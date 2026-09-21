@@ -75,6 +75,8 @@ center/
 api/
   inspections.js          # Vercel serverless mirror of serve.mjs's /api/inspections route
 vercel.json               # rewrites `/` to `/center/index.html`; includeFiles for api/inspections.js
+.github/
+  workflows/test.yml      # runs supabase start + pnpm test in CI (Docker/Supabase unreachable elsewhere)
 .claude/
   agents/inspector.md     # the inspector subagent (see §10)
 docs/
