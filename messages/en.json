@@ -20,5 +20,12 @@
   "Dashboard": {
     "title": "Dashboard",
     "signedInAs": "Signed in as {email}."
+  },
+  "Account": {
+    "title": "Account",
+    "credits": "Credits: {count}",
+    "buyCredits": "Buy credits",
+    "exportData": "Export data",
+    "deleteAccount": "Delete account"
   }
 }
