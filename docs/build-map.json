@@ -304,6 +304,7 @@
       "title_fi": "Suojattu alue (istunnot)",
       "why_fi": "Kirjautumattomat eivät pääse sovelluksen sisälle, vaikka tietäisivät osoitteen.",
       "instructions": "Middleware refreshes the session; `(app)` routes redirect signed-out users to sign-in.",
+      "build_summary_fi": "Yhdistettiin kirjautumisen istunnon päivitys samaan proxy.ts-tiedostoon joka jo hoiti kieliversioiden reitityksen (H3-brickistä) — molemmat toimivat nyt yhdessä joka pyynnöllä. Istunnon päivitys tarvitaan koska sivukomponentit eivät itse voi kirjoittaa evästeitä, vain lukea niitä; ilman tätä kirjautuminen olisi vanhentunut ajan myötä huomaamatta. Lisättiin uusi suojattu alue src/app/[locale]/(app)/ — sen oma layout tarkistaa palvelimella (ei koskaan vain selaimen puolella) onko käyttäjä kirjautunut, ja jos ei, ohjaa kirjautumissivulle. Rakennettiin yksi esimerkkisivu /dashboard todistamaan että suojaus toimii oikeasti — myöhemmät oikeat sovellussivut tulevat saman suojauksen taakse ilman lisätyötä. Testattiin oikeasti tuotantotilassa (pnpm build + pnpm start): sekä /en/dashboard että pelkkä /dashboard (joka ohjautuu ensin kieliversioon) ohjautuivat kirjautumattomana oikein kirjautumissivulle, eikä palvelin kaatunut. Mitään ei jäänyt kesken.",
       "security": [
         "Authorization checked on the server, never only in the UI"
       ],
@@ -312,7 +313,7 @@
         "A1"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "inspecting"
     },
     {
       "step": 13,
