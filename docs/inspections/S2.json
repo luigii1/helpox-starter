@@ -1,0 +1,16 @@
+{
+  "brick": "S2",
+  "inspected_at": "2026-09-21T20:42:22Z",
+  "result": "pass",
+  "summary_fi": "Syötteiden tarkistuskerros on rakennettu ja toimii: väärä tai rikkinäinen data saa aina siistin virheen kaatumisen sijaan, tähän mennessä rakennetuista sivuista jokainen ulkoista dataa vastaanottava reitti tarkistaa syötteensä, ja kaikki automaattitestit sekä laatutarkistukset menivät läpi.",
+  "checks": [
+    {
+      "check": "Every server action and route handler validates input",
+      "result": "pass"
+    },
+    {
+      "check": "Sending malformed input to any endpoint returns a 400-style error, not a crash.",
+      "result": "pass"
+    }
+  ]
+}
