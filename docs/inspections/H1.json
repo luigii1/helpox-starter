@@ -1,0 +1,9 @@
+{
+  "brick": "H1",
+  "inspected_at": "2026-09-21T14:05:00Z",
+  "result": "pass",
+  "summary_fi": "Värit ja fontit on nyt keskitetty yhteen tiedostoon, ja testasin oikeasti selaimella, että sivun ulkoasu muuttuu automaattisesti käyttöjärjestelmän vaalea/tumma-asetuksen mukaan; mikään koodi ei myöskään käytä värejä suoraan ohi tästä yhteisestä paletista.",
+  "checks": [
+    { "check": "Switching OS theme switches the app theme; no raw hex values in components.", "result": "pass" }
+  ]
+}

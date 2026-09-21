@@ -208,6 +208,7 @@
       "title": "Design tokens",
       "title_fi": "Värit ja fontit (design-tokenit)",
       "why_fi": "Helpoxin värit ja fontit yhdessä paikassa, jotta kaikki näyttää samalta ja teiltä.",
+      "build_summary_fi": "Luotiin src/styles/tokens.css: väri-, fontti- ja pyöristyspaikanvaraajat sekä vaalealle että tummalle tilalle, kytkettynä Tailwindiin CSS-muuttujina. Etusivun teksti vaihdettiin käyttämään näitä väripaikanvaraajia (esim. bg-background) suorien Tailwind-värien sijaan. Tarkistin sekä koodihaulla ettei mistään komponentista löydy yhtään suoraa heksaväriarvoa, että oikeasti selaimessa (Chromium) simuloimalla käyttöjärjestelmän vaalea/tumma-asetusta — sivun tausta ja tekstin väri vaihtuivat oikeasti. Mitään ei jäänyt kesken; tämä on väliaikainen paikanvaraajapaletti kunnes oikea Helpox-brändi on päätetty (kirjattu ohjeeseen).",
       "instructions": "`src/styles/tokens.css`: colors, typography, radius, spacing, light and dark. Wire into Tailwind. Placeholder Helpox palette.",
       "security": [],
       "done_when": "Switching OS theme switches the app theme; no raw hex values in components.",
@@ -215,7 +216,7 @@
         "P1"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 8,
