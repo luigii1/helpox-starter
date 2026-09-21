@@ -69,8 +69,15 @@ describe("check_rate_limit", () => {
   });
 
   it("does not let a client read the underlying hit table directly", async () => {
+    // Supabase grants anon/authenticated base table privileges by default —
+    // RLS with zero policies doesn't turn the query itself into an error, it
+    // makes every row invisible (same pattern as profiles.test.ts's "anon
+    // can read nothing"). So the query succeeds with zero rows, not a
+    // permission error; that's still "no client can read a hit", just
+    // expressed as an empty result instead of a thrown error.
     const client = anonClient();
-    const { error } = await client.from("rate_limit_hits").select("id").limit(1);
-    expect(error).not.toBeNull();
+    const { data, error } = await client.from("rate_limit_hits").select("id").limit(1);
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
   });
 });
