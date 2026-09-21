@@ -167,6 +167,7 @@
       "title": "profiles table",
       "title_fi": "Käyttäjätaulu (profiles + RLS)",
       "why_fi": "Jokaisen käyttäjän oma rivi ja krediittisaldo. Kukaan ei voi muuttaa omaa saldoaan itse.",
+      "build_summary_fi": "Luotiin profiles-taulu migraationa: yksi rivi per käyttäjä ja krediittisaldo joka ei voi mennä negatiiviseksi, RLS päällä samassa migraatiossa. Rivi syntyy automaattisesti kun käyttäjä rekisteröityy. Ennen pushia asennettiin oikea PostgreSQL tähän koneeseen (ei Dockeria) ja jäljiteltiin Supabasen kirjautumisjärjestelmän rakennetta, jotta migraatio ja suojaus voitiin oikeasti ajaa ja kokeilla kolmella eri roolilla (käyttäjä A, käyttäjä B, anonyymi) etukäteen. Tämä paljasti yhden virheen: anonyymiltä oli aluksi evätty pääsy kokonaan virheilmoituksella, vaikka piti vain näyttää tyhjä tulos ilman virhettä — korjattiin ennen pushia. Kaikki kolme vaadittua käytöstä (oma rivi näkyy, toisen rivi ei näy, saldoa ei voi muuttaa itse) vahvistettu sekä täällä että GitHub Actionsin CI:ssä oikeaa Supabase-tietokantaa vasten.",
       "instructions": "As in base-spec.md. Created by trigger on auth.users insert. RLS enabled in the same migration.",
       "security": [
         "Users can select only their own row",
@@ -178,7 +179,7 @@
         "D1"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 6,
