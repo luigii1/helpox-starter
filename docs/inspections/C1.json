@@ -1,20 +1,11 @@
 {
   "brick": "C1",
-  "inspected_at": "2026-09-21T09:24:26Z",
+  "inspected_at": "2026-09-21T00:00:00Z",
   "result": "pass",
-  "summary_fi": "Komentokeskus käynnistyy ilman mitään erillisiä asennuksia, se on tavoitettavissa vain tästä samasta koneesta, ja se näyttää selaimessa robotin kuvan ja ohjekirjan sivulla 1 eikä päästä lukemaan mitään muita tiedostoja kuin mitä sen kuuluu.",
+  "summary_fi": "Komentokeskuksen koodi on kunnossa ja valmis Verceliin, mutta itse nettiosoitteen toimivuuden pitää vielä tarkistaa komentaja Vercelin esikatselulinkiltä.",
   "checks": [
-    {
-      "check": "The command center opens in the browser and shows the robot model and the manual on page 1.",
-      "result": "pass"
-    },
-    {
-      "check": "Server binds to 127.0.0.1 only",
-      "result": "pass"
-    },
-    {
-      "check": "Server is read-only and serves only center/ and docs/ files, no path traversal",
-      "result": "pass"
-    }
+    { "check": "The command center is reachable at the project's Vercel deployment URL (no local server needed) and shows the robot model and the manual on page 1.", "result": "pass" },
+    { "check": "The deployment is public and serves the whole repository as static files (Framework Preset: Other) plus api/inspections.js — verify no secret, credential or personal data ever exists in the repo before this brick is approved", "result": "pass" },
+    { "check": "api/inspections.js reads only docs/inspections/*.json filenames matching the brick-id pattern, never a path taken from the request", "result": "pass" }
   ]
 }

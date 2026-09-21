@@ -11,12 +11,17 @@ every step, and the owners approve by trying things out, not by reading code. Ru
 
 ## Command center
 
+Live on Vercel: every push gets its own preview deployment (see the project's Vercel dashboard for the
+current URL). Open it to see the robot, the manual page you are on, what waits for your check and what
+Claude Code should do next — no local setup needed.
+
+For local development only:
+
 ```bash
 node center/serve.mjs
 ```
 
-Open http://localhost:4400 to see the robot, the manual page you are on, what waits for your check and what
-Claude Code should do next. Requires Node.js 20 or newer. No other dependencies.
+Open http://localhost:4400. Requires Node.js 20 or newer. No other dependencies.
 
 ## Start
 

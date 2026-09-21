@@ -5,6 +5,27 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Command center checked on Vercel, not localhost
+**Decision:** The command center is deployed on Vercel (Framework Preset: Other, no build command;
+`vercel.json` rewrites `/` to `/center/index.html`; `api/inspections.js` is a Node serverless function
+mirroring `center/serve.mjs`'s `/api/inspections` route). Every push gets its own preview deployment.
+The commander does the `commander_check_fi` for every brick against the Vercel URL. `center/serve.mjs`
+stays for local development only.
+**Why:** The commander does not want to run anything on their own machine to check progress.
+**Consequence — read before approving any brick:** with Framework Preset "Other" and no `outputDirectory`,
+Vercel serves the *entire* repository as static files at their repo path (e.g. `/CLAUDE.md`,
+`/docs/decisions.md` are publicly reachable, not just `center/` and `docs/build-map.json`). The commander
+chose public (no Vercel Deployment Protection) since nothing in the repo is a secret or personal data —
+this must stay true. `SUPABASE_SERVICE_ROLE_KEY`, `POLAR_*` and any other secret must only ever be a Vercel
+environment variable, never a file in the repo (already required by `CLAUDE.md` §4). This replaces the
+"binds to 127.0.0.1 only" security rule from the 2026-09-21 command-center decision below. Once P1 (the
+real Next.js app) exists and is deployed to its own Vercel project (brick P5), this stop-gap setup should
+be revisited — it was chosen for speed while only `center/` and `docs/` exist.
+**Alternatives considered:** restricting the static output to only `center/` and `docs/build-map.json` via
+a dedicated output folder — rejected for now since it needs a new top-level folder and duplicated files,
+which `CLAUDE.md` §3 says to avoid without asking; Vercel Deployment Protection (password) — needs a paid
+plan, declined by the commander.
+
 ## 2026-09-21 — Build with a command center, mechanic and inspector
 **Decision:** The base is built brick by brick from `docs/build-map.json`. The main Claude Code session
 (mechanic) builds; a separate `inspector` subagent verifies every brick and writes a report; the owners

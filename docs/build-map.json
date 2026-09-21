@@ -89,19 +89,19 @@
       "step": 1,
       "id": "C1",
       "module": "base",
-      "title": "Command center running locally",
-      "title_fi": "Komentokeskus käyntiin",
-      "why_fi": "Tästä näette koko ajan, mikä on valmista ja mitä seuraavaksi tehdään.",
-      "instructions": "The files `center/index.html` and `center/serve.mjs` are provided. Verify `node center/serve.mjs` starts with zero dependencies, serves the page on http://localhost:4400 and reads `docs/build-map.json` and `docs/inspections/*.json` live. Add `\"center\": \"node center/serve.mjs\"` to package.json scripts once P1 exists.",
+      "title": "Command center on Vercel",
+      "title_fi": "Komentokeskus käyntiin (Vercel)",
+      "why_fi": "Tästä näette koko ajan, mikä on valmista ja mitä seuraavaksi tehdään — suoraan netistä, ilman että teidän tarvitsee ajaa mitään omalla koneella.",
+      "instructions": "The files `center/index.html`, `center/serve.mjs`, `vercel.json` and `api/inspections.js` are provided. `vercel.json` rewrites `/` to `/center/index.html` and declares `includeFiles` so `api/inspections.js` (a Node serverless function mirroring `center/serve.mjs`'s `/api/inspections` route) can read `docs/inspections/*.json` at runtime. `docs/build-map.json` is served as-is since Vercel serves any static file in the repo by its path when no build step is configured (Framework Preset: Other). The commander connects the GitHub repo to a Vercel project themselves (see chat instructions); every push then gets its own preview deployment. `center/serve.mjs` remains for local development only — do not remove it. Add `\"center\": \"node center/serve.mjs\"` to package.json scripts once P1 exists.",
       "security": [
-        "Server binds to 127.0.0.1 only",
-        "Server is read-only and serves only center/ and docs/ files, no path traversal"
+        "The deployment is public and serves the whole repository as static files (Framework Preset: Other) plus api/inspections.js — verify no secret, credential or personal data ever exists in the repo before this brick is approved",
+        "api/inspections.js reads only docs/inspections/*.json filenames matching the brick-id pattern, never a path taken from the request"
       ],
-      "done_when": "The command center opens in the browser and shows the robot model and the manual on page 1.",
+      "done_when": "The command center is reachable at the project's Vercel deployment URL (no local server needed) and shows the robot model and the manual on page 1.",
       "depends_on": [],
       "human_check": true,
       "status": "awaiting_commander",
-      "commander_check_fi": "Avatkaa komentokeskus selaimessa. Näkyykö robotin malli ja ohjekirja sivulla 1?"
+      "commander_check_fi": "Avatkaa projektin Vercel-esikatselulinkki (Vercelin projektisivulla, haaran claude/adoring-lovelace-s6w44y kohdalla). Näkyykö robotin malli ja ohjekirja sivulla 1?"
     },
     {
       "step": 2,
