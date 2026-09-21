@@ -188,6 +188,7 @@
       "title": "credit_ledger table",
       "title_fi": "Krediittikirjanpito (credit_ledger + RLS)",
       "why_fi": "Kirjanpito jokaisesta krediittien muutoksesta. Rivejä ei voi muokata tai poistaa jälkikäteen.",
+      "build_summary_fi": "Luotiin credit_ledger-taulu: jokainen krediittimuutos on oma rivinsä (syy, määrä, ulkoinen tunniste kaksinkertaisten maksujen estämiseksi), RLS päällä samassa migraatiossa. Kukaan asiakaspuolen käyttäjä ei voi lisätä, muokata tai poistaa rivejä — vain taustapalvelu (service_role) voi kirjoittaa, ja senkin tekevät myöhemmin (E2-vaihe) tietokantafunktiot eivätkä sovellus suoraan. Testattiin samalla tavalla kuin D2:ssa: asennettiin oikea Postgres tähän koneeseen ja jäljiteltiin myös taustapalvelun roolia (ei vain kirjautunutta käyttäjää ja anonyymiä), jotta \"vain palvelu voi kirjoittaa\" -vaatimus voitiin oikeasti kokeilla, ei vain lukea koodista. Kaikki meni suoraan läpi: oma rivi näkyy, toisen ei, anonyymi näkee tyhjää ei virhettä, kukaan asiakas ei voi kirjoittaa/muokata/poistaa, kaksoismaksu (sama external_id) torjutaan, ja väärä \"reason\"-arvo hylätään. Mitään ei jäänyt kesken.",
       "instructions": "As in base-spec.md, append-only, `external_id` unique. RLS in the same migration.",
       "security": [
         "Users can select only their own rows",
@@ -198,7 +199,7 @@
         "D2"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 7,

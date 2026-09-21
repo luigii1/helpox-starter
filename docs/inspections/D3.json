@@ -1,0 +1,11 @@
+{
+  "brick": "D3",
+  "inspected_at": "2026-09-21T13:49:42Z",
+  "result": "pass",
+  "summary_fi": "Krediittikirjanpito on rakennettu ja suojattu oikein: jokainen tarkistin todistui itsenäisesti oikeaa tietokantaa vasten - asiakas ei pääse muokkaamaan tai poistamaan rivejä, näkee vain omat rivinsä, eikä tuplamaksuja tai virheellisiä syykoodeja pääse tietokantaan.",
+  "checks": [
+    { "check": "RLS tests: A cannot read B's ledger, no role except service can insert.", "result": "pass" },
+    { "check": "Users can select only their own rows", "result": "pass" },
+    { "check": "No client writes of any kind", "result": "pass" }
+  ]
+}
