@@ -293,7 +293,7 @@
         "H2"
       ],
       "human_check": true,
-      "status": "inspecting",
+      "status": "awaiting_commander",
       "commander_check_fi": "Kaksi asiaa tarkistettavaksi. 1) Sähköpostilinkki: mene /sign-in-sivulle, syötä oma sähköpostiosoitteesi, paina 'Send magic link', avaa sähköpostiisi tullut linkki. Sen pitäisi kirjautua sisään — etusivulla pitäisi lukea 'Signed in as ...'. Paina sitten 'Sign out' ja tarkista että kirjaudut ulos. Kokeile vielä kirjautua takaisin samalla sähköpostilla. 2) Google: tätä ei voi vielä kokeilla, koska Google-kirjautuminen pitää ensin ottaa käyttöön Supabasen hallintapaneelissa (Authentication → Providers → Google) Google Cloud Consolesta haettavilla tunnuksilla, ja sovelluksen /callback-osoite pitää lisätä sallittujen paluuosoitteiden listalle (Authentication → URL Configuration). Voit hyväksyä tämän vaiheen jo pelkän sähköpostilinkin perusteella ja tehdä Google-asetuksen ja -kokeilun myöhemmin, tai pyytää minua auttamaan asetuksen kanssa nyt — kerro kumpi sopii."
     },
     {

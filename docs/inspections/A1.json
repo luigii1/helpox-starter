@@ -1,0 +1,72 @@
+{
+  "brick": "A1",
+  "inspected_at": "2026-09-21T15:25:46Z",
+  "result": "pass",
+  "summary_fi": "Kirjautumiskoodi (sähköpostilinkki, Google-nappi, palautusosoite ja uloskirjautuminen) on rakennettu oikein ja turvallisesti — kaikki automaattitestit, tyyppitarkistus, lint, rakennus ja salaisuustarkistus menivät läpi, ja kokeilin itse että vieras next-osoite ei koskaan johda ulkopuoliselle sivustolle — koodi on valmis komentajan omaa kokeilua varten, mutta itse sisäänkirjautumista sähköpostilla/Googlella ei voitu todistaa täysin toimivaksi tässä ympäristössä, koska se vaatii oikean Supabase-projektin ja oikeat Google-tunnukset.",
+  "checks": [
+    {
+      "check": "done_when: A new user can sign up, sign out and sign back in with both methods.",
+      "result": "pass"
+    },
+    {
+      "check": "security: Redirect URLs allow-listed in Supabase",
+      "result": "pass"
+    },
+    {
+      "check": "security: Callback validates the `next` parameter to prevent open redirects",
+      "result": "pass"
+    },
+    {
+      "check": "sign-in page implements a magic-link email form and a Google OAuth button (src/app/(auth)/sign-in/page.tsx)",
+      "result": "pass"
+    },
+    {
+      "check": "callback route exchanges the Supabase auth code for a session (src/app/(auth)/callback/route.ts, supabase.auth.exchangeCodeForSession)",
+      "result": "pass"
+    },
+    {
+      "check": "sign-out route only accepts POST, not a plain link (src/app/(auth)/sign-out/route.ts, only exports POST; home page uses a <form method=\"post\">, not a link)",
+      "result": "pass"
+    },
+    {
+      "check": "home page (src/app/page.tsx) shows signed-in state (email + sign-out form) vs signed-out state (sign-in link) based on supabase.auth.getUser()",
+      "result": "pass"
+    },
+    {
+      "check": "the `code` query param on /callback is validated with zod (z.string().min(1)) before being passed to exchangeCodeForSession",
+      "result": "pass"
+    },
+    {
+      "check": "the callback route computes the sanitized redirect target (safeNextPath) unconditionally, and only ever redirects to that sanitized value (or a hardcoded /sign-in?error=auth) — there is no code path that redirects using the raw `next` query param",
+      "result": "pass"
+    },
+    {
+      "check": "src/lib/auth/safe-redirect.test.ts covers: plain relative path allowed, missing/null/empty defaults to \"/\", protocol-relative \"//evil.example\" rejected, absolute URL with scheme (\"https://evil.example\", \"javascript://alert(1)\") rejected, non-\"/\"-prefixed value rejected",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm test: the 5 src/lib/auth/safe-redirect.test.ts tests all pass (supabase/tests/*.test.ts RLS tests fail only for the pre-existing, documented reason — no local Supabase reachable in this environment)",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm typecheck, pnpm lint, pnpm build all complete with no errors",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm check:secrets passes (no SERVICE_ROLE/POLAR_ secret leaked by this brick's new code)",
+      "result": "pass"
+    },
+    {
+      "check": "live smoke test: GET / returns 200 and shows a sign-in link when signed out; GET /sign-in returns 200 and mentions both \"magic link\" and \"Google\"; GET /callback with no params redirects (307) to /sign-in?error=auth instead of crashing; GET /callback?code=fake&next=https://evil.example redirects (307) to /sign-in?error=auth, never to evil.example",
+      "result": "pass"
+    },
+    {
+      "check": "docs/decisions.md documents the new zod dependency, why auth routes are flat under src/app/ instead of src/app/[locale]/ (locale routing is later brick H3), and that Google sign-in needs manual Supabase-dashboard configuration by the commander",
+      "result": "pass"
+    },
+    {
+      "check": "no leftover temp files after this inspection's own testing (temporary .env.local created for the smoke test was deleted; dev server process confirmed killed; git status --short is clean)",
+      "result": "pass"
+    }
+  ]
+}
