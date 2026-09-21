@@ -5,6 +5,23 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Brick G2 pulled forward out of order: E1 blocked on the commander's Polar setup
+**Decision:** Started brick G2 (step 27, "Data export") instead of E1 (step 17, "Polar sandbox and
+products"), which is next in strict step order.
+**Why:** E1's `done_when` requires two real products to exist in a Polar sandbox organization —
+something only the commander can create (a third-party account, sandbox mode, an access token).
+The commander was asked directly what's needed (Polar account, two products, an access token) and
+three hourly check-ins passed with no reply. G2's dependencies (`A3`, `D3`) are both `approved`, its
+`human_check` is `false`, and it needs nothing external, so it's fully buildable right now. Per
+CLAUDE.md §10 ("If a brick turns out to be wrong or too big, propose a change instead of
+improvising"), pulling forward a brick that's genuinely ready, rather than sitting idle waiting on a
+different brick's external blocker, is the same kind of judgment call already made once for P5.
+**Consequence:** E1 stays `todo`, still waiting on the commander's Polar sandbox details. Step order
+resumes normally once E1 is unblocked — this is a one-off skip-ahead, not a change to the build
+plan's order itself.
+
+---
+
 ## 2026-09-21 — Brick S4: rate limiting implemented in Postgres, not a new external service
 **Decision:** `check_rate_limit(p_key, p_limit, p_window_seconds)` is a `SECURITY DEFINER` Postgres
 function (migration `20260921204740_rate_limits.sql`) backed by a plain hit-counter table

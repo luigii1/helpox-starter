@@ -27,15 +27,21 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           {t("credits", { count: profile?.credits ?? 0 })}
         </p>
 
-        {/* Buy/export/delete are wired in later bricks (E1+, Milestone 4) — the
-            buttons exist now so this page's layout doesn't have to change later. */}
+        {/* Buy/delete are wired in later bricks (E1+, G3) — the buttons exist
+            now so this page's layout doesn't have to change later. */}
         <div className="flex flex-col gap-2">
           <Button type="button" disabled>
             {t("buyCredits")}
           </Button>
-          <Button type="button" variant="secondary" disabled>
-            {t("exportData")}
-          </Button>
+          {/* Plain <a>, not next/link's Link: this downloads a file
+              (Content-Disposition: attachment) from an API route, not a page
+              — Link's client-side RSC navigation isn't meant for that. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href="/api/account/export">
+            <Button type="button" variant="secondary" className="w-full">
+              {t("exportData")}
+            </Button>
+          </a>
           <Button type="button" variant="danger" disabled>
             {t("deleteAccount")}
           </Button>
