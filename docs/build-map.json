@@ -1,0 +1,716 @@
+{
+  "project": "helpox-starter",
+  "version": 5,
+  "updated": "2026-09-21",
+  "statuses": {
+    "todo": "Odottaa",
+    "building": "Rakennetaan",
+    "inspecting": "Tarkastetaan",
+    "rework": "Korjataan",
+    "awaiting_commander": "Tarkistakaa itse",
+    "approved": "Valmis"
+  },
+  "modules": [
+    {
+      "id": "base",
+      "label_fi": "Rakennusalusta",
+      "label_en": "Command center & project",
+      "about_fi": "Pöytä, jolla robotti kootaan: komentokeskus ja tyhjä projekti."
+    },
+    {
+      "id": "legs",
+      "label_fi": "Jalat",
+      "label_en": "Database",
+      "about_fi": "Robotti seisoo tietokannan varassa. Jokainen käyttäjä näkee vain omat tietonsa."
+    },
+    {
+      "id": "hips",
+      "label_fi": "Lantio ja nivelet",
+      "label_en": "Design system",
+      "about_fi": "Vakiopalat ja liitokset, joista kaikki näkymät kootaan."
+    },
+    {
+      "id": "chest",
+      "label_fi": "Rintapanssari",
+      "label_en": "Secrets & authentication",
+      "about_fi": "Salaiset avaimet pysyvät sisällä, ja sisään pääsee vain kirjautumalla."
+    },
+    {
+      "id": "back",
+      "label_fi": "Selkäpanssari",
+      "label_en": "Continuous integration",
+      "about_fi": "Suojaa kaikkea selän takana: jokainen muutos tarkistetaan automaattisesti."
+    },
+    {
+      "id": "hands",
+      "label_fi": "Kourat",
+      "label_en": "Input validation & rate limiting",
+      "about_fi": "Robotti ottaa vastaan vain sen, minkä on tarkistanut, eikä liikaa kerralla."
+    },
+    {
+      "id": "core",
+      "label_fi": "Virtakenno",
+      "label_en": "Payments & credits",
+      "about_fi": "Robotin virta: maksut ja krediitit. Virtaa ostetaan paketteina ja se kuluu käytössä."
+    },
+    {
+      "id": "shoulders",
+      "label_fi": "Olkapanssarit",
+      "label_en": "Preview deploys & security headers",
+      "about_fi": "Ulkoiset suojat: testiosoitteet ja selaimen turvasäännöt."
+    },
+    {
+      "id": "head",
+      "label_fi": "Pää",
+      "label_en": "Landing page & i18n",
+      "about_fi": "Se mitä ihmiset näkevät ensimmäisenä: etusivu ja kieliversiot."
+    },
+    {
+      "id": "chip",
+      "label_fi": "Muistisiru",
+      "label_en": "Privacy & legal",
+      "about_fi": "Mitä robotti muistaa ja mitä se lupaa unohtaa: tietosuoja, tietojen vienti ja tilin poisto."
+    },
+    {
+      "id": "tool",
+      "label_fi": "Työkalu",
+      "label_en": "Example feature & template guide",
+      "about_fi": "Esimerkki siitä, mitä tuleva sovellus tekee krediiteillä, ja ohje uuden robotin aloittamiseen."
+    },
+    {
+      "id": "eyes",
+      "label_fi": "Silmät syttyvät",
+      "label_en": "Smoke test & launch",
+      "about_fi": "Viimeinen testi ja tarkistuslista. Kun ne menevät läpi, robotti herää eli sovellus julkaistaan."
+    }
+  ],
+  "bricks": [
+    {
+      "step": 1,
+      "id": "C1",
+      "module": "base",
+      "title": "Command center running locally",
+      "title_fi": "Komentokeskus käyntiin",
+      "why_fi": "Tästä näette koko ajan, mikä on valmista ja mitä seuraavaksi tehdään.",
+      "instructions": "The files `center/index.html` and `center/serve.mjs` are provided. Verify `node center/serve.mjs` starts with zero dependencies, serves the page on http://localhost:4400 and reads `docs/build-map.json` and `docs/inspections/*.json` live. Add `\"center\": \"node center/serve.mjs\"` to package.json scripts once P1 exists.",
+      "security": [
+        "Server binds to 127.0.0.1 only",
+        "Server is read-only and serves only center/ and docs/ files, no path traversal"
+      ],
+      "done_when": "The command center opens in the browser and shows the robot model and the manual on page 1.",
+      "depends_on": [],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Avatkaa komentokeskus selaimessa. Näkyykö robotin malli ja ohjekirja sivulla 1?"
+    },
+    {
+      "step": 2,
+      "id": "P1",
+      "module": "base",
+      "title": "Create the Next.js project",
+      "title_fi": "Projektin pohja (Next.js)",
+      "why_fi": "Sovelluksen runko, jonka päälle kaikki muu rakennetaan.",
+      "instructions": "Next.js App Router, TypeScript strict, pnpm, ESLint, Prettier. Folder structure exactly as CLAUDE.md §3. Keep the existing `center/` and `docs/` folders untouched.",
+      "security": [
+        "`.env*` in .gitignore from the first commit"
+      ],
+      "done_when": "`pnpm dev`, `pnpm typecheck` and `pnpm lint` run without errors.",
+      "depends_on": [],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 3,
+      "id": "P3",
+      "module": "legs",
+      "title": "Supabase local and cloud projects",
+      "title_fi": "Tietokanta (Supabase)",
+      "why_fi": "Tietokanta, johon käyttäjät ja krediitit tallennetaan. Muutokset tehdään vain tiedostoina, jotta mikään ei muutu vahingossa.",
+      "instructions": "Supabase CLI, local stack, `supabase/migrations/` as the only way to change schema. Create a free cloud project for development.",
+      "security": [
+        "No schema changes by hand in the dashboard"
+      ],
+      "done_when": "`supabase start` works and an empty migration applies locally and to the cloud project.",
+      "depends_on": [
+        "P1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 4,
+      "id": "D1",
+      "module": "legs",
+      "title": "RLS test harness",
+      "title_fi": "Suojauksen testipenkki (RLS-testit)",
+      "why_fi": "Testit, jotka yrittävät lukea toisen käyttäjän tietoja. Näin todistetaan, että suojaus oikeasti toimii.",
+      "instructions": "Vitest setup that creates two users against local Supabase and gives each an authenticated client, plus an anon client.",
+      "security": [
+        "Tests run against a fresh database built from migrations"
+      ],
+      "done_when": "A sample test proves the harness can sign in two different users.",
+      "depends_on": [
+        "P3"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 5,
+      "id": "D2",
+      "module": "legs",
+      "title": "profiles table",
+      "title_fi": "Käyttäjätaulu (profiles + RLS)",
+      "why_fi": "Jokaisen käyttäjän oma rivi ja krediittisaldo. Kukaan ei voi muuttaa omaa saldoaan itse.",
+      "instructions": "As in base-spec.md. Created by trigger on auth.users insert. RLS enabled in the same migration.",
+      "security": [
+        "Users can select only their own row",
+        "No client insert, update or delete",
+        "credits has check (credits >= 0)"
+      ],
+      "done_when": "RLS tests: A cannot read B's profile, anon reads nothing, A cannot update own credits.",
+      "depends_on": [
+        "D1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 6,
+      "id": "D3",
+      "module": "legs",
+      "title": "credit_ledger table",
+      "title_fi": "Krediittikirjanpito (credit_ledger + RLS)",
+      "why_fi": "Kirjanpito jokaisesta krediittien muutoksesta. Rivejä ei voi muokata tai poistaa jälkikäteen.",
+      "instructions": "As in base-spec.md, append-only, `external_id` unique. RLS in the same migration.",
+      "security": [
+        "Users can select only their own rows",
+        "No client writes of any kind"
+      ],
+      "done_when": "RLS tests: A cannot read B's ledger, no role except service can insert.",
+      "depends_on": [
+        "D2"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 7,
+      "id": "H1",
+      "module": "hips",
+      "title": "Design tokens",
+      "title_fi": "Värit ja fontit (design-tokenit)",
+      "why_fi": "Helpoxin värit ja fontit yhdessä paikassa, jotta kaikki näyttää samalta ja teiltä.",
+      "instructions": "`src/styles/tokens.css`: colors, typography, radius, spacing, light and dark. Wire into Tailwind. Placeholder Helpox palette.",
+      "security": [],
+      "done_when": "Switching OS theme switches the app theme; no raw hex values in components.",
+      "depends_on": [
+        "P1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 8,
+      "id": "H2",
+      "module": "hips",
+      "title": "UI primitives",
+      "title_fi": "Peruskomponentit (painikkeet, kentät, ikkunat)",
+      "why_fi": "Painikkeet, kentät ja ikkunat, joita kaikki sivut käyttävät.",
+      "instructions": "Button, Input, Textarea, Card, Dialog, Toast, Badge in `src/components/ui/`, all using tokens, keyboard accessible.",
+      "security": [],
+      "done_when": "A dev-only `/dev/ui` page shows every primitive in both themes.",
+      "depends_on": [
+        "H1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 9,
+      "id": "P4",
+      "module": "chest",
+      "title": "Environment variables and secret boundary",
+      "title_fi": "Salaiset avaimet (ympäristömuuttujat)",
+      "why_fi": "Salaiset avaimet pidetään palvelimella. Jos ne päätyvät selaimeen, kuka tahansa voi lukea koko tietokannan.",
+      "instructions": "`.env.example` with every variable commented. `src/lib/supabase/{server,client,admin}.ts`; `admin.ts` starts with `import 'server-only'`.",
+      "security": [
+        "Only Supabase URL, anon key and Plausible domain are NEXT_PUBLIC_",
+        "Service role key is read only in admin.ts"
+      ],
+      "done_when": "Importing admin.ts from a client component fails the build.",
+      "depends_on": [
+        "P3"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 10,
+      "id": "S1",
+      "module": "chest",
+      "title": "Secret leak check",
+      "title_fi": "Avainvuotojen tarkistus",
+      "why_fi": "Automaattinen hälytys, jos salainen avain on päätymässä väärään paikkaan.",
+      "instructions": "Script `pnpm check:secrets` that fails if `SERVICE_ROLE` or `POLAR_` secrets appear outside allowed server files or with NEXT_PUBLIC_.",
+      "security": [
+        "Runs in CI on every PR"
+      ],
+      "done_when": "Planting a fake secret in a client file makes the check fail.",
+      "depends_on": [
+        "P4"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 11,
+      "id": "A1",
+      "module": "chest",
+      "title": "Sign-in with magic link and Google",
+      "title_fi": "Kirjautuminen (sähköpostilinkki ja Google)",
+      "why_fi": "Kirjautuminen ilman salasanoja: sähköpostilinkki tai Google.",
+      "instructions": "Supabase Auth, `(auth)` route group, callback route, sign-out.",
+      "security": [
+        "Redirect URLs allow-listed in Supabase",
+        "Callback validates the `next` parameter to prevent open redirects"
+      ],
+      "done_when": "A new user can sign up, sign out and sign back in with both methods.",
+      "depends_on": [
+        "D2",
+        "H2"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Rekisteröityköön kumpikin omalla sähköpostillaan ja Googlella. Kirjautukaa ulos ja takaisin."
+    },
+    {
+      "step": 12,
+      "id": "A2",
+      "module": "chest",
+      "title": "Session middleware and protected area",
+      "title_fi": "Suojattu alue (istunnot)",
+      "why_fi": "Kirjautumattomat eivät pääse sovelluksen sisälle, vaikka tietäisivät osoitteen.",
+      "instructions": "Middleware refreshes the session; `(app)` routes redirect signed-out users to sign-in.",
+      "security": [
+        "Authorization checked on the server, never only in the UI"
+      ],
+      "done_when": "Opening an `(app)` URL signed out redirects to sign-in.",
+      "depends_on": [
+        "A1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 13,
+      "id": "A3",
+      "module": "chest",
+      "title": "Account page",
+      "title_fi": "Oma tili -sivu",
+      "why_fi": "Sivu, jolta käyttäjä näkee krediittinsä ja hallitsee tiliään.",
+      "instructions": "Shows email and credit balance; buttons for buy, export, delete (wired later).",
+      "security": [],
+      "done_when": "Signed-in user sees own email and balance.",
+      "depends_on": [
+        "A2"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 14,
+      "id": "T1",
+      "module": "back",
+      "title": "Continuous integration",
+      "title_fi": "Automaattitarkistukset (CI)",
+      "why_fi": "Jokainen muutos testataan automaattisesti ennen kuin se hyväksytään.",
+      "instructions": "GitHub Actions: typecheck, lint, check:secrets, unit and RLS tests on every PR.",
+      "security": [],
+      "done_when": "A PR with a failing RLS test cannot be merged.",
+      "depends_on": [
+        "S1",
+        "D3"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 15,
+      "id": "S2",
+      "module": "hands",
+      "title": "Input validation layer",
+      "title_fi": "Syötteiden tarkistus (validointi)",
+      "why_fi": "Kaikki mitä käyttäjä lähettää tarkistetaan palvelimella ennen käyttöä.",
+      "instructions": "zod schemas in `src/lib/validation/`; helper for server actions and route handlers that rejects invalid input with a translated error.",
+      "security": [
+        "Every server action and route handler validates input"
+      ],
+      "done_when": "Sending malformed input to any endpoint returns a 400-style error, not a crash.",
+      "depends_on": [
+        "A2"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 16,
+      "id": "S4",
+      "module": "hands",
+      "title": "Rate limiting",
+      "title_fi": "Pyyntöjen rajoitus (rate limiting)",
+      "why_fi": "Estää yrittämästä samaa asiaa tuhansia kertoja sekunnissa.",
+      "instructions": "Limit auth callback, checkout creation and credit consumption per user and per IP.",
+      "security": [
+        "Limits apply on the server, not in the UI"
+      ],
+      "done_when": "Rapid repeated calls get a 429 with a translated message.",
+      "depends_on": [
+        "S2"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 17,
+      "id": "E1",
+      "module": "core",
+      "title": "Polar sandbox and products",
+      "title_fi": "Maksupalvelu ja paketit (Polar)",
+      "why_fi": "Maksupalvelun testiympäristö ja myytävät krediittipaketit.",
+      "instructions": "Polar sandbox organization; products for 5 credits (€4.99) and 12 credits (€9.99). `src/lib/credits/packs.ts` maps product ids to credit amounts.",
+      "security": [
+        "Sandbox keys only; production keys never in development"
+      ],
+      "done_when": "Both products visible in the sandbox and referenced from packs.ts.",
+      "depends_on": [
+        "P4"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 18,
+      "id": "E2",
+      "module": "core",
+      "title": "Credit database functions",
+      "title_fi": "Krediittien laskenta (tietokantafunktiot)",
+      "why_fi": "Krediittien lisäys ja käyttö tietokannan sisällä, niin ettei niitä voi huijata tai käyttää kahdesti.",
+      "instructions": "`grant_credits`, `consume_credits`, `refund_credits` as in base-spec.md. SECURITY DEFINER, `search_path = ''`, fully qualified names.",
+      "security": [
+        "grant and refund executable only by service role",
+        "consume uses auth.uid(), never a user id argument",
+        "Duplicate external_id is a no-op"
+      ],
+      "done_when": "Tests: grant twice with same external_id adds once; two concurrent consumes on balance 1 give exactly one success; authenticated user cannot call grant.",
+      "depends_on": [
+        "D3"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Lukekaa valvojan raportti. Onko jokainen kohta PASS? Kysykää mekaanikolta, jos jokin on epäselvää."
+    },
+    {
+      "step": 19,
+      "id": "E3",
+      "module": "core",
+      "title": "Checkout creation",
+      "title_fi": "Osta-painike (kassa)",
+      "why_fi": "Osta-painike vie Polarin maksusivulle. Hinta tulee aina palvelimelta, ei selaimesta.",
+      "instructions": "Server action creates a Polar checkout for a pack with the Supabase user id as external customer id; redirects to Polar hosted checkout.",
+      "security": [
+        "Pack id validated against packs.ts, price never taken from the client",
+        "Only signed-in users can start checkout"
+      ],
+      "done_when": "Clicking Buy opens Polar sandbox checkout for the right product.",
+      "depends_on": [
+        "E1",
+        "A2",
+        "S2"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 20,
+      "id": "E4",
+      "module": "core",
+      "title": "Webhook handler",
+      "title_fi": "Maksun vahvistus (webhook)",
+      "why_fi": "Kun maksu onnistuu, Polar ilmoittaa siitä ja krediitit lisätään. Väärennetyt ilmoitukset hylätään.",
+      "instructions": "`/api/webhooks/polar`, Node runtime, raw body, verify signature with Polar SDK, handle the paid-order event: look up pack, call grant_credits with the Polar order id as external_id. Check current Polar docs for event names.",
+      "security": [
+        "Invalid signature returns 403 before any processing",
+        "Replayed event returns 200 and grants nothing",
+        "Never log the full payload"
+      ],
+      "done_when": "Sandbox purchase via a tunnel grants credits exactly once; forged request is rejected.",
+      "depends_on": [
+        "E2",
+        "E3"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Ostakaa paketti testikortilla 4242 4242 4242 4242. Tuliko oikea määrä krediittejä, ja vain kerran?"
+    },
+    {
+      "step": 21,
+      "id": "E5",
+      "module": "core",
+      "title": "Sign-up bonus credit",
+      "title_fi": "Ilmainen ensimmäinen krediitti",
+      "why_fi": "Ensimmäinen krediitti lahjaksi, mutta vain kerran per tili.",
+      "instructions": "Grant 1 credit after email is verified, via grant_credits with external_id `signup:<user_id>`.",
+      "security": [
+        "Granted once per account, only after verification"
+      ],
+      "done_when": "New verified user has exactly 1 credit; re-running the grant adds nothing.",
+      "depends_on": [
+        "E2",
+        "A1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 22,
+      "id": "P5",
+      "module": "shoulders",
+      "title": "Vercel project with preview deployments",
+      "title_fi": "Testiosoitteet (Vercel)",
+      "why_fi": "Jokainen muutos saa oman testiosoitteen, jossa sitä voi kokeilla ennen julkaisua.",
+      "instructions": "Connect repo to Vercel. Separate env vars for Preview and Production.",
+      "security": [
+        "Production and preview use different Supabase projects and keys"
+      ],
+      "done_when": "Every push to a branch creates a working preview URL.",
+      "depends_on": [
+        "P4"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Avatkaa Vercelin antama testiosoite puhelimella. Aukeaako sivu?"
+    },
+    {
+      "step": 23,
+      "id": "S3",
+      "module": "shoulders",
+      "title": "Security headers",
+      "title_fi": "Selaimen turvasäännöt (CSP ja turvaotsakkeet)",
+      "why_fi": "Selaimelle kerrotaan, mitä sivu saa ladata. Estää monta yleistä hyökkäystä.",
+      "instructions": "CSP, HSTS, Referrer-Policy, X-Content-Type-Options, frame-ancestors in next.config. CSP allows only own origin, Supabase, Polar checkout and Plausible.",
+      "security": [
+        "No `unsafe-eval` in production CSP"
+      ],
+      "done_when": "securityheaders.com gives A or better on the preview URL.",
+      "depends_on": [
+        "P5"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Syöttäkää testiosoite palveluun securityheaders.com. Onko arvosana A tai parempi?"
+    },
+    {
+      "step": 24,
+      "id": "H3",
+      "module": "head",
+      "title": "Internationalization",
+      "title_fi": "Kieliversiot (i18n)",
+      "why_fi": "Tekstit erillään koodista, jotta uuden kielen lisääminen on helppoa.",
+      "instructions": "next-intl with `[locale]` routing, `en` default, `messages/en.json`. Lint rule or check that flags hard-coded JSX strings.",
+      "security": [],
+      "done_when": "`/en` works and adding `fi.json` would need no code changes.",
+      "depends_on": [
+        "P1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 25,
+      "id": "H4",
+      "module": "head",
+      "title": "Marketing layout and landing page",
+      "title_fi": "Etusivu",
+      "why_fi": "Ensimmäinen sivu, jonka asiakas näkee: mitä tämä on ja paljonko se maksaa.",
+      "instructions": "Header, footer, hero, feature grid, pricing (1 free, 5 for €4.99, 12 for €9.99), FAQ. Metadata and Open Graph image.",
+      "security": [],
+      "done_when": "Landing page works at 360 px on a real phone, zero hard-coded strings.",
+      "depends_on": [
+        "H2",
+        "H3"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Avatkaa etusivu puhelimella. Näyttääkö hyvältä, ovatko hinnat oikein (1 ilmainen, 5 kpl 4,99 €, 12 kpl 9,99 €)?"
+    },
+    {
+      "step": 26,
+      "id": "G1",
+      "module": "chip",
+      "title": "Privacy policy and terms",
+      "title_fi": "Tietosuojaseloste ja käyttöehdot",
+      "why_fi": "Lakisääteiset sivut: mitä tietoja kerätään ja millä ehdoilla palvelua käytetään.",
+      "instructions": "Templates with placeholders for Helpox details; list processors: Supabase, Vercel, Polar, Plausible. Linked in footer.",
+      "security": [
+        "Marked clearly as drafts until reviewed by a professional"
+      ],
+      "done_when": "Pages exist in all locales and are linked from every page.",
+      "depends_on": [
+        "H4"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Lukekaa tietosuojaseloste ja käyttöehdot läpi. Ovatko Helpoxin tiedot oikein? Juristi tarkistaa ne ennen julkaisua."
+    },
+    {
+      "step": 27,
+      "id": "G2",
+      "module": "chip",
+      "title": "Data export",
+      "title_fi": "Tietojen vienti",
+      "why_fi": "Käyttäjä voi ladata kaikki omat tietonsa. GDPR vaatii tämän.",
+      "instructions": "Account page button downloads JSON with the user's profile, ledger and product data.",
+      "security": [
+        "Export only ever contains the requesting user's rows"
+      ],
+      "done_when": "Export for user A contains nothing of user B.",
+      "depends_on": [
+        "A3",
+        "D3"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 28,
+      "id": "G3",
+      "module": "chip",
+      "title": "Account deletion",
+      "title_fi": "Tilin poisto",
+      "why_fi": "Käyttäjä voi poistaa tilinsä, ja silloin kaikki hänen tietonsa katoavat oikeasti.",
+      "instructions": "Confirmation dialog, server action deletes the auth user via admin client; all rows cascade.",
+      "security": [
+        "Requires fresh confirmation",
+        "Only deletes the signed-in user"
+      ],
+      "done_when": "After deletion the user has zero rows in any table (checked in the database).",
+      "depends_on": [
+        "A3",
+        "D3"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Luokaa testitili, ostakaa sillä jotain ja poistakaa tili. Pyytäkää mekaanikkoa näyttämään, että tietokannasta ei löydy siitä mitään."
+    },
+    {
+      "step": 29,
+      "id": "G4",
+      "module": "chip",
+      "title": "Cookieless analytics",
+      "title_fi": "Kävijätilastot ilman evästeitä (Plausible)",
+      "why_fi": "Kävijätilastot ilman evästeitä, joten evästebanneria ei tarvita.",
+      "instructions": "Plausible script, disabled in development. No other third-party scripts.",
+      "security": [
+        "Devtools show only Supabase auth cookies"
+      ],
+      "done_when": "Page views appear in Plausible from the preview URL; no new cookies set.",
+      "depends_on": [
+        "H4"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Käykää sivulla ja katsokaa Plausiblesta, näkyykö käynti."
+    },
+    {
+      "step": 30,
+      "id": "F1",
+      "module": "tool",
+      "title": "Example feature",
+      "title_fi": "Esimerkkiominaisuus",
+      "why_fi": "Malliesimerkki siitä, miten tuleva sovellus käyttää krediittejä.",
+      "instructions": "`src/features/example/`: a page where the user spends 1 credit to perform a trivial action; on failure the credit is refunded.",
+      "security": [
+        "Credit is consumed on the server before the action, refunded on failure"
+      ],
+      "done_when": "Using the feature lowers the balance by 1; a forced failure restores it.",
+      "depends_on": [
+        "E2",
+        "A3"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 31,
+      "id": "F2",
+      "module": "tool",
+      "title": "Start-a-new-product guide",
+      "title_fi": "Ohje uuteen sovellukseen",
+      "why_fi": "Ohje, jolla pohjasta tehdään uusi sovellus tunnissa.",
+      "instructions": "README section: copy repo, rename, create Supabase/Polar/Vercel projects, set env vars, replace tokens and copy, delete the example feature, reset build-map statuses.",
+      "security": [
+        "New product never reuses another product's keys or webhook secret"
+      ],
+      "done_when": "Following the README alone produces a deployed copy.",
+      "depends_on": [
+        "F1",
+        "T1"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Seuratkaa ohjetta itse ja tehkää pohjasta harjoituskopio. Onnistuiko pelkällä ohjeella?"
+    },
+    {
+      "step": 32,
+      "id": "T2",
+      "module": "eyes",
+      "title": "End-to-end smoke test",
+      "title_fi": "Koko polun testi (savutesti)",
+      "why_fi": "Robotti käy koko polun läpi: rekisteröityy, ostaa, käyttää krediitin.",
+      "instructions": "Playwright: sign up → receive bonus credit → buy pack in sandbox → consume credit → balance correct.",
+      "security": [],
+      "done_when": "Smoke test passes against the preview deployment.",
+      "depends_on": [
+        "E4",
+        "E5",
+        "F1"
+      ],
+      "human_check": false,
+      "status": "todo"
+    },
+    {
+      "step": 33,
+      "id": "L1",
+      "module": "eyes",
+      "title": "Launch checklist on staging",
+      "title_fi": "Julkaisun tarkistuslista",
+      "why_fi": "Viimeinen läpikäynti ennen kuin oikeaa rahaa liikkuu.",
+      "instructions": "Run every section of docs/launch-checklist.md, including the AI attacker review, against a staging environment.",
+      "security": [
+        "Every box ticked; anything failing blocks the launch"
+      ],
+      "done_when": "Checklist fully ticked and committed.",
+      "depends_on": [
+        "T2",
+        "S3",
+        "S4",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "F2"
+      ],
+      "human_check": true,
+      "status": "todo",
+      "commander_check_fi": "Käykää julkaisun tarkistuslista läpi yhdessä mekaanikon kanssa. Jokainen ruksi täytyy olla tehty."
+    }
+  ],
+  "how_to_use": "Bricks are built in `step` order. The next brick is the first `todo` brick whose `depends_on` are all `approved`. Flow: todo → building (mechanic) → inspecting (inspector subagent) → rework if any check fails, back to building → if all checks pass: awaiting_commander when human_check is true, otherwise approved. Only the commander sets a human_check brick to approved.",
+  "crew": {
+    "mechanic": "Builder: the Claude Code session that builds one step. Never inspects its own work.",
+    "inspector": "Inspector: the separate subagent (.claude/agents/inspector.md). Writes docs/inspections/<id>.json.",
+    "commander": "Owners: never read code; do the commander_check_fi for human_check steps and approve."
+  },
+  "metaphor": "A Lego-style robot built from an instruction manual. Each module is one robot part and one page of the manual; each brick is one numbered step."
+}
