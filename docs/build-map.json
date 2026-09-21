@@ -293,7 +293,7 @@
         "H2"
       ],
       "human_check": true,
-      "status": "awaiting_commander",
+      "status": "approved",
       "commander_check_fi": "Huom: kieliversiot (brick H3) siirsivät sivut osoitteiden alle /en/..., eli kirjautumissivu on nyt /en/sign-in (lyhyt /sign-in ohjaa sinne automaattisesti). Kolme asiaa tarkistettavaksi. 1) Supabasen hallintapaneelissa (Authentication → URL Configuration → Redirect URLs) pitää olla sovelluksesi osoite + /en/callback (esim. https://<sivustosi>/en/callback) — ilman tätä sähköpostilinkkikin hylätään. 2) Sähköpostilinkki: mene /sign-in-sivulle, syötä oma sähköpostiosoitteesi, paina 'Send magic link', avaa sähköpostiisi tullut linkki. Sen pitäisi kirjautua sisään — etusivulla pitäisi lukea 'Signed in as ...'. Paina sitten 'Sign out' ja tarkista että kirjaudut ulos. Kokeile vielä kirjautua takaisin samalla sähköpostilla. 3) Google: tätä ei voi vielä kokeilla, koska Google-kirjautuminen pitää ensin ottaa käyttöön Supabasen hallintapaneelissa (Authentication → Providers → Google) Google Cloud Consolesta haettavilla tunnuksilla — sama /en/callback-osoite kelpaa tähänkin. Voit hyväksyä tämän vaiheen jo pelkän sähköpostilinkin perusteella ja tehdä Google-asetuksen ja -kokeilun myöhemmin, tai pyytää minua auttamaan asetuksen kanssa nyt — kerro kumpi sopii."
     },
     {
@@ -411,6 +411,7 @@
       "title_fi": "Krediittien laskenta (tietokantafunktiot)",
       "why_fi": "Krediittien lisäys ja käyttö tietokannan sisällä, niin ettei niitä voi huijata tai käyttää kahdesti.",
       "instructions": "`grant_credits`, `consume_credits`, `refund_credits` as in base-spec.md. SECURITY DEFINER, `search_path = ''`, fully qualified names.",
+      "build_summary_fi": "Lisättiin kolme tietokantafunktiota: grant_credits (lisää krediittejä, vain service_role saa kutsua), consume_credits (käyttää krediitin, kuka tahansa kirjautunut saa kutsua mutta AINA vain omasta saldostaan — funktio ei ota käyttäjä-id:tä parametrina ollenkaan, vaan lukee sen aina Supabasen omasta auth.uid()-tunnisteesta), ja refund_credits (peruu aiemman kirjauksen, vain service_role). Duplikaattisuoja (sama external_id kahdesti = lisätään vain kerran) tehtiin tietokannan omalla uniikkiusrajoitteella, ei sovelluskoodissa. Rakentaminen ja testaus tehtiin oikeasti alusta asti paikallisella Postgres-tietokannalla (ei Docker/Supabase-CLI, joka ei toimi tässä ympäristössä) — rakennettiin pieni jäljitelmä Supabasen auth-skeemasta ja rooleista, ajettiin kaikki migraatiot, ja testattiin jokainen brickin oma vaatimus käsin ennen koodin lukitsemista: sama external_id kahdesti lisää krediitit vain kerran; kaksi TÄYSIN SAMANAIKAISTA consume-kutsua saldolle 1 antoivat oikeasti tasan yhden onnistumisen ja yhden 'insufficient_credits'-virheen (todistettu ajamalla kaksi rinnakkaista tietokantayhteyttä samaan aikaan, ei vain peräkkäin); tavallinen kirjautunut käyttäjä ei pystynyt kutsumaan grant_credits- eikä refund_credits-funktiota (oikeus evätty tietokantatasolla). Matkalla löytyi ja korjattiin oikea bugi: funktioiden parametrit oli ensin nimetty samoin kuin taulujen sarakkeet (esim. external_id), mikä aiheutti PostgreSQL:ltä virheen 'column reference is ambiguous' rivillä `on conflict (external_id)` — korjattiin nimeämällä kaikki parametrit p_-etuliitteellä (esim. p_external_id), vakiintunut tapa juuri tämän ongelman välttämiseksi. Kirjoitettiin myös oikea, CI:ssä ajettava automaattitesti (supabase/tests/credit_functions.test.ts) samoilla tapauksilla. KESKEN: tätä testitiedostoa ei voitu ajaa tässä istunnossa pnpm test -komennolla, koska se vaatii oikean supabase start -pinon (tunnettu, jo aiemmin dokumentoitu rajoitus) — se ajetaan oikeasti ensimmäistä kertaa GitHub Actionsissa PR:n yhteydessä. LISÄYS: CI paljasti oikean, arvokkaan bugin jota paikallinen testaus ei löytänyt — testi 'kirjautunut käyttäjä ei saa kutsua grant_credits:ää' epäonnistui oikeassa Supabase-ympäristössä, koska Supabase myöntää uusille funktioille suoritusoikeuden suoraan anon/authenticated-rooleille oletuksena (ei vain 'public'-roolin kautta), eikä pelkkä 'revoke ... from public' siis riittänyt estämään sitä. Paikallinen jäljitelmäni ei toistanut tätä samaa oletusta. Korjattiin lisäämällä nimenomaiset revoke-lauseet myös anon- ja authenticated-rooleille, ja todistettiin korjaus paikallisesti uudestaan rakentamalla jäljitelmä joka nyt jäljittelee tätäkin Supabasen oletusta (alter default privileges), ennen uutta pushia.",
       "security": [
         "grant and refund executable only by service role",
         "consume uses auth.uid(), never a user id argument",
@@ -421,7 +422,7 @@
         "D3"
       ],
       "human_check": true,
-      "status": "todo",
+      "status": "awaiting_commander",
       "commander_check_fi": "Lukekaa valvojan raportti. Onko jokainen kohta PASS? Kysykää mekaanikolta, jos jokin on epäselvää."
     },
     {
@@ -503,7 +504,7 @@
         "P4"
       ],
       "human_check": true,
-      "status": "awaiting_commander",
+      "status": "approved",
       "commander_check_fi": "Tämä on kiireellinen, koska A1:n kirjautumissivu ei toiminut livenä ennen tätä korjausta. Kaksi asiaa: 1) Mene Vercelin hallintapaneeliin → projektisi → Settings → Environment Variables. Lisää sinne (kaikki ympäristöt: Production, Preview, Development): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY ja SUPABASE_SERVICE_ROLE_KEY — arvot löydät Supabasen hallintapaneelista Project Settings → API. Ilman näitä sivusto ei toimi ollenkaan. Push tai uusi deploy tarvitaan tämän jälkeen (voit painaa Vercelissä 'Redeploy'). 2) Kun ympäristömuuttujat ovat kohdallaan, avaa Vercelin antama pääosoite puhelimella — aukeaako etusivu, ja toimiiko /sign-in? Turvavaatimus erillisistä production/preview Supabase-projekteista jää vielä tekemättä — se tarkoittaisi TOISEN Supabase-projektin luomista pelkästään testiosoitteita varten, mikä ei ole pakollista juuri nyt saadaksemme sivun toimimaan, mutta kannattaa tehdä myöhemmin ettei testaaminen voi vahingossa sotkea oikeaa dataa. Kerro miten meni."
     },
     {
