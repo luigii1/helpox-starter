@@ -42,7 +42,11 @@ begin
 end;
 $$;
 
-revoke all on function public.grant_credits(uuid, integer, text, text, jsonb) from public;
+-- Supabase's own setup grants EXECUTE on new public-schema functions
+-- directly to anon/authenticated by default (not merely inherited via
+-- PUBLIC), so `revoke ... from public` alone does not lock this down —
+-- each role needs its own explicit revoke.
+revoke all on function public.grant_credits(uuid, integer, text, text, jsonb) from public, anon, authenticated;
 grant execute on function public.grant_credits(uuid, integer, text, text, jsonb) to service_role;
 
 -- Spends the caller's own credits: callable by any authenticated user, but
@@ -85,7 +89,7 @@ begin
 end;
 $$;
 
-revoke all on function public.consume_credits(integer) from public;
+revoke all on function public.consume_credits(integer) from public, anon;
 grant execute on function public.consume_credits(integer) to authenticated;
 
 -- Reverses a ledger entry (e.g. a consume, when the product action it paid
@@ -128,5 +132,5 @@ begin
 end;
 $$;
 
-revoke all on function public.refund_credits(bigint) from public;
+revoke all on function public.refund_credits(bigint) from public, anon, authenticated;
 grant execute on function public.refund_credits(bigint) to service_role;
