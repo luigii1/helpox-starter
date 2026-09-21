@@ -234,6 +234,9 @@ function renderPage(m){
 
     const d=h('div','detail');
     d.append(h('p',null,b.why_fi));
+    if(b.build_summary_fi){
+      const w=h('div');w.append(h('h4',null,'Mitä tehtiin'),h('p',null,b.build_summary_fi));d.append(w);
+    }
     if(b.status==='awaiting_commander'&&b.commander_check_fi){
       const w=h('div','checkbox-note');w.append(h('h4',null,'Tarkistatte itse'),h('p',null,b.commander_check_fi));d.append(w);
     }
