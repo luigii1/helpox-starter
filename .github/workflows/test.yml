@@ -33,6 +33,10 @@ jobs:
       - run: supabase start
 
       - name: Export local Supabase URL and keys into the job's env
-        run: supabase status -o env >> "$GITHUB_ENV"
+        # `-o env` quotes each value (KEY="value"), which GITHUB_ENV does not
+        # unquote on its own — appending it raw leaves the quote characters
+        # inside process.env.KEY. Strip a matching pair of surrounding quotes
+        # before appending.
+        run: supabase status -o env | sed -E 's/^([A-Za-z_][A-Za-z0-9_]*)="(.*)"$/\1=\2/' >> "$GITHUB_ENV"
 
       - run: pnpm test
