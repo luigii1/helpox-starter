@@ -421,7 +421,7 @@
         "D3"
       ],
       "human_check": true,
-      "status": "todo",
+      "status": "building",
       "commander_check_fi": "Lukekaa valvojan raportti. Onko jokainen kohta PASS? Kysykää mekaanikolta, jos jokin on epäselvää."
     },
     {
