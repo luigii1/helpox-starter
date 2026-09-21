@@ -219,7 +219,12 @@ to the owners.
    - `human_check: true` → set `awaiting_commander` and give the commander the `commander_check_fi`
      in plain Finnish, plus anything they need (a URL, a test card number). Wait.
    - otherwise → set `approved`.
-6. Commit code, report and `build-map.json` together. Do not start the next brick without being asked.
+6. Before committing, write `build_summary_fi` on the brick: plain Finnish, what was actually built, how,
+   any real problem hit along the way and how it was fixed, and anything left for a later brick. This is
+   the build log — the commander reads it in the command center, under "Mitä tehtiin" on each step, so it
+   has to stand on its own without the chat history.
+7. Commit code, report, `build_summary_fi` and `build-map.json` together. Do not start the next brick
+   without being asked.
 
 Only the commander approves a `human_check` brick: set `approved` only after they say it passed.
 If a brick turns out to be wrong or too big, propose a change to `build-map.json` instead of improvising.
