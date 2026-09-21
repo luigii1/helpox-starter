@@ -1,0 +1,10 @@
+{
+  "brick": "P1",
+  "inspected_at": "2026-09-21T09:47:29Z",
+  "result": "pass",
+  "summary_fi": "Sovelluksen Next.js-pohja toimii: kehityspalvelin ja tuotantokäännös käynnistyvät virheittä, eivätkä ne koskettaneet CLAUDE.md-ohjetiedostoa tai luoneet AGENTS.md-tiedostoa, ja salaisuustiedostot pysyvät poissa versionhallinnasta.",
+  "checks": [
+    { "check": "`pnpm dev`, `pnpm typecheck` and `pnpm lint` run without errors.", "result": "pass" },
+    { "check": "`.env*` in .gitignore from the first commit", "result": "pass" }
+  ]
+}
