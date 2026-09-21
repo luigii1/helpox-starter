@@ -1,0 +1,13 @@
+{
+  "brick": "P4",
+  "inspected_at": "2026-09-21T15:03:23Z",
+  "result": "pass",
+  "summary_fi": "Salaiset avaimet (esim. service_role) on eristetty vain palvelinpuolen koodiin, tämä testattiin oikeasti rikkomalla build tarkoituksella ja korjaamalla se takaisin, eikä yhtään avainta löytynyt väärästä paikasta.",
+  "checks": [
+    { "check": "`.env.example` with every variable commented", "result": "pass" },
+    { "check": "src/lib/supabase/{server,client,admin}.ts exist; admin.ts starts with `import 'server-only'`", "result": "pass" },
+    { "check": "done_when: Importing admin.ts from a client component fails the build", "result": "pass" },
+    { "check": "security: Only Supabase URL, anon key and Plausible domain are NEXT_PUBLIC_", "result": "pass" },
+    { "check": "security: Service role key is read only in admin.ts", "result": "pass" }
+  ]
+}

@@ -5,6 +5,20 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — New dependencies: `@supabase/ssr` and `server-only` (brick P4)
+**Decision:** Added `@supabase/ssr` (runtime) and `server-only` (runtime) as dependencies.
+`src/lib/supabase/server.ts` uses `@supabase/ssr`'s `createServerClient` to read the signed-in
+user's session from cookies in Server Components / Route Handlers; `src/lib/supabase/client.ts`
+uses its `createBrowserClient`. `admin.ts` and `server.ts` both start with `import "server-only"`.
+**Why:** `@supabase/ssr` is Supabase's own officially documented package for the Next.js App
+Router — plain `@supabase/supabase-js` has no cookie handling, so a server client needs it to
+read the user's session at all. `server-only` is the standard, zero-config way to make importing
+a module from client code fail the build, which is exactly `CLAUDE.md` §4's requirement and P4's
+`done_when` (verified: a temporary "use client" page importing `admin.ts` failed `pnpm build`
+with `'server-only' cannot be imported from a Client Component module`; removed after confirming).
+**Alternatives considered:** hand-rolling cookie parsing — rejected, exactly the kind of
+hand-rolled auth-adjacent code CLAUDE.md §1 says to avoid when a well-known library solves it.
+
 ## 2026-09-21 — Schema migrations deployed via Supabase's GitHub integration, not CLI
 **Decision:** The cloud Supabase project (`helpox-starter-dev`) applies `supabase/migrations/*.sql`
 automatically through Supabase's own GitHub integration (dashboard-configured: Project Settings →
