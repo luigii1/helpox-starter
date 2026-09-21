@@ -117,7 +117,7 @@
       "done_when": "`pnpm dev`, `pnpm typecheck` and `pnpm lint` run without errors.",
       "depends_on": [],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 3,
