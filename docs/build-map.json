@@ -503,7 +503,7 @@
         "P4"
       ],
       "human_check": true,
-      "status": "inspecting",
+      "status": "awaiting_commander",
       "commander_check_fi": "Tämä on kiireellinen, koska A1:n kirjautumissivu ei toiminut livenä ennen tätä korjausta. Kaksi asiaa: 1) Mene Vercelin hallintapaneeliin → projektisi → Settings → Environment Variables. Lisää sinne (kaikki ympäristöt: Production, Preview, Development): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY ja SUPABASE_SERVICE_ROLE_KEY — arvot löydät Supabasen hallintapaneelista Project Settings → API. Ilman näitä sivusto ei toimi ollenkaan. Push tai uusi deploy tarvitaan tämän jälkeen (voit painaa Vercelissä 'Redeploy'). 2) Kun ympäristömuuttujat ovat kohdallaan, avaa Vercelin antama pääosoite puhelimella — aukeaako etusivu, ja toimiiko /sign-in? Turvavaatimus erillisistä production/preview Supabase-projekteista jää vielä tekemättä — se tarkoittaisi TOISEN Supabase-projektin luomista pelkästään testiosoitteita varten, mikä ei ole pakollista juuri nyt saadaksemme sivun toimimaan, mutta kannattaa tehdä myöhemmin ettei testaaminen voi vahingossa sotkea oikeaa dataa. Kerro miten meni."
     },
     {
