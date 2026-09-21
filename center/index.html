@@ -7,18 +7,18 @@
 <style>
 :root{
   --ground:#EEF1F4; --paper:#FFFFFF; --ink:#1F2630; --dim:#5E6875; --line:#D5DBE2;
-  --shadow:0 1px 2px rgba(31,38,48,.06),0 8px 24px rgba(31,38,48,.06);
+  --ghost:#B9C2CC; --ghost-fill:#F6F8FA; --shadow:0 1px 2px rgba(31,38,48,.06),0 8px 24px rgba(31,38,48,.06);
   --done:#2F9E44; --wait:#D99A00; --bad:#D83A2E; --work:#1E5AA8;
   --font:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --ground:#13171C; --paper:#1C2128; --ink:#E8ECF1; --dim:#9AA5B2; --line:#2E3640;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --ghost:#4A5461; --ghost-fill:#20262E; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
   --done:#4CC364; --wait:#F2B51C; --bad:#F0584C; --work:#5B9BEA;
 }}
 :root[data-theme="dark"]{
   --ground:#13171C; --paper:#1C2128; --ink:#E8ECF1; --dim:#9AA5B2; --line:#2E3640;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --ghost:#4A5461; --ghost-fill:#20262E; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
   --done:#4CC364; --wait:#F2B51C; --bad:#F0584C; --work:#5B9BEA;
 }
 *{box-sizing:border-box}
@@ -41,17 +41,34 @@ header .progress{flex:none}
 .track .f{position:absolute;inset:0 auto 0 0;background:var(--done)}
 @media (prefers-reduced-motion:no-preference){.track .f{transition:width .4s ease}}
 
-/* manual */
-.manual{background:var(--paper);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
-.page-h{padding:20px 20px 10px;text-align:center}
-.pnum{font:700 32px/1 var(--font);font-variant-numeric:tabular-nums;color:var(--dim)}
-.page-h h2{margin:6px 0 0;font-size:21px;font-weight:700}
-.page-h p{margin:4px 0 0;color:var(--dim);font-size:14px}
+/* robot model */
+.model{display:flex;justify-content:center;padding-block:2px}
+.model svg{width:100%;max-width:260px;height:auto;display:block;overflow:visible}
+.pt{cursor:pointer}
+.pt:focus{outline:none}
+.pt .s{stroke:var(--ghost);stroke-width:1.6;stroke-dasharray:4 3;fill:var(--ghost-fill);stroke-linejoin:round}
+.pt .d{fill:var(--ghost)}
+.pt.part .s{stroke:var(--ink);stroke-dasharray:none;fill:var(--c);fill-opacity:.32}
+.pt.done .s{stroke:var(--ink);stroke-dasharray:none;fill:var(--c);fill-opacity:1}
+.pt.done .d,.pt.part .d{fill:var(--ink)}
+.pt.wait .s{stroke:var(--wait);stroke-width:2.4}
+.pt.bad .s{stroke:var(--bad);stroke-width:2.4;stroke-dasharray:none}
+.pt.cur .s{stroke:var(--work);stroke-width:2.6;stroke-dasharray:none}
+.pt:hover .s,.pt:focus-visible .s{stroke-width:2.8}
+.pt .ln{fill:none;stroke:var(--ghost);stroke-width:2}
+.pt.done .ln,.pt.part .ln{stroke:var(--ink)}
+.pt.lit .glow{filter:drop-shadow(0 0 5px var(--c))}
 
-.checklist{list-style:none;margin:0;padding:8px 14px 18px;display:flex;flex-direction:column;gap:2px}
-.item{border-radius:8px}
-.row{display:flex;align-items:flex-start;gap:10px;width:100%;min-width:0;background:none;border:0;text-align:left;padding:10px 8px;border-radius:8px;cursor:pointer}
-.row:hover{background:var(--ground)}
+/* manual: fixed size so the pager never moves when the page changes */
+.manual{background:var(--paper);border-radius:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;height:min(70vh,620px);min-height:380px}
+.page-h{flex:none;padding:18px 20px 8px;text-align:center}
+.pnum{font:700 30px/1 var(--font);font-variant-numeric:tabular-nums;color:var(--dim)}
+.page-h h2{margin:6px 0 0;font-size:20px;font-weight:700}
+.page-h p{margin:4px 0 0;color:var(--dim);font-size:13.5px}
+
+.checklist{flex:1;min-height:0;overflow-y:auto;list-style:none;margin:0;padding:6px 14px 12px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line)}
+.item{border-radius:8px;padding:8px 8px 2px}
+.row{display:flex;align-items:flex-start;gap:10px;width:100%;min-width:0}
 .check{flex:none;width:20px;height:20px;margin-top:1px;border-radius:5px;border:2px solid var(--line);display:grid;place-items:center}
 .check svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
 .check.on{background:var(--done);border-color:var(--done)}
@@ -60,22 +77,23 @@ header .progress{flex:none}
 .check.bad{border-color:var(--bad)}
 .check.active{border-color:var(--work)}
 .check.active:after{content:"";width:8px;height:8px;border-radius:50%;background:var(--work)}
-.title{flex:1;min-width:0;font-size:15px;line-height:1.35;padding-top:1px;overflow-wrap:break-word}
+.title{flex:1;min-width:0;font-size:15px;font-weight:500;line-height:1.35;padding-top:1px;overflow-wrap:break-word}
 .item.done .title{color:var(--dim);text-decoration:line-through;text-decoration-color:var(--line)}
 .tag{display:inline-block;margin-left:7px;font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:999px;white-space:nowrap;vertical-align:1px}
 .tag.wait{background:var(--wait);color:#1F2630}
 .tag.bad{background:var(--bad);color:#fff}
 .tag.active{background:var(--work);color:#fff}
 
-.detail{margin:0 8px 8px;padding:10px 12px;border-radius:8px;background:var(--ground);display:grid;gap:8px;font-size:13.5px}
-.detail h4{margin:0 0 2px;font-size:11px;font-weight:500;color:var(--dim);letter-spacing:.04em;text-transform:uppercase}
-.detail p,.detail ul{margin:0;color:var(--ink)}
+.detail{margin:4px 0 4px 30px;display:grid;gap:6px;font-size:13.5px}
+.detail h4{margin:0 0 2px;font-size:10.5px;font-weight:500;color:var(--dim);letter-spacing:.04em;text-transform:uppercase}
+.detail p,.detail ul{margin:0;color:var(--dim)}
 .detail ul{padding-left:18px}
 .ok{color:var(--done)} .no{color:var(--bad)}
-.checkbox-note{border:1px dashed var(--wait);border-radius:6px;padding:8px 10px}
+.checkbox-note{border:1px dashed var(--wait);border-radius:6px;padding:7px 10px}
+.checkbox-note p{color:var(--ink)}
 
-/* bottom pager */
-.pager{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 18px 18px;border-top:1px solid var(--line)}
+/* bottom pager: fixed position within the fixed-size manual card */
+.pager{flex:none;display:flex;align-items:center;justify-content:center;gap:14px;padding:12px 18px;border-top:1px solid var(--line)}
 .arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-size:17px;line-height:1;display:grid;place-items:center}
 .arrow:disabled{opacity:.35;cursor:default}
 .arrow:not(:disabled):hover{border-color:var(--ink)}
@@ -92,6 +110,8 @@ header .progress{flex:none}
 
   <div class="progress"><div class="track" id="track"><div class="f" id="trackFill"></div></div></div>
 
+  <div class="model"><svg id="robot" viewBox="40 40 260 356" role="img" aria-label="Robotin osat ja niiden valmiusaste"></svg></div>
+
   <section class="manual" id="manual" aria-label="Ohjekirja">
     <div class="page-h" id="pageH"></div>
     <ol class="checklist" id="checklist"></ol>
@@ -107,9 +127,11 @@ header .progress{flex:none}
 const EMBEDDED = /*__EMBED__*/null;
 const STATUS_FI={todo:'Odottaa',building:'Rakenteilla',inspecting:'Tarkastetaan',rework:'Korjataan',awaiting_commander:'Tarkistakaa itse',approved:'Valmis'};
 const ACTIVE=['building','inspecting','rework'];
+const COLOR={base:'#8C96A3',legs:'#1E5AA8',hips:'#4A5561',chest:'#D83A2E',back:'#5B7FA6',hands:'#7A8794',core:'#2F9E44',
+  shoulders:'#F08A24',head:'#F5C400',chip:'#7B4FC9',tool:'#14A3A3',eyes:'#29B6F6'};
 const NS='http://www.w3.org/2000/svg';
 
-let state={map:EMBEDDED,inspections:[]},page=null,sel=null;
+let state={map:EMBEDDED,inspections:[]},page=null;
 
 function h(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
 function s(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
@@ -121,7 +143,14 @@ function current(m){
   const n=m.bricks.find(b=>b.status==='todo'&&b.depends_on.every(d=>st[d]==='approved')); if(n) return n;
   return null;
 }
-
+function partState(m,id){
+  const bs=m.bricks.filter(b=>b.module===id),ok=bs.filter(b=>b.status==='approved').length;
+  if(bs.some(b=>b.status==='rework'))return 'bad';
+  if(bs.some(b=>b.status==='awaiting_commander'))return 'wait part';
+  if(bs.length&&ok===bs.length)return 'done lit';
+  if(ok||bs.some(b=>ACTIVE.includes(b.status)))return 'part';
+  return '';
+}
 function checkClass(status){
   if(status==='approved')return 'on';
   if(status==='awaiting_commander')return 'wait';
@@ -136,6 +165,37 @@ function tag(status){
   return null;
 }
 
+// Original blocky robot. Each part = one manual page.
+function drawRobot(m){
+  const svg=document.getElementById('robot');svg.textContent='';
+  const R=(g,x,y,w,hh,rx=3,cls='s')=>s('rect',{x,y,width:w,height:hh,rx,class:cls},g);
+  const parts={
+    base:g=>{R(g,50,372,220,16,3);for(let x=60;x<=250;x+=22)R(g,x,366,12,6,1);},
+    back:g=>{R(g,92,144,136,118,5);R(g,100,132,22,14,2);R(g,198,132,22,14,2);},
+    legs:g=>{R(g,114,282,32,74);R(g,174,282,32,74);R(g,104,352,50,18,4);R(g,166,352,50,18,4);},
+    hips:g=>{R(g,110,256,100,30,4);s('circle',{cx:130,cy:286,r:7,class:'s'},g);s('circle',{cx:190,cy:286,r:7,class:'s'},g);},
+    chest:g=>{R(g,104,150,112,108,7);s('circle',{cx:160,cy:170,r:4,class:'d'},g);R(g,158,172,4,8,1,'d');s('path',{d:'M116 166 H136 M184 166 H204',class:'ln'},g);},
+    core:g=>{s('path',{d:'M160 194 L177 204 V224 L160 234 L143 224 V204 Z',class:'s glow'},g);s('circle',{cx:160,cy:214,r:6,class:'d'},g);},
+    hands:g=>{R(g,76,176,24,58);R(g,220,176,24,58);R(g,72,232,32,22,4);R(g,216,232,32,22,4);s('path',{d:'M88 244 V254 M232 244 V254',class:'ln'},g);},
+    shoulders:g=>{R(g,66,146,42,30,6);R(g,212,146,42,30,6);R(g,74,140,10,6,1);R(g,90,140,10,6,1);R(g,220,140,10,6,1);R(g,236,140,10,6,1);},
+    head:g=>{R(g,148,134,24,18,2);R(g,124,82,72,56,9);R(g,142,76,12,6,1);R(g,166,76,12,6,1);R(g,134,98,52,20,5,'d');},
+    chip:g=>{R(g,196,92,12,30,2);s('path',{d:'M199 100 H205 M199 107 H205 M199 114 H205',class:'ln'},g);},
+    tool:g=>{s('path',{d:'M236 246 L244 254 L282 216 L274 208 Z',class:'s'},g);s('path',{d:'M270 200 a13 13 0 1 0 18 18 l-8 -3 l-4 -4 l-3 -8 z',class:'s'},g);},
+    eyes:g=>{R(g,142,102,12,10,2,'s glow');R(g,166,102,12,10,2,'s glow');s('path',{d:'M160 76 V58',class:'ln'},g);s('circle',{cx:160,cy:53,r:5,class:'s glow'},g);}
+  };
+  ['base','back','legs','hips','chest','core','hands','shoulders','head','chip','tool','eyes'].forEach(id=>{
+    const mod=m.modules.find(x=>x.id===id); if(!mod) return;
+    const pi=m.modules.indexOf(mod);
+    const g=s('g',{class:`pt ${partState(m,id)}${page===pi?' cur':''}`,style:`--c:${COLOR[id]}`,tabindex:0,role:'button',
+      'aria-label':`Sivu ${pi+1}: ${mod.label_fi}`},svg);
+    const t=s('title',{},g);t.textContent=`Sivu ${pi+1} · ${mod.label_fi}`;
+    parts[id](g);
+    const go=()=>{page=pi;render();};
+    g.addEventListener('click',go);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+  });
+}
+
 function renderProgress(m){
   const total=m.bricks.length,ok=m.bricks.filter(b=>b.status==='approved').length;
   document.getElementById('progressFrac').textContent=`${ok} / ${total}`;
@@ -148,11 +208,10 @@ function renderPage(m){
   ph.append(h('div','pnum',String(page+1)),h('h2',null,mod.label_fi),h('p',null,mod.about_fi));
 
   const bs=m.bricks.filter(b=>b.module===mod.id);
-  const cur=current(m);
   const ol=document.getElementById('checklist');ol.textContent='';
   bs.forEach(b=>{
     const li=h('li','item'+(b.status==='approved'?' done':''));
-    const row=h('button','row');
+    const row=h('div','row');
     const chk=h('span','check '+checkClass(b.status));
     const tick=s('svg',{viewBox:'0 0 24 24'});s('path',{d:'M5 13l5 5L19 7'},tick);chk.appendChild(tick);
     const titleWrap=h('span','title');
@@ -160,23 +219,19 @@ function renderPage(m){
     const t=tag(b.status);
     if(t){const tg=h('span','tag '+t.cls,t.txt);titleWrap.append(tg);}
     row.append(chk,titleWrap);
-    row.onclick=()=>{sel=sel===b.id?null:b.id;render();};
     li.append(row);
 
-    const showDetail=sel===b.id||(cur&&cur.id===b.id&&b.status==='awaiting_commander');
-    if(showDetail){
-      const d=h('div','detail');
-      const why=h('div');why.append(h('h4',null,'Miksi'),h('p',null,b.why_fi));d.append(why);
-      if(b.status==='awaiting_commander'&&b.commander_check_fi){
-        const w=h('div','checkbox-note');w.append(h('h4',null,'Tarkistatte itse'),h('p',null,b.commander_check_fi));d.append(w);
-      }
-      const r=state.inspections.find(x=>x.brick===b.id);
-      if(r){
-        const w=h('div');w.append(h('h4',null,'Tarkastajan raportti'),h('p',r.result==='pass'?'ok':'no',r.summary_fi));
-        d.append(w);
-      }
-      li.append(d);
+    const d=h('div','detail');
+    d.append(h('p',null,b.why_fi));
+    if(b.status==='awaiting_commander'&&b.commander_check_fi){
+      const w=h('div','checkbox-note');w.append(h('h4',null,'Tarkistatte itse'),h('p',null,b.commander_check_fi));d.append(w);
     }
+    const r=state.inspections.find(x=>x.brick===b.id);
+    if(r){
+      const w=h('div');w.append(h('h4',null,'Tarkastajan raportti'),h('p',r.result==='pass'?'ok':'no',r.summary_fi));
+      d.append(w);
+    }
+    li.append(d);
     ol.append(li);
   });
 }
@@ -187,21 +242,31 @@ function renderPager(m){
   document.getElementById('loc').textContent=`Sivu ${page+1} / ${m.modules.length}`;
 }
 
-function turn(d){const m=state.map;page=Math.max(0,Math.min(m.modules.length-1,page+d));sel=null;render();}
+function turn(d){
+  const m=state.map;page=Math.max(0,Math.min(m.modules.length-1,page+d));
+  // Clicking the pager button can make the browser auto-scroll it into view
+  // (it may sit below the fold on a short screen). Pin the scroll position so
+  // the buttons visibly stay put, which is the whole point of the fixed-size manual.
+  const y=window.scrollY;
+  render();
+  requestAnimationFrame(()=>window.scrollTo(0,y));
+}
 
 function render(){
   const m=state.map;
   const manual=document.getElementById('manual');
   if(!m){
     manual.hidden=true;
+    document.querySelector('.model').hidden=true;
     let e=document.getElementById('emptyMsg');
     if(!e){e=h('div','empty');e.id='emptyMsg';e.innerHTML='<strong>Ohjekirjaa ei löytynyt.</strong><br>Odotetaan yhteyttä palvelimeen.';document.querySelector('.wrap').append(e);}
     return;
   }
   const e=document.getElementById('emptyMsg');if(e)e.remove();
   manual.hidden=false;
+  document.querySelector('.model').hidden=false;
   if(page==null||page>=m.modules.length){const c=current(m);page=c?m.modules.findIndex(x=>x.id===c.module):0;}
-  renderProgress(m);renderPage(m);renderPager(m);
+  renderProgress(m);drawRobot(m);renderPage(m);renderPager(m);
 }
 
 document.getElementById('prevBtn').onclick=()=>turn(-1);
