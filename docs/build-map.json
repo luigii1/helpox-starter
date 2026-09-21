@@ -123,19 +123,19 @@
       "step": 3,
       "id": "P3",
       "module": "legs",
-      "title": "Supabase local and cloud projects",
+      "title": "Supabase cloud project, deployed via GitHub integration",
       "title_fi": "Tietokanta (Supabase)",
       "why_fi": "Tietokanta, johon käyttäjät ja krediitit tallennetaan. Muutokset tehdään vain tiedostoina, jotta mikään ei muutu vahingossa.",
-      "instructions": "Supabase CLI, local stack, `supabase/migrations/` as the only way to change schema. Create a free cloud project for development.",
+      "instructions": "`supabase/config.toml` and an empty first migration in `supabase/migrations/` are provided (from `supabase init` + `supabase migration new`, both pure local file operations). Schema changes are applied to the cloud project (`helpox-starter-dev`) by Supabase's own GitHub integration (Project Settings → Integrations → GitHub, watching `main`, directory `/`) — never by CLI `link`/`db push` and never by hand in the dashboard. This session's network policy blocks supabase.com, api.supabase.com and Docker Hub entirely, so neither `supabase` CLI network commands nor `supabase start` (Docker) can be run or verified here; the commander does not want a local machine involved either. `supabase start`/local Postgres for RLS tests is deferred to brick T1's GitHub Actions CI, which has normal internet access. Verify a new migration was applied by checking the Supabase dashboard's Database → Migrations page (the commander does this) or, once T1 exists, via CI.",
       "security": [
-        "No schema changes by hand in the dashboard"
+        "No schema changes by hand in the dashboard — only through files in supabase/migrations/, applied by the GitHub integration"
       ],
-      "done_when": "`supabase start` works and an empty migration applies locally and to the cloud project.",
+      "done_when": "The empty migration in supabase/migrations/ is applied to the cloud project (confirmed on the Database → Migrations page of the Supabase dashboard).",
       "depends_on": [
         "P1"
       ],
       "human_check": false,
-      "status": "building"
+      "status": "approved"
     },
     {
       "step": 4,
