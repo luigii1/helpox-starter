@@ -243,6 +243,7 @@
       "title_fi": "Salaiset avaimet (ympäristömuuttujat)",
       "why_fi": "Salaiset avaimet pidetään palvelimella. Jos ne päätyvät selaimeen, kuka tahansa voi lukea koko tietokannan.",
       "instructions": "`.env.example` with every variable commented. `src/lib/supabase/{server,client,admin}.ts`; `admin.ts` starts with `import 'server-only'`.",
+      "build_summary_fi": "Rakennettiin kolme Supabase-yhteystiedostoa src/lib/supabase/-kansioon: client.ts (selain, anon-avain), server.ts (palvelinkomponentit, lukee kirjautumisen evästeistä @supabase/ssr-kirjastolla, anon-avain) ja admin.ts (service_role-avain, ohittaa RLS:n kokonaan). Molemmat palvelinpuolen tiedostot alkavat `import \"server-only\"`-rivillä, joka estää niiden päätymisen selainkoodiin — jos joku yrittää tuoda admin.ts:n selainkomponenttiin, koko build kaatuu. Tämä todistettiin oikeasti: tehtiin väliaikainen selainkomponentti joka tuo admin.ts:n, ajettiin pnpm build, ja se kaatui juuri odotettuun virheeseen ('server-only' cannot be imported from a Client Component module); väliaikainen tiedosto poistettiin heti sen jälkeen ja build toimii taas normaalisti. Lisättiin .env.example, jossa jokainen muuttuja on selitetty (Supabase-URL ja anon-avain julkisia, service_role- ja Polar-avaimet eivät). Matkalla löytyi ja korjattiin pieni mutta todellinen bugi: .gitignore:n `.env*`-sääntö esti myös .env.example:n commitoinnin vahingossa — lisättiin poikkeus (!.env.example). Tarkistettiin grepillä ettei SERVICE_ROLE-avainta käytetä muualla kuin admin.ts:ssä eikä mikään salainen avain saa NEXT_PUBLIC_-etuliitettä. Uudet riippuvuudet (@supabase/ssr, server-only) kirjattu docs/decisions.md:hen perusteluineen. Mitään ei jäänyt kesken.",
       "security": [
         "Only Supabase URL, anon key and Plausible domain are NEXT_PUBLIC_",
         "Service role key is read only in admin.ts"
@@ -252,7 +253,7 @@
         "P3"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "inspecting"
     },
     {
       "step": 10,
