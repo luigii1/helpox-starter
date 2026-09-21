@@ -92,15 +92,15 @@
       "title": "Command center on Vercel",
       "title_fi": "Komentokeskus käyntiin (Vercel)",
       "why_fi": "Tästä näette koko ajan, mikä on valmista ja mitä seuraavaksi tehdään — suoraan netistä, ilman että teidän tarvitsee ajaa mitään omalla koneella.",
-      "instructions": "The files `center/index.html`, `center/serve.mjs`, `vercel.json` and `api/inspections.js` are provided. `vercel.json` rewrites `/` to `/center/index.html` and declares `includeFiles` so `api/inspections.js` (a Node serverless function mirroring `center/serve.mjs`'s `/api/inspections` route) can read `docs/inspections/*.json` at runtime. `docs/build-map.json` is served as-is since Vercel serves any static file in the repo by its path when no build step is configured (Framework Preset: Other). The commander connects the GitHub repo to a Vercel project themselves (see chat instructions); every push then gets its own preview deployment. `center/serve.mjs` remains for local development only — do not remove it. Add `\"center\": \"node center/serve.mjs\"` to package.json scripts once P1 exists.",
+      "instructions": "The files `center/index.html`, `center/serve.mjs`, `vercel.json` and `api/inspections.js` are provided. `vercel.json` sets `buildCommand: null` and `outputDirectory: \".\"` so Vercel serves the repo root as static files instead of trying to build it (required once `package.json` exists — Vercel's \"Other\" framework preset otherwise expects a `public/` build output and fails with \"No Output Directory named public found\"), rewrites `/` to `/center/index.html`, and declares `includeFiles` so `api/inspections.js` (a Node serverless function mirroring `center/serve.mjs`'s `/api/inspections` route) can read `docs/inspections/*.json` at runtime. `docs/build-map.json` is served as-is as a static file. The commander connects the GitHub repo to a Vercel project themselves (see chat instructions); every push then gets its own preview deployment. `center/serve.mjs` remains for local development only — do not remove it. This static-hosting setup for the command center is a stop-gap; revisit it at brick P5 once the real Next.js app gets deployed to Vercel in the same project.",
       "security": [
         "The deployment is public and serves the whole repository as static files (Framework Preset: Other) plus api/inspections.js — verify no secret, credential or personal data ever exists in the repo before this brick is approved",
         "api/inspections.js reads only docs/inspections/*.json filenames matching the brick-id pattern, never a path taken from the request"
       ],
-      "done_when": "The command center is reachable at the project's Vercel deployment URL (no local server needed) and shows the robot model and the manual on page 1.",
+      "done_when": "The command center is reachable at the project's Vercel deployment URL (no local server needed), the deployment has no build errors, and it shows the robot model and the manual on the current page.",
       "depends_on": [],
       "human_check": true,
-      "status": "approved",
+      "status": "awaiting_commander",
       "commander_check_fi": "Avatkaa projektin Vercel-esikatselulinkki (Vercelin projektisivulla, haaran claude/adoring-lovelace-s6w44y kohdalla). Näkyykö robotin malli ja ohjekirja sivulla 1?"
     },
     {

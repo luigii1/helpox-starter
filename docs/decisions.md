@@ -5,6 +5,19 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Fix: pin Vercel to serve the repo root as static output
+**Decision:** `vercel.json` now sets `"buildCommand": null` and `"outputDirectory": "."`.
+**Why:** After brick P1 added `package.json` (with a `next build` script), the commander's Vercel
+deployment failed: `Error: No Output Directory named "public" found after the Build completed.` Vercel's
+"Other" framework preset expects build output in `public/` once a `package.json` exists, even with no
+explicit Build Command override — it ran a build step and then looked for `public/`, which doesn't exist.
+Setting `buildCommand: null` stops any build from running; `outputDirectory: "."` tells Vercel to serve the
+repo root exactly as it did before `package.json` existed.
+**Consequence:** C1 was reopened (`approved` → `building`) since its `done_when` — the deployment actually
+working — was not true when the commander's earlier check passed (P1 didn't exist yet, so this failure mode
+didn't exist yet either). Re-inspected and awaiting the commander's check again.
+**Note:** this is still the same stop-gap noted in the entry below — revisit at brick P5.
+
 ## 2026-09-21 — Command center checked on Vercel, not localhost
 **Decision:** The command center is deployed on Vercel (Framework Preset: Other, no build command;
 `vercel.json` rewrites `/` to `/center/index.html`; `api/inspections.js` is a Node serverless function
