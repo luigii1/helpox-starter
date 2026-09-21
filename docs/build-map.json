@@ -100,7 +100,7 @@
       "done_when": "The command center is reachable at the project's Vercel deployment URL (no local server needed) and shows the robot model and the manual on page 1.",
       "depends_on": [],
       "human_check": true,
-      "status": "awaiting_commander",
+      "status": "approved",
       "commander_check_fi": "Avatkaa projektin Vercel-esikatselulinkki (Vercelin projektisivulla, haaran claude/adoring-lovelace-s6w44y kohdalla). Näkyykö robotin malli ja ohjekirja sivulla 1?"
     },
     {
