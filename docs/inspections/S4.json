@@ -1,0 +1,16 @@
+{
+  "brick": "S4",
+  "inspected_at": "2026-09-21T20:54:30Z",
+  "result": "pass",
+  "summary_fi": "Pyyntöjen rajoitus toimii oikeasti palvelimen puolella: kirjautumisen paluuosoite (callback) estää liian tiheät kutsut ja palauttaa käännetyn virheviestin, todistettu sekä koodista että ajamalla tietokantatoiminto oikeaa Postgresia vasten, ja kaikki testit sekä laatutarkistukset menivät läpi.",
+  "checks": [
+    {
+      "check": "Limits apply on the server, not in the UI",
+      "result": "pass"
+    },
+    {
+      "check": "Rapid repeated calls get a 429 with a translated message.",
+      "result": "pass"
+    }
+  ]
+}

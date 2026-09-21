@@ -5,6 +5,30 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Brick S4: rate limiting implemented in Postgres, not a new external service
+**Decision:** `check_rate_limit(p_key, p_limit, p_window_seconds)` is a `SECURITY DEFINER` Postgres
+function (migration `20260921204740_rate_limits.sql`) backed by a plain hit-counter table
+(`rate_limit_hits`, RLS on with zero policies — no role can touch it directly). Application code
+calls it via `supabase.rpc(...)` through the new `src/lib/rate-limit/` helper.
+**Why:** CLAUDE.md §2 prefers "managed services, few dependencies, no servers of our own" and
+requires a one-line justification for any *new* dependency. A dedicated rate-limiting service
+(Upstash Redis, Vercel KV) would add a new external account for the commander to set up and a new
+env var to wire through Vercel, for a base this small. Supabase is already the stack's database;
+reusing it avoids both. The function self-cleans (deletes a key's own expired hits on every call to
+that key), so there is no separate cleanup job to run — acceptable at this app's scale.
+**Alternatives considered:** In-memory rate limiting (rejected outright — Vercel serverless
+functions are not guaranteed to share memory across invocations or instances, so an in-memory
+counter would not actually enforce a limit in production, which is a hole CLAUDE.md §4 doesn't
+allow). Upstash/Vercel KV (rejected for now per above; revisit if request volume ever makes a
+per-request Postgres round trip a real bottleneck).
+**Consequence:** `src/lib/rate-limit/` is a new `lib/` subfolder, one level more than
+`CLAUDE.md`'s current `src/` tree in §3 anticipates (it lists `validation/` but not
+`rate-limit/`). Adding it follows the same shape as the other `lib/` subfolders already there
+(`supabase/`, `polar/`, `credits/`) rather than inventing a new top-level folder, so treated as a
+minor, in-pattern addition rather than something to stop and ask about.
+
+---
+
 ## 2026-09-21 — Brick P5 pulled forward out of order: Vercel was never building the app
 **Decision:** Started brick P5 (step 22) immediately, ahead of E1/E2 (steps 17-18), instead of
 following strict step order.

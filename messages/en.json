@@ -27,5 +27,8 @@
     "buyCredits": "Buy credits",
     "exportData": "Export data",
     "deleteAccount": "Delete account"
+  },
+  "RateLimit": {
+    "tooManyRequests": "Too many requests. Please wait a moment and try again."
   }
 }
