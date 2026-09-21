@@ -100,7 +100,7 @@
       "done_when": "The command center opens in the browser and shows the robot model and the manual on page 1.",
       "depends_on": [],
       "human_check": true,
-      "status": "todo",
+      "status": "awaiting_commander",
       "commander_check_fi": "Avatkaa komentokeskus selaimessa. Näkyykö robotin malli ja ohjekirja sivulla 1?"
     },
     {

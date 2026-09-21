@@ -1,0 +1,20 @@
+{
+  "brick": "C1",
+  "inspected_at": "2026-09-21T09:24:26Z",
+  "result": "pass",
+  "summary_fi": "Komentokeskus käynnistyy ilman mitään erillisiä asennuksia, se on tavoitettavissa vain tästä samasta koneesta, ja se näyttää selaimessa robotin kuvan ja ohjekirjan sivulla 1 eikä päästä lukemaan mitään muita tiedostoja kuin mitä sen kuuluu.",
+  "checks": [
+    {
+      "check": "The command center opens in the browser and shows the robot model and the manual on page 1.",
+      "result": "pass"
+    },
+    {
+      "check": "Server binds to 127.0.0.1 only",
+      "result": "pass"
+    },
+    {
+      "check": "Server is read-only and serves only center/ and docs/ files, no path traversal",
+      "result": "pass"
+    }
+  ]
+}
