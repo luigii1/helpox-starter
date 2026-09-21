@@ -294,7 +294,7 @@
       ],
       "human_check": true,
       "status": "awaiting_commander",
-      "commander_check_fi": "Kaksi asiaa tarkistettavaksi. 1) Sähköpostilinkki: mene /sign-in-sivulle, syötä oma sähköpostiosoitteesi, paina 'Send magic link', avaa sähköpostiisi tullut linkki. Sen pitäisi kirjautua sisään — etusivulla pitäisi lukea 'Signed in as ...'. Paina sitten 'Sign out' ja tarkista että kirjaudut ulos. Kokeile vielä kirjautua takaisin samalla sähköpostilla. 2) Google: tätä ei voi vielä kokeilla, koska Google-kirjautuminen pitää ensin ottaa käyttöön Supabasen hallintapaneelissa (Authentication → Providers → Google) Google Cloud Consolesta haettavilla tunnuksilla, ja sovelluksen /callback-osoite pitää lisätä sallittujen paluuosoitteiden listalle (Authentication → URL Configuration). Voit hyväksyä tämän vaiheen jo pelkän sähköpostilinkin perusteella ja tehdä Google-asetuksen ja -kokeilun myöhemmin, tai pyytää minua auttamaan asetuksen kanssa nyt — kerro kumpi sopii."
+      "commander_check_fi": "Huom: kieliversiot (brick H3) siirsivät sivut osoitteiden alle /en/..., eli kirjautumissivu on nyt /en/sign-in (lyhyt /sign-in ohjaa sinne automaattisesti). Kolme asiaa tarkistettavaksi. 1) Supabasen hallintapaneelissa (Authentication → URL Configuration → Redirect URLs) pitää olla sovelluksesi osoite + /en/callback (esim. https://<sivustosi>/en/callback) — ilman tätä sähköpostilinkkikin hylätään. 2) Sähköpostilinkki: mene /sign-in-sivulle, syötä oma sähköpostiosoitteesi, paina 'Send magic link', avaa sähköpostiisi tullut linkki. Sen pitäisi kirjautua sisään — etusivulla pitäisi lukea 'Signed in as ...'. Paina sitten 'Sign out' ja tarkista että kirjaudut ulos. Kokeile vielä kirjautua takaisin samalla sähköpostilla. 3) Google: tätä ei voi vielä kokeilla, koska Google-kirjautuminen pitää ensin ottaa käyttöön Supabasen hallintapaneelissa (Authentication → Providers → Google) Google Cloud Consolesta haettavilla tunnuksilla — sama /en/callback-osoite kelpaa tähänkin. Voit hyväksyä tämän vaiheen jo pelkän sähköpostilinkin perusteella ja tehdä Google-asetuksen ja -kokeilun myöhemmin, tai pyytää minua auttamaan asetuksen kanssa nyt — kerro kumpi sopii."
     },
     {
       "step": 12,
@@ -532,13 +532,14 @@
       "title_fi": "Kieliversiot (i18n)",
       "why_fi": "Tekstit erillään koodista, jotta uuden kielen lisääminen on helppoa.",
       "instructions": "next-intl with `[locale]` routing, `en` default, `messages/en.json`. Lint rule or check that flags hard-coded JSX strings.",
+      "build_summary_fi": "Otettiin käyttöön kieliversiot next-intl-kirjastolla. Kaikki sivut (etusivu, kirjautuminen, paluu- ja uloskirjautumisosoitteet) siirrettiin osoitteiden alle /en/... — pelkkä /sivu ohjautuu automaattisesti oikeaan kieliversioon selaimen omalla ohjauksella. Kaikki näkyvä teksti näillä sivuilla tulee nyt tiedostosta messages/en.json koodiin kirjoitetun tekstin sijaan. Lisättiin ESLint-sääntö joka pysäyttää koodin tarkistuksen jos joku kirjoittaa tekstiä suoraan sivulle messages-tiedoston ohi — tämä todistettiin oikeasti kirjoittamalla väliaikainen kiinteä teksti sivulle, nähtiin tarkistuksen kaatuvan, ja korjattiin takaisin. Matkalla löytyi ja korjattiin hienovarainen bugi: sääntö oli ensin kirjoitettu niin, ettei se valvonut mitään ollenkaan, koska '[locale]' kansion nimessä olevat hakasulkeet tulkittiin vahingossa ESLintin omaksi merkkijoukko-syntaksiksi eikä kirjaimellisena kansionimenä — huomattiin juuri siksi, että testi tehtiin oikeasti eikä vain oletettu toimivaksi. Kirjautumisen paluuosoite muuttui samalla /callback:sta /en/callback:iin, joten A1-brickin komentajan ohjeet päivitettiin, ja samalla huomattiin että ne olivat puutteelliset: Supabase vaatii paluuosoitteen sallittujen listalle myös pelkkää sähköpostilinkkiä varten, ei vain Googlea varten kuten aiemmin kerrottiin — tämä lisättiin ohjeisiin. Myös pieni Next.js 16:n varoitus (middleware.ts on vanhentumassa, uusi nimi proxy.ts) korjattiin samalla. Kehitystilan /dev/ui-sivu jätettiin tarkoituksella kieliversioiden ulkopuolelle, koska sitä ei koskaan näytetä oikealle käyttäjälle.",
       "security": [],
       "done_when": "`/en` works and adding `fi.json` would need no code changes.",
       "depends_on": [
         "P1"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "inspecting"
     },
     {
       "step": 25,

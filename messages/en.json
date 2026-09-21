@@ -1,0 +1,20 @@
+{
+  "Home": {
+    "title": "Helpox",
+    "tagline": "Project skeleton. Nothing built yet.",
+    "signedInAs": "Signed in as {email}.",
+    "signOut": "Sign out",
+    "signIn": "Sign in"
+  },
+  "SignIn": {
+    "title": "Sign in",
+    "checkInbox": "Check your inbox — we sent a sign-in link to {email}.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "sendLink": "Send magic link",
+    "sending": "Sending…",
+    "error": "Something went wrong. Please try again.",
+    "or": "or",
+    "continueWithGoogle": "Continue with Google"
+  }
+}

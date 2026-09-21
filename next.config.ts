@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   // CLAUDE.md is this repo's own hand-maintained instructions file (see project root);
@@ -6,4 +7,6 @@ const nextConfig: NextConfig = {
   agentRules: false,
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+export default withNextIntl(nextConfig);
