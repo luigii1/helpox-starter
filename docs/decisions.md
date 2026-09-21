@@ -5,6 +5,21 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Brick S3: Polar's exact checkout domain used a wildcard, unverified against live docs
+**Decision:** The CSP's `connect-src`/`frame-src` allow `https://*.polar.sh` for Polar rather than one
+exact subdomain (e.g. `checkout.polar.sh` or `buy.polar.sh`).
+**Why:** CLAUDE.md §10 says to check official docs rather than guess when unsure about a Polar API —
+this session's sandbox network couldn't actually reach `polar.sh` or `docs.polar.sh` (blocked by the
+egress proxy), so the exact checkout hostname couldn't be confirmed. A wildcard on Polar's own domain
+is still scoped to one vendor (not a blanket allowance) and won't need a follow-up CSP change if the
+real hostname turns out to be `buy.polar.sh` vs `checkout.polar.sh` vs something else.
+**Consequence:** Flagged here so the assumption isn't silently load-bearing. Must be re-checked once
+brick E1+ actually wires up a real Polar checkout and a live checkout can be tested end-to-end — if
+Polar's checkout ever needs a domain outside `*.polar.sh` (unlikely, but possible for a payment
+processor sub-step), the CSP will need a follow-up commit then.
+
+---
+
 ## 2026-09-21 — Brick G2 pulled forward out of order: E1 blocked on the commander's Polar setup
 **Decision:** Started brick G2 (step 27, "Data export") instead of E1 (step 17, "Polar sandbox and
 products"), which is next in strict step order.

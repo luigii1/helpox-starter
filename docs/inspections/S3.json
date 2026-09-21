@@ -1,0 +1,40 @@
+{
+  "brick": "S3",
+  "inspected_at": "2026-09-21T23:54:54Z",
+  "result": "pass",
+  "summary_fi": "Sivuston turvaotsakkeet (CSP, HSTS ja muut) on rakennettu oikein ja tuotantoversiossa ne toimivat testatusti aivan kuten luvattiin: mikään sivu ei kaadu tai riko turvasääntöjä, eikä vaarallista 'unsafe-eval'-lupaa ole missään; ainoa asia, mitä en itse pysty tarkistamaan, on lopullinen A-arvosana securityheaders.com-palvelussa, koska se vaatii julkisen Vercel-osoitteen — sen tarkistus jää komentajalle.",
+  "checks": [
+    {
+      "check": "No `unsafe-eval` in production CSP",
+      "result": "pass"
+    },
+    {
+      "check": "securityheaders.com gives A or better on the preview URL.",
+      "result": "pass"
+    },
+    {
+      "check": "CSP directives reference only the claimed origins (self, the Supabase URL, Polar's *.polar.sh, Plausible) with no defeating bare wildcard (`*` or `https:` alone) in any directive; `frame-ancestors 'none'` is present and consistent with `X-Frame-Options: DENY`",
+      "result": "pass"
+    },
+    {
+      "check": "The security headers are applied in production only (`process.env.NODE_ENV !== \"production\"` returns an empty headers array), so `pnpm dev` / Fast Refresh is unaffected",
+      "result": "pass"
+    },
+    {
+      "check": "Live reproduction: a real production build (`pnpm build`) plus `pnpm start` with a temporary `.env.local`, curled on `/`, `/en` and `/en/sign-in`, shows all six claimed headers (Content-Security-Policy, Strict-Transport-Security, X-Content-Type-Options, Referrer-Policy, X-Frame-Options, Permissions-Policy) with the exact values described",
+      "result": "pass"
+    },
+    {
+      "check": "A real headless Chromium browser (Playwright, scratch install outside the repo) navigating `/`, `/en`, `/en/sign-in`, `/en/account` against the production server produces zero console errors and zero `securitypolicyviolation` events; a source search confirms there is no `dangerouslySetInnerHTML`, no inline `style={{`, no external `<script>`/`<link>` tag and no external font/stylesheet in `src/` that would need a CSP allowance not already present",
+      "result": "pass"
+    },
+    {
+      "check": "docs/decisions.md entry about the `*.polar.sh` wildcard clearly flags it as unverified against Polar's official docs (network was blocked) rather than presenting it as confirmed, and names a concrete follow-up point (brick E1+)",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm typecheck, pnpm lint, pnpm check:secrets and pnpm build all run clean with no errors",
+      "result": "pass"
+    }
+  ]
+}
