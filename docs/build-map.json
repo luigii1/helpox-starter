@@ -367,7 +367,8 @@
         "A2"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "inspecting",
+      "build_summary_fi": "Rakennettiin yhteinen syötteidentarkistuskerros (`src/lib/validation/`), jota jokainen tuleva API-reitti ja server action käyttää tarkistaakseen käyttäjän lähettämän datan ennen sen käyttöä. Kolme funktiota: `validate()` server actioneille (palauttaa onnistui/epäonnistui -tuloksen ilman HTTP:tä), `validateOrRespond()` reittikäsittelijöille (palauttaa valmiin 400-vastauksen virhetilanteessa) ja `validateJsonBody()` joka lukee pyynnön JSON-rungon ja tarkistaa sen samalla kertaa — myös rikkinäinen JSON (ei vain väärä muoto) päätyy siistiin 400-vastaukseen eikä kaadu palvelinvirheeseen. Virheviesti on aina vakaa koodi (\"validation_failed\") ja lista kohdista, ei suoraan käyttäjälle näytettävä teksti — UI kääntää sen myöhemmin t()-funktiolla CLAUDE.md:n i18n-säännön mukaisesti. Testattiin kahdella tavalla: kahdeksan yksikkötestiä (`pnpm vitest run`) kattaa kelvollisen syötteen, väärän muodon ja rikkinäisen JSONin kaikille kolmelle funktiolle — nämä ajettiin oikeasti ja menivät läpi. Koska sovelluksessa ei vielä ole yhtään oikeaa JSON-runkoa vastaanottavaa reittiä, rakennettiin lisäksi tilapäinen todistusreitti `/api/dev/validate-example` (näkyy vain kehitystilassa, sama malli kuin H2:n `/dev/ui`) ja testattiin sitä oikeilla HTTP-kutsuilla: tuotantotilassa (`pnpm build && pnpm start`) reitti palauttaa 404 kuten pitää, kehitystilassa (`pnpm dev`) kelvollinen data palautti 200:n, väärä data 400:n ja rikkinäinen JSON 400:n — kaikki täsmälleen niin kuin `done_when` vaatii. Mitään ei jäänyt kesken; seuraavat reitit ja server actionit (esim. Polar-webhook S3:ssa) käyttävät tätä samaa kerrosta."
     },
     {
       "step": 16,
