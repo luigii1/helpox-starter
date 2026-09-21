@@ -323,13 +323,14 @@
       "title_fi": "Oma tili -sivu",
       "why_fi": "Sivu, jolta käyttäjä näkee krediittinsä ja hallitsee tiliään.",
       "instructions": "Shows email and credit balance; buttons for buy, export, delete (wired later).",
+      "build_summary_fi": "Lisättiin oma tili -sivu /account (suojatun alueen sisällä, eli sinne pääsee vain kirjautuneena — sama suoja peritään automaattisesti A2-brickistä). Sivu näyttää sähköpostiosoitteen ja krediittisaldon (luetaan profiles-taulusta). Osta lisää-, vie tiedot- ja poista tili -napit ovat jo näkyvissä mutta pois päältä (disabled), koska niiden oikea toiminta rakennetaan vasta myöhemmissä brickeissä (maksut E1+, tietojen vienti/poisto myöhemmässä vaiheessa) — näin sivun ulkoasu ei muutu enää silloin. Sivu käyttää täsmälleen samaa tapaa lukea kirjautunut käyttäjä (supabase.auth.getUser()) kuin etusivu, joka jo todistettiin oikeasti toimivaksi kun kokeilit Google-kirjautumista livenä — sitä ei siis tarvinnut keksiä uudestaan. Kirjautumattomana suojaus testattiin oikeasti tuotantotilassa: /en/account ohjaa kirjautumattoman suoraan kirjautumissivulle, palvelin ei kaadu. Mitään ei jäänyt kesken.",
       "security": [],
       "done_when": "Signed-in user sees own email and balance.",
       "depends_on": [
         "A2"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 14,

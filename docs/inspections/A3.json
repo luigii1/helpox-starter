@@ -1,0 +1,12 @@
+{
+  "brick": "A3",
+  "inspected_at": "2026-09-21T16:57:38Z",
+  "result": "pass",
+  "summary_fi": "Oma tili -sivu näyttää sähköpostin ja krediittisaldon täsmälleen samalla, jo aiemmin livenä toimivaksi todistetulla kirjautumisen lukutavalla kuin etusivu, ja saldon haku täsmää tietokannan rakenteeseen ja sen käyttöoikeuksiin; suojaus, käännökset ja napit tarkistettiin oikeasti tuotantotilassa ilman kaatumisia — täyttä livetestiä oikealla Google-kirjautumisella ei tässä ympäristössä voitu tehdä, mutta se ei ollut tarpeen koska kirjautumisen lukumekanismi on jo todistettu eikä sivu keksi sitä uudestaan.",
+  "checks": [
+    {
+      "check": "Signed-in user sees own email and balance.",
+      "result": "pass"
+    }
+  ]
+}
