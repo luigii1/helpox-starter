@@ -5,6 +5,59 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — T1 changed to `human_check: true` (branch protection is a GitHub Settings action)
+**Decision:** Brick T1's `human_check` was changed from `false` to `true` in `docs/build-map.json`.
+Everything code-side is done: `.github/workflows/test.yml` now also runs `pnpm typecheck` and
+`pnpm lint` (alongside the existing `check:secrets` and `test` steps) on every PR. But T1's
+`done_when` — "A PR with a failing RLS test cannot be merged" — means the `test` check must be a
+*required* GitHub branch protection rule on `main`, which is a repository Settings change, not a
+file in this repo.
+**Why:** No tool available in this session can call GitHub's branch-protection API (it needs repo
+admin scope); this is structurally the same situation as brick A1's Google OAuth setup — a
+one-time action only the commander can take in the GitHub UI. `commander_check_fi` on the T1 brick
+gives the exact steps (Settings → Branches → Add rule → `main` → require the `test` status check).
+**Consequence:** Once the commander confirms the rule is set, re-verify (e.g. check the rule via
+the repo's branch protection settings, or confirm a red PR is blocked) before approving T1.
+
+## 2026-09-21 — Auth routes built flat, not under `[locale]/` (brick A1)
+**Decision:** `src/app/(auth)/sign-in`, `/callback`, `/sign-out` were added directly under
+`src/app/`, not under a `src/app/[locale]/` segment, even though `CLAUDE.md` §3's target structure
+shows `(auth)` nested inside `[locale]/`.
+**Why:** Locale routing (`[locale]/`) is brick H3 (step 24, still `todo`), which comes after A1
+(step 11) in build order. Building `[locale]/` now to satisfy A1 would mean building H3's work
+early, and moving `/` and `/dev/ui` under it too — out of scope for "build only this brick."
+**Consequence:** H3 will need to move `(auth)`, `page.tsx` and future routes under `[locale]/`
+when it lands; noted here so that move isn't a surprise. No behavior change for A1 itself — the
+Supabase redirect URLs registered for `/callback` will need updating to `/{locale}/callback` (or
+the callback kept outside the locale segment, a call for H3 to make) at that point.
+
+## 2026-09-21 — New dependency: `zod` (brick A1)
+**Decision:** Added `zod`, used to validate the `code` query param on the auth callback route
+(`src/app/(auth)/callback/route.ts`) and to build the open-redirect-safe `next` path sanitizer
+(`src/lib/auth/safe-redirect.ts`, unit-tested in `safe-redirect.test.ts`).
+**Why:** Already the fixed stack choice for input validation per `CLAUDE.md` §2 ("Validation:
+zod — All external input"); A1 is the first brick to actually validate a request, so this is
+adopting the already-declared stack rather than a new substitution.
+**Consequence:** `vitest.config.ts`'s test `include` was widened from only `supabase/tests/**` to
+also pick up colocated `src/**/*.test.ts` files, so the redirect-safety logic can have a real,
+CI-runnable unit test that doesn't need a live Supabase stack (unlike the RLS tests).
+
+## 2026-09-21 — Google sign-in needs manual Supabase-dashboard configuration (brick A1)
+**Decision:** `supabase/config.toml` now has an `[auth.external.google]` block (disabled,
+credentials via `env(...)` substitution) matching the existing Apple stub — this only affects
+`supabase start` for local dev/CI. The deployed cloud project's Google provider must be enabled
+separately in the Supabase dashboard (Authentication → Providers → Google, with a real Google
+Cloud OAuth client ID/secret) and the app's `/callback` URL added to Authentication → URL
+Configuration's redirect allow-list. Supabase's GitHub integration (see the 2026-09-21 migrations
+entry above) only syncs `supabase/migrations/*.sql`, not `config.toml`'s auth provider settings.
+**Why:** No CLI/API access to the cloud project's Auth settings is possible from this session
+(network policy) or was set up for automatic config sync — this is a one-time, dashboard-only
+setup step by design, not something code can do.
+**Consequence:** A1 is `human_check: true` for exactly this reason — magic-link sign-in can be
+built and is testable in principle without external config, but Google sign-in is code-complete
+and cannot be verified end-to-end until the commander does this dashboard step. The
+`commander_check_fi` spells out what to do.
+
 ## 2026-09-21 — New dependencies: `@supabase/ssr` and `server-only` (brick P4)
 **Decision:** Added `@supabase/ssr` (runtime) and `server-only` (runtime) as dependencies.
 `src/lib/supabase/server.ts` uses `@supabase/ssr`'s `createServerClient` to read the signed-in

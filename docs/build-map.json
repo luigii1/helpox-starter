@@ -282,6 +282,7 @@
       "title_fi": "Kirjautuminen (sähköpostilinkki ja Google)",
       "why_fi": "Kirjautuminen ilman salasanoja: sähköpostilinkki tai Google.",
       "instructions": "Supabase Auth, `(auth)` route group, callback route, sign-out.",
+      "build_summary_fi": "Rakennettiin kirjautumissivu /sign-in (sähköpostilinkki + Google-nappi), palautusosoite /callback joka vaihtaa Supabasen lähettämän koodin oikeaksi istunnoksi, ja /sign-out joka kirjaa ulos (toimii vain POST-pyynnöllä, ei tavallisella linkillä, ettei kirjautumista voi laukaista vahingossa). Etusivu näyttää nyt kummankin tilan: kirjautuneena sähköpostin ja Kirjaudu ulos -napin, kirjautumattomana Kirjaudu sisään -linkin. Turvavaatimus 'next-parametri ei saa mahdollistaa avointa uudelleenohjausta' rakennettiin omaksi, erikseen testattavaksi funktioksi (src/lib/auth/safe-redirect.ts) ja sille kirjoitettiin viisi oikeaa automaattitestiä (hyväksyy tavallisen polun, hylkää toisen sivuston osoitteen ja //-alkuisen temppuosoitteen) — nämä ajetaan jatkossa joka PR:llä CI:ssä ilman että tarvitaan oikeaa Supabasea. Paikallisesti todistettiin lisäksi oikeasti käynnistämällä sovellus ja kokeilemalla /callback-osoitetta väärillä next-arvoilla (https://evil.example, //evil.example) — molemmat ohjautuivat turvallisesti takaisin kirjautumissivulle kaatumatta. Google-kirjautuminen on koodissa valmis, mutta sitä EI voi vielä kokeilla oikeasti: se vaatii Google-tunnukset Supabasen hallintapaneeliin, mikä on komentajan oma, kertaluontoinen asetus (selitetty commander_check_fi:ssä). Tästä syystä tämä on human_check-vaihe.",
       "security": [
         "Redirect URLs allow-listed in Supabase",
         "Callback validates the `next` parameter to prevent open redirects"
@@ -292,8 +293,8 @@
         "H2"
       ],
       "human_check": true,
-      "status": "todo",
-      "commander_check_fi": "Rekisteröityköön kumpikin omalla sähköpostillaan ja Googlella. Kirjautukaa ulos ja takaisin."
+      "status": "awaiting_commander",
+      "commander_check_fi": "Kaksi asiaa tarkistettavaksi. 1) Sähköpostilinkki: mene /sign-in-sivulle, syötä oma sähköpostiosoitteesi, paina 'Send magic link', avaa sähköpostiisi tullut linkki. Sen pitäisi kirjautua sisään — etusivulla pitäisi lukea 'Signed in as ...'. Paina sitten 'Sign out' ja tarkista että kirjaudut ulos. Kokeile vielä kirjautua takaisin samalla sähköpostilla. 2) Google: tätä ei voi vielä kokeilla, koska Google-kirjautuminen pitää ensin ottaa käyttöön Supabasen hallintapaneelissa (Authentication → Providers → Google) Google Cloud Consolesta haettavilla tunnuksilla, ja sovelluksen /callback-osoite pitää lisätä sallittujen paluuosoitteiden listalle (Authentication → URL Configuration). Voit hyväksyä tämän vaiheen jo pelkän sähköpostilinkin perusteella ja tehdä Google-asetuksen ja -kokeilun myöhemmin, tai pyytää minua auttamaan asetuksen kanssa nyt — kerro kumpi sopii."
     },
     {
       "step": 12,
@@ -337,14 +338,16 @@
       "title_fi": "Automaattitarkistukset (CI)",
       "why_fi": "Jokainen muutos testataan automaattisesti ennen kuin se hyväksytään.",
       "instructions": "GitHub Actions: typecheck, lint, check:secrets, unit and RLS tests on every PR.",
+      "build_summary_fi": "GitHub Actions -työnkulkuun (.github/workflows/test.yml) lisättiin kaksi uutta vaihetta: pnpm typecheck ja pnpm lint. Ne ajetaan nyt joka PR:llä avainvuototarkistuksen (check:secrets) ja testien (RLS + uudet yksikkötestit) lisäksi — kaikki samassa työnkulussa, joka on jo ajossa jokaisella PR:llä D1-brickistä asti. Itse koodipuoli on siis valmis ja todistettu paikallisesti (typecheck, lint, build, check:secrets kaikki läpi). Vaiheen oma tavoite 'viallista PR:ää ei voi mergetä' vaatii kuitenkin GitHubin haaransuojausasetuksen (branch protection rule), joka on repon asetus GitHubin puolella, ei tiedosto tässä repossa — sitä ei voi tehdä käytettävissä olevilla työkaluilla, aivan kuten A1-brickin Google-kirjautumisen asetus. Tästä syystä tämä vaihe muutettiin human_check-vaiheeksi, ja komentajalle annettiin tarkat askeleet GitHub-asetuksen tekemiseen (commander_check_fi). Kun komentaja on tehnyt sen, tarkistetaan vielä oikeasti että viallinen PR jää estetyksi, ennen kuin vaihe hyväksytään.",
       "security": [],
       "done_when": "A PR with a failing RLS test cannot be merged.",
       "depends_on": [
         "S1",
         "D3"
       ],
-      "human_check": false,
-      "status": "todo"
+      "human_check": true,
+      "status": "awaiting_commander",
+      "commander_check_fi": "Tämä vaihe vaatii yhden asetuksen GitHubissa, jota en pysty tekemään puolestasi (ei ole työkalua GitHubin haaransuojausasetuksiin). Mene repoon github.com/luigii1/helpox-starter → Settings → Branches → Add branch protection rule (tai Add rule). Kirjoita 'main' kohtaan Branch name pattern. Rastita 'Require status checks to pass before merging', ja etsi/valitse listalta 'test' (se on tarkistus joka ajaa typecheck+lint+check:secrets+testit). Tallenna. Kerro minulle kun olet tehnyt tämän, niin varmistan vielä oikeasti että viallinen PR ei mene läpi, ja hyväksyn vaiheen."
     },
     {
       "step": 15,
