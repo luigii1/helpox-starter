@@ -1,0 +1,44 @@
+{
+  "brick": "H3",
+  "inspected_at": "2026-09-21T15:45:14Z",
+  "result": "pass",
+  "summary_fi": "Kieliversiot toimivat oikeasti: etusivu ohjautuu osoitteeseen /en ja näyttää suomeksi kirjoitetun tekstin sijaan englanninkielisen tekstin tiedostosta messages/en.json, uuden kielen lisääminen ei vaatisi koodimuutoksia, ja rakentaja löysi ja korjasi aidon piilobugin (tarkistussääntö ei aluksi valvonut mitään), mikä todistettiin itse kokeilemalla eikä vain uskomalla.",
+  "checks": [
+    {
+      "check": "next-intl is wired correctly: routing config (src/i18n/routing.ts, locales=[\"en\"], defaultLocale=\"en\"), request config (src/i18n/request.ts), navigation helpers (src/i18n/navigation.ts), and the proxy (src/proxy.ts, renamed from middleware.ts, uses next-intl/middleware with routing and a matcher that redirects unprefixed paths while excluding /dev, /api, /_next, /_vercel and static files)",
+      "result": "pass"
+    },
+    {
+      "check": "Every page/route under src/app/[locale]/ (layout.tsx, page.tsx, (auth)/sign-in/page.tsx, (auth)/callback/route.ts, (auth)/sign-out/route.ts) and the root src/app/layout.tsx use next-intl's t()/getTranslations/useTranslations for all user-visible strings, sourced from messages/en.json — no hard-coded UI strings found",
+      "result": "pass"
+    },
+    {
+      "check": "src/app/dev/ui/page.tsx (brick H2's dev-only showcase) is deliberately left outside src/app/[locale]/ and outside the i18n proxy matcher and the ESLint no-literal-string rule's file scope — confirmed intentional via docs/decisions.md and eslint.config.mjs comments, not a bug",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm typecheck, pnpm lint, pnpm check:secrets, pnpm build (after deleting .next for a clean rebuild) all pass cleanly with no errors",
+      "result": "pass"
+    },
+    {
+      "check": "done_when: \"/en works and adding fi.json would need no code changes\" — proved live with pnpm dev and dummy env vars: GET / returns 307 to /en; GET /en returns 200 with real page content (title, tagline, sign-in link text all present, sourced from messages/en.json); GET /sign-in returns 307 to /en/sign-in; GET /dev/ui returns 200 standalone, not redirected into a locale prefix. Adding fi.json would only require adding \"fi\" to routing.ts's locales array and creating messages/fi.json — no other code changes, since request.ts already dynamically imports `../../messages/${locale}.json`",
+      "result": "pass"
+    },
+    {
+      "check": "ESLint hard-coded-string rule (i18next/no-literal-string) demonstrably fires, not just silently absent of errors: planting a literal JSX text string in src/app/[locale]/page.tsx made pnpm lint fail with an i18next/no-literal-string error; restoring the file exactly (verified via identical md5sum) made pnpm lint pass again. The escaped glob src/app/\\\\[locale\\\\]/**/*.{ts,tsx} is present in eslint.config.mjs, consistent with the documented gotcha (unescaped [locale] would be interpreted as a glob bracket expression and silently match nothing)",
+      "result": "pass"
+    },
+    {
+      "check": "docs/decisions.md has an H3 entry explaining the auth callback path change (/callback -> /en/callback), the correction to A1's guidance (Supabase needs the redirect URL allow-listed for magic-link email too, not just Google), the ESLint glob gotcha, and the middleware.ts -> proxy.ts rename",
+      "result": "pass"
+    },
+    {
+      "check": "docs/build-map.json's A1 brick has its commander_check_fi updated to mention /en/sign-in and /en/callback and the missing redirect-URL-allowlist-for-email point",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm test: the 5 pre-existing src/lib/auth/safe-redirect.test.ts tests still pass, unaffected by this brick; the supabase/tests/*.test.ts RLS failures are the pre-existing, documented no-local-Supabase limitation, unrelated to this brick",
+      "result": "pass"
+    }
+  ]
+}
