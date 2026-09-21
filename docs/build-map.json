@@ -422,7 +422,7 @@
         "D3"
       ],
       "human_check": true,
-      "status": "inspecting",
+      "status": "awaiting_commander",
       "commander_check_fi": "Lukekaa valvojan raportti. Onko jokainen kohta PASS? Kysykää mekaanikolta, jos jokin on epäselvää."
     },
     {

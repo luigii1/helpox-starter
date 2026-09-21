@@ -1,0 +1,28 @@
+{
+  "brick": "E2",
+  "inspected_at": "2026-09-21T16:30:20Z",
+  "result": "pass",
+  "summary_fi": "Krediittien lisäys-, käyttö- ja hyvitysfunktiot toimivat oikein ja turvallisesti — testasin itse omalla erillisellä Postgres-tietokannalla muun muassa kymmentä samanaikaista käyttöyritystä ja varmistin, että saldo ei koskaan mennyt miinukselle eikä kukaan päässyt lisäämään tai hyvittämään krediittejä ilman oikeuksia, ja kaikki koneelliset tarkistukset (typecheck, lint, salaisuustarkistus, build) menivät läpi puhtaasti.",
+  "checks": [
+    {
+      "check": "instructions: grant_credits, consume_credits, refund_credits as in base-spec.md, SECURITY DEFINER, search_path = '', fully qualified names",
+      "result": "pass"
+    },
+    {
+      "check": "security: grant and refund executable only by service role",
+      "result": "pass"
+    },
+    {
+      "check": "security: consume uses auth.uid(), never a user id argument",
+      "result": "pass"
+    },
+    {
+      "check": "security: Duplicate external_id is a no-op",
+      "result": "pass"
+    },
+    {
+      "check": "done_when: Tests: grant twice with same external_id adds once; two concurrent consumes on balance 1 give exactly one success; authenticated user cannot call grant",
+      "result": "pass"
+    }
+  ]
+}
