@@ -31,7 +31,7 @@ export function anonClient(): SupabaseClient {
   return createClient(supabaseUrl(), anonKey());
 }
 
-function adminClient(): SupabaseClient {
+export function adminClient(): SupabaseClient {
   return createClient(supabaseUrl(), serviceRoleKey(), {
     auth: { autoRefreshToken: false, persistSession: false },
   });
