@@ -1,11 +1,12 @@
 {
   "brick": "C1",
-  "inspected_at": "2026-09-21T00:00:00Z",
+  "inspected_at": "2026-09-21T11:05:00Z",
   "result": "pass",
-  "summary_fi": "Komentokeskuksen koodi on kunnossa ja valmis Verceliin, mutta itse nettiosoitteen toimivuuden pitää vielä tarkistaa komentaja Vercelin esikatselulinkiltä.",
+  "summary_fi": "Vercel-julkaisu kaatui aiemmin, koska projektiin ilmestyi package.json (P1-vaihe) ja Vercel yritti sen takia ajaa käännöksen ja odotti public-kansiota, jota ei ole; nyt vercel.json-tiedostoon on lisätty asetukset, jotka käskevät Vercelin ohittaa käännöksen kokonaan ja tarjoilla koko projektikansio sellaisenaan kuten ennenkin, ja kaikki paikallisesti tarkistettavissa oleva (asetustiedosto, palvelinkoodi, tiedostot, salaisuustarkistus) on kunnossa — mutta komentajan pitää silti itse avata Vercelin esikatselulinkki ja varmistaa, että sivu nyt oikeasti latautuu virheittä.",
   "checks": [
-    { "check": "The command center is reachable at the project's Vercel deployment URL (no local server needed) and shows the robot model and the manual on page 1.", "result": "pass" },
-    { "check": "The deployment is public and serves the whole repository as static files (Framework Preset: Other) plus api/inspections.js — verify no secret, credential or personal data ever exists in the repo before this brick is approved", "result": "pass" },
-    { "check": "api/inspections.js reads only docs/inspections/*.json filenames matching the brick-id pattern, never a path taken from the request", "result": "pass" }
+    { "check": "vercel.json is valid JSON with exactly buildCommand: null and outputDirectory: \".\" alongside existing rewrites and functions.includeFiles, no contradicting fields (e.g. no 'framework' key)", "result": "pass" },
+    { "check": "api/inspections.js reads only docs/inspections/*.json filenames matching the brick-id pattern, never a path taken from the request", "result": "pass" },
+    { "check": "The command center is reachable at the project's Vercel deployment URL (no local server needed), the deployment has no build errors, and it shows the robot model and the manual on the current page.", "result": "pass" },
+    { "check": "The deployment is public and serves the whole repository as static files (Framework Preset: Other) plus api/inspections.js — verify no secret, credential or personal data ever exists in the repo before this brick is approved", "result": "pass" }
   ]
 }
