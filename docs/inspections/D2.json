@@ -1,0 +1,24 @@
+{
+  "brick": "D2",
+  "inspected_at": "2026-09-21T13:41:08Z",
+  "result": "pass",
+  "summary_fi": "Käyttäjätaulu ja sen suojaukset toimivat: tarkastin asian itse alusta asti omalla tietokantakokeella, ja jokainen käyttäjä näkee vain oman rivinsä, kukaan ei pääse muuttamaan saldoaan, eikä kirjautumaton käyttäjä saa mitään tietoja näkyviin.",
+  "checks": [
+    {
+      "check": "RLS tests: A cannot read B's profile, anon reads nothing, A cannot update own credits.",
+      "result": "pass"
+    },
+    {
+      "check": "Users can select only their own row",
+      "result": "pass"
+    },
+    {
+      "check": "No client insert, update or delete",
+      "result": "pass"
+    },
+    {
+      "check": "credits has check (credits >= 0)",
+      "result": "pass"
+    }
+  ]
+}
