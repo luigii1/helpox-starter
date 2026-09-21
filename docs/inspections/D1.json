@@ -1,0 +1,10 @@
+{
+  "brick": "D1",
+  "inspected_at": "2026-09-21T13:01:21Z",
+  "result": "pass",
+  "summary_fi": "RLS-testipenkki todistettiin oikeasti toimivaksi — ei paikallisesti eikä pelkän koodin lukemisella, vaan ajamalla se GitHub Actionsissa oikeaa paikallista Supabase-tietokantaa vasten. Ensimmäinen ajo epäonnistui ympäristömuuttujien lainausmerkkivirheeseen; korjattu ja toinen ajo läpäisi testin puhtaasti.",
+  "checks": [
+    { "check": "A sample test proves the harness can sign in two different users", "result": "pass" },
+    { "check": "Verified by a passing GitHub Actions run (checked via the GitHub API, not locally)", "result": "pass" }
+  ]
+}
