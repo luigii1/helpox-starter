@@ -5,6 +5,20 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — T1 changed to `human_check: true` (branch protection is a GitHub Settings action)
+**Decision:** Brick T1's `human_check` was changed from `false` to `true` in `docs/build-map.json`.
+Everything code-side is done: `.github/workflows/test.yml` now also runs `pnpm typecheck` and
+`pnpm lint` (alongside the existing `check:secrets` and `test` steps) on every PR. But T1's
+`done_when` — "A PR with a failing RLS test cannot be merged" — means the `test` check must be a
+*required* GitHub branch protection rule on `main`, which is a repository Settings change, not a
+file in this repo.
+**Why:** No tool available in this session can call GitHub's branch-protection API (it needs repo
+admin scope); this is structurally the same situation as brick A1's Google OAuth setup — a
+one-time action only the commander can take in the GitHub UI. `commander_check_fi` on the T1 brick
+gives the exact steps (Settings → Branches → Add rule → `main` → require the `test` status check).
+**Consequence:** Once the commander confirms the rule is set, re-verify (e.g. check the rule via
+the repo's branch protection settings, or confirm a red PR is blocked) before approving T1.
+
 ## 2026-09-21 — Auth routes built flat, not under `[locale]/` (brick A1)
 **Decision:** `src/app/(auth)/sign-in`, `/callback`, `/sign-out` were added directly under
 `src/app/`, not under a `src/app/[locale]/` segment, even though `CLAUDE.md` §3's target structure

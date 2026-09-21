@@ -338,14 +338,16 @@
       "title_fi": "Automaattitarkistukset (CI)",
       "why_fi": "Jokainen muutos testataan automaattisesti ennen kuin se hyväksytään.",
       "instructions": "GitHub Actions: typecheck, lint, check:secrets, unit and RLS tests on every PR.",
+      "build_summary_fi": "GitHub Actions -työnkulkuun (.github/workflows/test.yml) lisättiin kaksi uutta vaihetta: pnpm typecheck ja pnpm lint. Ne ajetaan nyt joka PR:llä avainvuototarkistuksen (check:secrets) ja testien (RLS + uudet yksikkötestit) lisäksi — kaikki samassa työnkulussa, joka on jo ajossa jokaisella PR:llä D1-brickistä asti. Itse koodipuoli on siis valmis ja todistettu paikallisesti (typecheck, lint, build, check:secrets kaikki läpi). Vaiheen oma tavoite 'viallista PR:ää ei voi mergetä' vaatii kuitenkin GitHubin haaransuojausasetuksen (branch protection rule), joka on repon asetus GitHubin puolella, ei tiedosto tässä repossa — sitä ei voi tehdä käytettävissä olevilla työkaluilla, aivan kuten A1-brickin Google-kirjautumisen asetus. Tästä syystä tämä vaihe muutettiin human_check-vaiheeksi, ja komentajalle annettiin tarkat askeleet GitHub-asetuksen tekemiseen (commander_check_fi). Kun komentaja on tehnyt sen, tarkistetaan vielä oikeasti että viallinen PR jää estetyksi, ennen kuin vaihe hyväksytään.",
       "security": [],
       "done_when": "A PR with a failing RLS test cannot be merged.",
       "depends_on": [
         "S1",
         "D3"
       ],
-      "human_check": false,
-      "status": "todo"
+      "human_check": true,
+      "status": "inspecting",
+      "commander_check_fi": "Tämä vaihe vaatii yhden asetuksen GitHubissa, jota en pysty tekemään puolestasi (ei ole työkalua GitHubin haaransuojausasetuksiin). Mene repoon github.com/luigii1/helpox-starter → Settings → Branches → Add branch protection rule (tai Add rule). Kirjoita 'main' kohtaan Branch name pattern. Rastita 'Require status checks to pass before merging', ja etsi/valitse listalta 'test' (se on tarkistus joka ajaa typecheck+lint+check:secrets+testit). Tallenna. Kerro minulle kun olet tehnyt tämän, niin varmistan vielä oikeasti että viallinen PR ei mene läpi, ja hyväksyn vaiheen."
     },
     {
       "step": 15,
