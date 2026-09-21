@@ -1,0 +1,11 @@
+{
+  "brick": "C1",
+  "inspected_at": "2026-09-21T10:51:03Z",
+  "result": "pass",
+  "summary_fi": "Komentokeskus näyttää nyt paperisen ohjekirjan tyylillä: sivuittain numeroidut moduulit, tehtävät valintalistana (ruksi = valmis, pieni merkki muille tiloille), edistymispalkki ja kaksi sivunvaihtopainiketta keskellä alhaalla — robottikuva ja erillinen tilalaatikko ovat poissa, eikä sivu vuoda reunojen yli kapealla puhelinnäytöllä; rivin klikkaus avaa ja sulkee lisätiedot, ja komentajan tarkistusta odottava tehtävä avautuu automaattisesti; muistakaa silti tehdä oma tarkistus oikealla Vercel-osoitteella, koska sitä ei voi tarkastaa täältä.",
+  "checks": [
+    { "check": "The command center is reachable at the project's Vercel deployment URL (no local server needed), the deployment has no build errors, and it shows the manual: pages, a checklist per page with the brick titles as checkboxes (checked = approved), and the overall progress — nothing else (no robot illustration, no separate status box above the manual). Page switching is two buttons centered at the bottom of the manual.", "result": "pass" },
+    { "check": "The deployment is public and serves the whole repository as static files (Framework Preset: Other) plus api/inspections.js — verify no secret, credential or personal data ever exists in the repo before this brick is approved", "result": "pass" },
+    { "check": "api/inspections.js reads only docs/inspections/*.json filenames matching the brick-id pattern, never a path taken from the request", "result": "pass" }
+  ]
+}

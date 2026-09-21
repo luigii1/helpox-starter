@@ -100,7 +100,7 @@
       "done_when": "The command center is reachable at the project's Vercel deployment URL (no local server needed), the deployment has no build errors, and it shows the manual: pages, a checklist per page with the brick titles as checkboxes (checked = approved), and the overall progress — nothing else (no robot illustration, no separate status box above the manual). Page switching is two buttons centered at the bottom of the manual.",
       "depends_on": [],
       "human_check": true,
-      "status": "inspecting",
+      "status": "awaiting_commander",
       "commander_check_fi": "Avatkaa projektin Vercel-esikatselulinkki (Vercelin projektisivulla, haaran claude/adoring-lovelace-s6w44y kohdalla). Näkyykö ohjekirja sivuittain, jokaisella sivulla tehtävät checkboxeina, ja sivunvaihto keskellä alhaalla?"
     },
     {
