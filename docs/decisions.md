@@ -5,6 +5,26 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Schema migrations deployed via Supabase's GitHub integration, not CLI
+**Decision:** The cloud Supabase project (`helpox-starter-dev`) applies `supabase/migrations/*.sql`
+automatically through Supabase's own GitHub integration (dashboard-configured: Project Settings →
+Integrations → GitHub, watching `main`, directory `/`), not via `supabase link` / `supabase db push`
+run by anyone. `supabase/config.toml` and migrations are still authored locally (pure file operations,
+no network) exactly as `CLAUDE.md` §3/§4 require.
+**Why:** This session's environment cannot reach `supabase.com`, `api.supabase.com` or Docker Hub at
+all — every host tried returned a 403 policy denial from the egress proxy, confirmed repeatedly. The
+commander also does not want to install or run anything on their own machine (mirrors the earlier
+decision to check the command center via Vercel instead of localhost). The GitHub integration needs
+neither.
+**Consequence:** `supabase start` (the local Postgres/Auth/Storage stack, needed for RLS tests per
+`CLAUDE.md` §2) cannot be run or verified from this session either — Docker image pulls hit the same
+block. That verification is deferred to brick T1's GitHub Actions CI, which has normal internet access
+and can run the full local stack. Until T1 exists, a brick that needs to prove RLS behavior (D1/D2/D3)
+will need to say plainly that live verification is pending CI, the same way P3 did for its cloud check.
+**Verification:** confirmed via the "Supabase Preview" GitHub check appearing on PR #9 (linked to the
+correct project) and the commander confirming the empty migration's timestamp appears on the
+project's Database → Migrations page.
+
 ## 2026-09-21 — Command center UI: plain paper-manual, no robot
 **Decision:** `center/index.html` no longer draws a robot illustration or shows a separate
 "what's next" status box above the manual. It shows only: numbered pages (one per module), each
