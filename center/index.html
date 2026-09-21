@@ -28,6 +28,13 @@ body{margin:0;color:var(--ink);font:15px/1.5 var(--font);padding-inline:16px;pad
 button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--work);outline-offset:2px}
 .wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.content{display:flex;flex-direction:column;gap:14px}
+@media (min-width:760px){
+  .wrap{max-width:920px}
+  .content{flex-direction:row;align-items:flex-start}
+  .model{flex:0 0 260px}
+  .manual{flex:1;min-width:0}
+}
 
 header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .brand{flex:1;min-width:0;font-weight:700;font-size:16px;letter-spacing:.01em}
@@ -108,19 +115,21 @@ header .progress{flex:none}
     <div class="progress" id="progressTop"><b id="progressFrac"></b></div>
   </header>
 
+  <div class="content">
+    <div class="model"><svg id="robot" viewBox="40 40 260 356" role="img" aria-label="Robotin osat ja niiden valmiusaste"></svg></div>
+
+    <section class="manual" id="manual" aria-label="Ohjekirja">
+      <div class="page-h" id="pageH"></div>
+      <ol class="checklist" id="checklist"></ol>
+      <div class="pager">
+        <button class="arrow" id="prevBtn" aria-label="Edellinen sivu">←</button>
+        <span class="loc" id="loc"></span>
+        <button class="arrow" id="nextBtn" aria-label="Seuraava sivu">→</button>
+      </div>
+    </section>
+  </div>
+
   <div class="progress"><div class="track" id="track"><div class="f" id="trackFill"></div></div></div>
-
-  <div class="model"><svg id="robot" viewBox="40 40 260 356" role="img" aria-label="Robotin osat ja niiden valmiusaste"></svg></div>
-
-  <section class="manual" id="manual" aria-label="Ohjekirja">
-    <div class="page-h" id="pageH"></div>
-    <ol class="checklist" id="checklist"></ol>
-    <div class="pager">
-      <button class="arrow" id="prevBtn" aria-label="Edellinen sivu">←</button>
-      <span class="loc" id="loc"></span>
-      <button class="arrow" id="nextBtn" aria-label="Seuraava sivu">→</button>
-    </div>
-  </section>
 </div>
 
 <script>
