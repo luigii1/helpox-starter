@@ -144,16 +144,17 @@
       "title": "RLS test harness",
       "title_fi": "Suojauksen testipenkki (RLS-testit)",
       "why_fi": "Testit, jotka yrittävät lukea toisen käyttäjän tietoja. Näin todistetaan, että suojaus oikeasti toimii.",
-      "instructions": "Vitest setup that creates two users against local Supabase and gives each an authenticated client, plus an anon client.",
+      "instructions": "Vitest setup that creates two users against local Supabase and gives each an authenticated client, plus an anon client. Also adds a minimal `.github/workflows/test.yml` (checkout, pnpm install, `supabase start`, `supabase status -o env` to export URL/keys, `pnpm test`) since neither this session nor the commander's machine can run `supabase start` (see docs/decisions.md) — GitHub Actions is the only place this harness can actually execute right now. Brick T1 later extends this same workflow file with typecheck/lint/check:secrets rather than creating a second one.",
       "security": [
-        "Tests run against a fresh database built from migrations"
+        "Tests run against a fresh database built from migrations",
+        "Local/CI Supabase URL and keys come from `supabase status -o env` at run time, never hardcoded — even though local dev keys are well-known/non-secret, treating them as config keeps the pattern identical to production"
       ],
-      "done_when": "A sample test proves the harness can sign in two different users.",
+      "done_when": "A sample test proves the harness can sign in two different users, verified by a passing GitHub Actions run (checked via the GitHub API, not locally).",
       "depends_on": [
         "P3"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 5,
