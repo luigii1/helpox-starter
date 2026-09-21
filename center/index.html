@@ -1,325 +1,220 @@
 <!doctype html>
 <html lang="fi">
-<title>Helpox Build Manual</title>
+<title>Helpox – Ohjekirja</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap">
 <style>
 :root{
   --ground:#EEF1F4; --paper:#FFFFFF; --ink:#1F2630; --dim:#5E6875; --line:#D5DBE2;
-  --ghost:#B9C2CC; --ghost-fill:#F6F8FA; --shadow:0 1px 2px rgba(31,38,48,.06),0 8px 24px rgba(31,38,48,.06);
+  --shadow:0 1px 2px rgba(31,38,48,.06),0 8px 24px rgba(31,38,48,.06);
   --done:#2F9E44; --wait:#D99A00; --bad:#D83A2E; --work:#1E5AA8;
   --font:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --ground:#13171C; --paper:#1C2128; --ink:#E8ECF1; --dim:#9AA5B2; --line:#2E3640;
-  --ghost:#4A5461; --ghost-fill:#20262E; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
   --done:#4CC364; --wait:#F2B51C; --bad:#F0584C; --work:#5B9BEA;
 }}
 :root[data-theme="dark"]{
   --ground:#13171C; --paper:#1C2128; --ink:#E8ECF1; --dim:#9AA5B2; --line:#2E3640;
-  --ghost:#4A5461; --ghost-fill:#20262E; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
   --done:#4CC364; --wait:#F2B51C; --bad:#F0584C; --work:#5B9BEA;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{background:var(--ground)}
-body{margin:0;color:var(--ink);font:15px/1.5 var(--font);padding-inline:16px;padding-block:16px 40px}
+body{margin:0;color:var(--ink);font:15px/1.5 var(--font);padding-inline:16px;padding-block:16px 40px;overflow-x:hidden}
 button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--work);outline-offset:2px}
-.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{font-weight:700;font-size:16px;letter-spacing:.01em}
-.brand span{font-weight:400;color:var(--dim);margin-left:8px}
-.hdr-r{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--dim)}
-.live{display:inline-flex;align-items:center;gap:6px}
-.live i{width:7px;height:7px;border-radius:50%;background:var(--ghost)}
-.live.on i{background:var(--done)}
-.linkbtn{background:none;border:0;padding:0;color:var(--work);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-.demo-note{background:var(--paper);border:1px dashed var(--wait);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:13px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.brand{flex:1;min-width:0;font-weight:700;font-size:16px;letter-spacing:.01em}
+.brand span{font-weight:400;color:var(--dim);margin-left:8px;font-size:13px}
+header .progress{flex:none}
 
-.model{display:flex;justify-content:center;padding-block:4px}
-.model svg{width:100%;max-width:340px;height:auto;display:block;overflow:visible}
-.pt{cursor:pointer}
-.pt:focus{outline:none}
-.pt .s{stroke:var(--ghost);stroke-width:1.6;stroke-dasharray:4 3;fill:var(--ghost-fill);stroke-linejoin:round}
-.pt .d{fill:var(--ghost)}
-.pt.part .s{stroke:var(--ink);stroke-dasharray:none;fill:var(--c);fill-opacity:.32}
-.pt.done .s{stroke:var(--ink);stroke-dasharray:none;fill:var(--c);fill-opacity:1}
-.pt.done .d,.pt.part .d{fill:var(--ink)}
-.pt.wait .s{stroke:var(--wait);stroke-width:2.4}
-.pt.bad .s{stroke:var(--bad);stroke-width:2.4;stroke-dasharray:none}
-.pt.cur .s{stroke:var(--work);stroke-width:2.6;stroke-dasharray:none}
-.pt:hover .s,.pt:focus-visible .s{stroke-width:2.8}
-.pt .ln{fill:none;stroke:var(--ghost);stroke-width:2}
-.pt.done .ln,.pt.part .ln{stroke:var(--ink)}
-.pt.lit .glow{filter:drop-shadow(0 0 5px var(--c))}
-
-.next{background:var(--paper);border-radius:10px;box-shadow:var(--shadow);padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center}
-@media (max-width:560px){.next{grid-template-columns:1fr}}
-.next small{display:block;color:var(--dim);font-size:12.5px}
-.next strong{display:block;font-size:17px;font-weight:500;margin-top:1px}
-.next p{margin:4px 0 0;color:var(--dim);font-size:14px;max-width:62ch}
-.cmd{display:flex;flex-direction:column;gap:6px;align-items:stretch}
-.cmd code{font:12.5px/1.4 var(--mono);background:var(--ground);border-radius:6px;padding:7px 10px}
-.btn{border:0;border-radius:6px;background:var(--ink);color:var(--paper);font-weight:500;font-size:14px;padding:8px 14px;cursor:pointer}
-.btn:hover{opacity:.88}
+/* overall progress */
+.progress{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--dim)}
+.progress b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.track{position:relative;flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.track .f{position:absolute;inset:0 auto 0 0;background:var(--done)}
+@media (prefers-reduced-motion:no-preference){.track .f{transition:width .4s ease}}
 
 /* manual */
 .manual{background:var(--paper);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
-.page-h{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:18px 18px 10px}
-.pnum{font:700 44px/1 var(--font);font-variant-numeric:tabular-nums;min-width:1.2em;text-align:center}
-.page-h h2{margin:0;font-size:22px;font-weight:700;text-wrap:balance}
-.page-h p{margin:2px 0 0;color:var(--dim);font-size:14px;max-width:60ch}
-.page-h .code{font:12px var(--mono);color:var(--dim)}
-@media (max-width:560px){.page-h{grid-template-columns:auto 1fr}.flip{grid-column:1/-1;justify-content:flex-end}.pnum{font-size:36px}}
-.flip{display:flex;gap:6px}
-.arrow{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-size:18px;line-height:1;display:grid;place-items:center}
-.arrow:disabled{opacity:.35;cursor:default}
-.arrow:not(:disabled):hover{border-color:var(--ink)}
+.page-h{padding:20px 20px 10px;text-align:center}
+.pnum{font:700 32px/1 var(--font);font-variant-numeric:tabular-nums;color:var(--dim)}
+.page-h h2{margin:6px 0 0;font-size:21px;font-weight:700}
+.page-h p{margin:4px 0 0;color:var(--dim);font-size:14px}
 
-.steps{list-style:none;margin:0;padding:6px 18px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
-.step{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;cursor:pointer;text-align:left;background:var(--paper);width:100%;height:100%}
-.step:hover{border-color:var(--dim)}
-.step.sel{border-color:var(--ink)}
-.step.is-next{border-color:var(--work);box-shadow:0 0 0 2px color-mix(in srgb,var(--work) 25%,transparent)}
-.step .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.step .n{font:700 26px/1 var(--font);font-variant-numeric:tabular-nums}
-.step .t{font-weight:500;line-height:1.35}
-.pill{font-size:11.5px;font-weight:500;padding:2px 8px;border-radius:999px;white-space:nowrap;border:1px solid var(--line);color:var(--dim)}
-.pill.approved{background:var(--done);border-color:var(--done);color:#fff}
-.pill.awaiting_commander{background:var(--wait);border-color:var(--wait);color:#1F2630}
-.pill.rework{background:var(--bad);border-color:var(--bad);color:#fff}
-.pill.building,.pill.inspecting{border-color:var(--work);color:var(--work)}
-.flag{font-size:12px;color:var(--dim)}
+.checklist{list-style:none;margin:0;padding:8px 14px 18px;display:flex;flex-direction:column;gap:2px}
+.item{border-radius:8px}
+.row{display:flex;align-items:flex-start;gap:10px;width:100%;min-width:0;background:none;border:0;text-align:left;padding:10px 8px;border-radius:8px;cursor:pointer}
+.row:hover{background:var(--ground)}
+.check{flex:none;width:20px;height:20px;margin-top:1px;border-radius:5px;border:2px solid var(--line);display:grid;place-items:center}
+.check svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.check.on{background:var(--done);border-color:var(--done)}
+.check.on svg{opacity:1}
+.check.wait{border-color:var(--wait)}
+.check.bad{border-color:var(--bad)}
+.check.active{border-color:var(--work)}
+.check.active:after{content:"";width:8px;height:8px;border-radius:50%;background:var(--work)}
+.title{flex:1;min-width:0;font-size:15px;line-height:1.35;padding-top:1px;overflow-wrap:break-word}
+.item.done .title{color:var(--dim);text-decoration:line-through;text-decoration-color:var(--line)}
+.tag{display:inline-block;margin-left:7px;font-size:11.5px;font-weight:500;padding:1px 7px;border-radius:999px;white-space:nowrap;vertical-align:1px}
+.tag.wait{background:var(--wait);color:#1F2630}
+.tag.bad{background:var(--bad);color:#fff}
+.tag.active{background:var(--work);color:#fff}
 
-.detail{border-top:1px solid var(--line);padding:14px 18px 18px;display:grid;gap:12px}
-.detail h3{margin:0;font-size:16px;font-weight:500}
-.detail h4{margin:0 0 3px;font-size:12px;font-weight:500;color:var(--dim);letter-spacing:.04em;text-transform:uppercase}
-.detail p,.detail ul{margin:0;max-width:66ch}
+.detail{margin:0 8px 8px;padding:10px 12px;border-radius:8px;background:var(--ground);display:grid;gap:8px;font-size:13.5px}
+.detail h4{margin:0 0 2px;font-size:11px;font-weight:500;color:var(--dim);letter-spacing:.04em;text-transform:uppercase}
+.detail p,.detail ul{margin:0;color:var(--ink)}
 .detail ul{padding-left:18px}
 .ok{color:var(--done)} .no{color:var(--bad)}
-.detail details summary{cursor:pointer;color:var(--dim);font-size:13px}
-.detail details p{margin-top:6px;font:12.5px/1.5 var(--mono);color:var(--dim)}
+.checkbox-note{border:1px dashed var(--wait);border-radius:6px;padding:8px 10px}
 
-/* overall progress */
-.progress{border-top:1px solid var(--line);padding:14px 18px 16px;display:grid;gap:8px}
-.prow{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--dim);flex-wrap:wrap}
-.prow b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
-.track{position:relative;height:12px;border-radius:6px;background:var(--ground);overflow:hidden}
-.track .f{position:absolute;inset:0 auto 0 0;background:var(--done)}
-.track .w{position:absolute;top:0;bottom:0;background:var(--wait)}
-.track .tick{position:absolute;top:0;bottom:0;width:2px;background:var(--paper)}
-.here{position:relative;height:6px}
-.here i{position:absolute;top:0;height:4px;border-radius:2px;background:var(--work)}
-@media (prefers-reduced-motion:no-preference){.track .f,.track .w,.here i{transition:all .4s ease}}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 18px);background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:6px;font-size:13px}
+/* bottom pager */
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 18px 18px;border-top:1px solid var(--line)}
+.arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-size:17px;line-height:1;display:grid;place-items:center}
+.arrow:disabled{opacity:.35;cursor:default}
+.arrow:not(:disabled):hover{border-color:var(--ink)}
+.pager .loc{font-size:13px;color:var(--dim);min-width:74px;text-align:center;font-variant-numeric:tabular-nums}
+
+.empty{background:var(--paper);border-radius:12px;box-shadow:var(--shadow);padding:24px;text-align:center;color:var(--dim);font-size:14px}
 </style>
 
 <div class="wrap">
   <header>
-    <div class="brand">Helpox<span id="proj">helpox-starter · rakennusohje</span></div>
-    <div class="hdr-r">
-      <span class="live" id="live"><i></i><span id="liveTxt">Tilannekuva</span></span>
-      <button class="linkbtn" id="demoBtn">Näytä esimerkki</button>
-    </div>
+    <div class="brand">Helpox<span id="proj">helpox-starter · ohjekirja</span></div>
+    <div class="progress" id="progressTop"><b id="progressFrac"></b></div>
   </header>
-  <div class="demo-note" id="demoNote" hidden>Esimerkki: keksitty tilanne puolivälissä rakennusta. Tämä ei ole teidän robottinne.</div>
 
-  <div class="model"><svg id="robot" viewBox="40 40 260 356" role="img" aria-label="Robotin osat ja niiden valmiusaste"></svg></div>
+  <div class="progress"><div class="track" id="track"><div class="f" id="trackFill"></div></div></div>
 
-  <section class="next" id="next" aria-live="polite"></section>
-
-  <section class="manual" aria-label="Ohjekirja">
+  <section class="manual" id="manual" aria-label="Ohjekirja">
     <div class="page-h" id="pageH"></div>
-    <ol class="steps" id="steps"></ol>
-    <div class="detail" id="detail" hidden></div>
-    <div class="progress">
-      <div class="prow"><span id="pLeft"></span><span id="pRight"></span></div>
-      <div class="track" id="track"></div>
-      <div class="here"><i id="here"></i></div>
+    <ol class="checklist" id="checklist"></ol>
+    <div class="pager">
+      <button class="arrow" id="prevBtn" aria-label="Edellinen sivu">←</button>
+      <span class="loc" id="loc"></span>
+      <button class="arrow" id="nextBtn" aria-label="Seuraava sivu">→</button>
     </div>
   </section>
 </div>
 
 <script>
 const EMBEDDED = /*__EMBED__*/null;
-const STATUS_FI={todo:'Odottaa',building:'Rakennetaan',inspecting:'Tarkastetaan',rework:'Korjataan',awaiting_commander:'Tarkistakaa itse',approved:'Valmis'};
+const STATUS_FI={todo:'Odottaa',building:'Rakenteilla',inspecting:'Tarkastetaan',rework:'Korjataan',awaiting_commander:'Tarkistakaa itse',approved:'Valmis'};
 const ACTIVE=['building','inspecting','rework'];
-const CMD_NEXT='Lue CLAUDE.md ja tee seuraava vaihe.';
-const COLOR={base:'#8C96A3',legs:'#1E5AA8',hips:'#4A5561',chest:'#D83A2E',back:'#5B7FA6',hands:'#7A8794',core:'#2F9E44',
-  shoulders:'#F08A24',head:'#F5C400',chip:'#7B4FC9',tool:'#14A3A3',eyes:'#29B6F6'};
 const NS='http://www.w3.org/2000/svg';
 
-let real={map:EMBEDDED,inspections:[]},demo=null,useDemo=false,live=false,page=null,sel=null;
-const V=()=>useDemo?demo:real;
+let state={map:EMBEDDED,inspections:[]},page=null,sel=null;
 
 function h(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
 function s(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
 
 function current(m){
   const st=Object.fromEntries(m.bricks.map(b=>[b.id,b.status]));
-  const a=m.bricks.find(b=>ACTIVE.includes(b.status)); if(a) return {b:a,kind:'active'};
-  const w=m.bricks.find(b=>b.status==='awaiting_commander'); if(w) return {b:w,kind:'wait'};
-  const n=m.bricks.find(b=>b.status==='todo'&&b.depends_on.every(d=>st[d]==='approved')); if(n) return {b:n,kind:'next'};
+  const a=m.bricks.find(b=>ACTIVE.includes(b.status)); if(a) return a;
+  const w=m.bricks.find(b=>b.status==='awaiting_commander'); if(w) return w;
+  const n=m.bricks.find(b=>b.status==='todo'&&b.depends_on.every(d=>st[d]==='approved')); if(n) return n;
   return null;
 }
-function partState(m,id){
-  const bs=m.bricks.filter(b=>b.module===id),ok=bs.filter(b=>b.status==='approved').length;
-  if(bs.some(b=>b.status==='rework'))return 'bad';
-  if(bs.some(b=>b.status==='awaiting_commander'))return 'wait part';
-  if(bs.length&&ok===bs.length)return 'done lit';
-  if(ok||bs.some(b=>ACTIVE.includes(b.status)))return 'part';
+
+function checkClass(status){
+  if(status==='approved')return 'on';
+  if(status==='awaiting_commander')return 'wait';
+  if(status==='rework')return 'bad';
+  if(ACTIVE.includes(status))return 'active';
   return '';
 }
-
-// Original blocky robot. Each part = one manual page.
-function drawRobot(m){
-  const svg=document.getElementById('robot');svg.textContent='';
-  const R=(g,x,y,w,hh,rx=3,cls='s')=>s('rect',{x,y,width:w,height:hh,rx,class:cls},g);
-  const parts={
-    base:g=>{R(g,50,372,220,16,3);for(let x=60;x<=250;x+=22)R(g,x,366,12,6,1);},
-    back:g=>{R(g,92,144,136,118,5);R(g,100,132,22,14,2);R(g,198,132,22,14,2);},
-    legs:g=>{R(g,114,282,32,74);R(g,174,282,32,74);R(g,104,352,50,18,4);R(g,166,352,50,18,4);},
-    hips:g=>{R(g,110,256,100,30,4);s('circle',{cx:130,cy:286,r:7,class:'s'},g);s('circle',{cx:190,cy:286,r:7,class:'s'},g);},
-    chest:g=>{R(g,104,150,112,108,7);s('circle',{cx:160,cy:170,r:4,class:'d'},g);R(g,158,172,4,8,1,'d');s('path',{d:'M116 166 H136 M184 166 H204',class:'ln'},g);},
-    core:g=>{s('path',{d:'M160 194 L177 204 V224 L160 234 L143 224 V204 Z',class:'s glow'},g);s('circle',{cx:160,cy:214,r:6,class:'d'},g);},
-    hands:g=>{R(g,76,176,24,58);R(g,220,176,24,58);R(g,72,232,32,22,4);R(g,216,232,32,22,4);s('path',{d:'M88 244 V254 M232 244 V254',class:'ln'},g);},
-    shoulders:g=>{R(g,66,146,42,30,6);R(g,212,146,42,30,6);R(g,74,140,10,6,1);R(g,90,140,10,6,1);R(g,220,140,10,6,1);R(g,236,140,10,6,1);},
-    head:g=>{R(g,148,134,24,18,2);R(g,124,82,72,56,9);R(g,142,76,12,6,1);R(g,166,76,12,6,1);R(g,134,98,52,20,5,'d');},
-    chip:g=>{R(g,196,92,12,30,2);s('path',{d:'M199 100 H205 M199 107 H205 M199 114 H205',class:'ln'},g);},
-    tool:g=>{s('path',{d:'M236 246 L244 254 L282 216 L274 208 Z',class:'s'},g);s('path',{d:'M270 200 a13 13 0 1 0 18 18 l-8 -3 l-4 -4 l-3 -8 z',class:'s'},g);},
-    eyes:g=>{R(g,142,102,12,10,2,'s glow');R(g,166,102,12,10,2,'s glow');s('path',{d:'M160 76 V58',class:'ln'},g);s('circle',{cx:160,cy:53,r:5,class:'s glow'},g);}
-  };
-  ['base','back','legs','hips','chest','core','hands','shoulders','head','chip','tool','eyes'].forEach(id=>{
-    const mod=m.modules.find(x=>x.id===id); if(!mod) return;
-    const pi=m.modules.indexOf(mod);
-    const g=s('g',{class:`pt ${partState(m,id)}${page===pi?' cur':''}`,style:`--c:${COLOR[id]}`,tabindex:0,role:'button',
-      'aria-label':`Sivu ${pi+1}: ${mod.label_fi}`},svg);
-    const t=s('title',{},g);t.textContent=`Sivu ${pi+1} · ${mod.label_fi}`;
-    parts[id](g);
-    const go=()=>{page=pi;sel=null;render();};
-    g.addEventListener('click',go);
-    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
-  });
-}
-
-function renderNext(m){
-  const n=document.getElementById('next');n.textContent='';
-  const c=current(m),left=h('div'),right=h('div','cmd');
-  if(!c){left.append(h('small',null,'Kaikki vaiheet valmiina'),h('strong',null,'Robotti on valmis'));n.append(left);return;}
-  const b=c.b,pi=m.modules.findIndex(x=>x.id===b.module);
-  let lab,txt,cmd=null;
-  if(c.kind==='active'){
-    lab=b.status==='rework'?'Tarkastaja hylkäsi · Claude Code korjaa':b.status==='inspecting'?'Tarkastaja tarkastaa':'Claude Code rakentaa';
-    const r=V().inspections.find(x=>x.brick===b.id);
-    txt=b.status==='rework'&&r?r.summary_fi:b.why_fi;
-  }else if(c.kind==='wait'){
-    lab='Teidän vuoronne';txt=b.commander_check_fi;cmd=`Tarkistin vaiheen ${b.step}, se toimii. Hyväksy se.`;
-  }else{lab='Seuraavaksi';txt=b.why_fi;cmd=CMD_NEXT;}
-  left.append(h('small',null,`${lab} · sivu ${pi+1}, vaihe ${b.step}`),h('strong',null,b.title_fi),h('p',null,txt));
-  n.append(left);
-  if(cmd){const code=h('code',null,cmd),btn=h('button','btn','Kopioi Claude Codelle');btn.onclick=()=>copy(cmd);right.append(code,btn);n.append(right);}
-}
-
-function renderPage(m){
-  const mod=m.modules[page],bs=m.bricks.filter(b=>b.module===mod.id),c=current(m);
-  const ph=document.getElementById('pageH');ph.textContent='';
-  const mid=h('div');mid.append(h('h2',null,mod.label_fi),h('p',null,mod.about_fi),h('div','code',`Koodissa: ${mod.label_en}`));
-  const flip=h('div','flip'),prev=h('button','arrow','←'),next=h('button','arrow','→');
-  prev.setAttribute('aria-label','Edellinen sivu');next.setAttribute('aria-label','Seuraava sivu');
-  prev.disabled=page===0;next.disabled=page===m.modules.length-1;
-  prev.onclick=()=>turn(-1);next.onclick=()=>turn(1);
-  flip.append(prev,next);
-  ph.append(h('div','pnum',String(page+1)),mid,flip);
-
-  const ol=document.getElementById('steps');ol.textContent='';
-  bs.forEach(b=>{
-    const li=h('li'),btn=h('button','step'+(sel===b.id?' sel':'')+(c&&c.b.id===b.id?' is-next':''));
-    const top=h('div','top');top.append(h('span','n',String(b.step)),h('span','pill '+b.status,STATUS_FI[b.status]||b.status));
-    btn.append(top,h('span','t',b.title_fi));
-    if(b.human_check)btn.append(h('span','flag','✋ Tarkistatte itse'));
-    btn.onclick=()=>{sel=sel===b.id?null:b.id;render();};
-    li.append(btn);ol.append(li);
-  });
-
-  const d=document.getElementById('detail');d.textContent='';
-  const b=bs.find(x=>x.id===sel);d.hidden=!b;
-  if(b){
-    const sec=(t,node)=>{const w=h('div');w.append(h('h4',null,t),node);d.append(w);};
-    d.append(h('h3',null,`Vaihe ${b.step}: ${b.title_fi}`));
-    sec('Miksi',h('p',null,b.why_fi));
-    if(b.commander_check_fi)sec('Tarkistatte itse',h('p',null,b.commander_check_fi));
-    const r=V().inspections.find(x=>x.brick===b.id);
-    if(r){const w=h('div');w.append(h('p',r.result==='pass'?'ok':'no',r.summary_fi));
-      const ul=h('ul');(r.checks||[]).forEach(x=>ul.append(h('li',x.result==='pass'?'ok':'no',`${x.result==='pass'?'✓':'✗'} ${x.check}`)));w.append(ul);sec('Tarkastajan raportti',w);}
-    else if(b.security&&b.security.length){const ul=h('ul');b.security.forEach(x=>ul.append(h('li',null,x)));sec('Tarkastaja varmistaa',ul);}
-    const det=h('details');det.append(h('summary',null,'Ohje Claude Codelle'),h('p',null,b.instructions+' Done when: '+b.done_when));d.append(det);
-  }
+function tag(status){
+  if(status==='awaiting_commander')return {cls:'wait',txt:STATUS_FI[status]};
+  if(status==='rework')return {cls:'bad',txt:STATUS_FI[status]};
+  if(ACTIVE.includes(status))return {cls:'active',txt:STATUS_FI[status]};
+  return null;
 }
 
 function renderProgress(m){
-  const total=m.bricks.length,ok=m.bricks.filter(b=>b.status==='approved').length,wait=m.bricks.filter(b=>b.status==='awaiting_commander').length;
-  const tr=document.getElementById('track');tr.textContent='';
-  const f=h('i','f');f.style.width=(ok/total*100)+'%';
-  const w=h('i','w');w.style.left=(ok/total*100)+'%';w.style.width=(wait/total*100)+'%';
-  tr.append(f,w);
-  let acc=0;m.modules.forEach((mod,i)=>{acc+=m.bricks.filter(b=>b.module===mod.id).length;if(i<m.modules.length-1){const t=h('i','tick');t.style.left=`calc(${acc/total*100}% - 1px)`;tr.append(t);}});
-  const before=m.bricks.filter(b=>m.modules.findIndex(x=>x.id===b.module)<page).length,here=m.bricks.filter(b=>b.module===m.modules[page].id).length;
-  const hr=document.getElementById('here');hr.style.left=(before/total*100)+'%';hr.style.width=(here/total*100)+'%';
-  document.getElementById('pLeft').innerHTML='';document.getElementById('pRight').innerHTML='';
-  const L=document.getElementById('pLeft');L.append(h('b',null,`${ok} / ${total}`),document.createTextNode(' vaihetta valmiina'));
-  const Rr=document.getElementById('pRight');Rr.append(document.createTextNode('Sivu '),h('b',null,`${page+1} / ${m.modules.length}`));
+  const total=m.bricks.length,ok=m.bricks.filter(b=>b.status==='approved').length;
+  document.getElementById('progressFrac').textContent=`${ok} / ${total}`;
+  document.getElementById('trackFill').style.width=(ok/total*100)+'%';
 }
 
-function turn(d){const m=V().map;page=Math.max(0,Math.min(m.modules.length-1,page+d));sel=null;render();}
+function renderPage(m){
+  const mod=m.modules[page];
+  const ph=document.getElementById('pageH');ph.textContent='';
+  ph.append(h('div','pnum',String(page+1)),h('h2',null,mod.label_fi),h('p',null,mod.about_fi));
+
+  const bs=m.bricks.filter(b=>b.module===mod.id);
+  const cur=current(m);
+  const ol=document.getElementById('checklist');ol.textContent='';
+  bs.forEach(b=>{
+    const li=h('li','item'+(b.status==='approved'?' done':''));
+    const row=h('button','row');
+    const chk=h('span','check '+checkClass(b.status));
+    const tick=s('svg',{viewBox:'0 0 24 24'});s('path',{d:'M5 13l5 5L19 7'},tick);chk.appendChild(tick);
+    const titleWrap=h('span','title');
+    titleWrap.append(document.createTextNode(b.title_fi+' '));
+    const t=tag(b.status);
+    if(t){const tg=h('span','tag '+t.cls,t.txt);titleWrap.append(tg);}
+    row.append(chk,titleWrap);
+    row.onclick=()=>{sel=sel===b.id?null:b.id;render();};
+    li.append(row);
+
+    const showDetail=sel===b.id||(cur&&cur.id===b.id&&b.status==='awaiting_commander');
+    if(showDetail){
+      const d=h('div','detail');
+      const why=h('div');why.append(h('h4',null,'Miksi'),h('p',null,b.why_fi));d.append(why);
+      if(b.status==='awaiting_commander'&&b.commander_check_fi){
+        const w=h('div','checkbox-note');w.append(h('h4',null,'Tarkistatte itse'),h('p',null,b.commander_check_fi));d.append(w);
+      }
+      const r=state.inspections.find(x=>x.brick===b.id);
+      if(r){
+        const w=h('div');w.append(h('h4',null,'Tarkastajan raportti'),h('p',r.result==='pass'?'ok':'no',r.summary_fi));
+        d.append(w);
+      }
+      li.append(d);
+    }
+    ol.append(li);
+  });
+}
+
+function renderPager(m){
+  document.getElementById('prevBtn').disabled=page===0;
+  document.getElementById('nextBtn').disabled=page===m.modules.length-1;
+  document.getElementById('loc').textContent=`Sivu ${page+1} / ${m.modules.length}`;
+}
+
+function turn(d){const m=state.map;page=Math.max(0,Math.min(m.modules.length-1,page+d));sel=null;render();}
 
 function render(){
-  const m=V()&&V().map;
-  if(!m){const n=document.getElementById('next');n.innerHTML='<div><small>Ei yhteyttä</small><strong>Rakennusohjetta ei löytynyt</strong><p>Käynnistä komentokeskus komennolla node center/serve.mjs ja avaa http://localhost:4400.</p></div>';return;}
-  if(page==null||page>=m.modules.length){const c=current(m);page=c?m.modules.findIndex(x=>x.id===c.b.module):0;}
-  drawRobot(m);renderNext(m);renderPage(m);renderProgress(m);
-  document.getElementById('live').className='live'+(live&&!useDemo?' on':'');
-  document.getElementById('liveTxt').textContent=useDemo?'Esimerkki':live?'Päivittyy':'Tilannekuva';
+  const m=state.map;
+  const manual=document.getElementById('manual');
+  if(!m){
+    manual.hidden=true;
+    let e=document.getElementById('emptyMsg');
+    if(!e){e=h('div','empty');e.id='emptyMsg';e.innerHTML='<strong>Ohjekirjaa ei löytynyt.</strong><br>Odotetaan yhteyttä palvelimeen.';document.querySelector('.wrap').append(e);}
+    return;
+  }
+  const e=document.getElementById('emptyMsg');if(e)e.remove();
+  manual.hidden=false;
+  if(page==null||page>=m.modules.length){const c=current(m);page=c?m.modules.findIndex(x=>x.id===c.module):0;}
+  renderProgress(m);renderPage(m);renderPager(m);
 }
 
-function copy(text){
-  const ok=()=>toast('Kopioitu');
-  try{navigator.clipboard.writeText(text).then(ok,fb);}catch(e){fb();}
-  function fb(){const t=document.createElement('textarea');t.value=text;document.body.append(t);t.select();try{document.execCommand('copy');ok();}catch(e){toast('Valitse teksti ja kopioi');}t.remove();}
-}
-function toast(msg){const t=h('div','toast',msg);document.body.append(t);setTimeout(()=>t.remove(),1600);}
-
-function makeDemo(map){
-  const m=JSON.parse(JSON.stringify(map));const done=new Set();
-  for(const b of m.bricks){if(b.id==='S4')break;done.add(b.id);}
-  m.bricks.forEach(b=>{if(done.has(b.id))b.status='approved';});
-  const set={S4:'rework',E1:'approved',E2:'awaiting_commander'};
-  m.bricks.forEach(b=>{if(set[b.id])b.status=set[b.id];});
-  const inspections=[
-    {brick:'D2',inspected_at:'2026-10-02T19:10',result:'pass',summary_fi:'Käyttäjä näkee vain oman rivinsä, eikä kukaan voi muuttaa omaa saldoaan.',
-     checks:[{check:'Users can select only their own row',result:'pass'},{check:'No client insert, update or delete',result:'pass'}]},
-    {brick:'S4',inspected_at:'2026-10-04T18:40',result:'fail',summary_fi:'Kirjautumista pystyi yrittämään rajattomasti samasta osoitteesta. Claude Code korjaa.',
-     checks:[{check:'Limits apply on the server, not in the UI',result:'fail'}]},
-    {brick:'E2',inspected_at:'2026-10-05T20:05',result:'pass',summary_fi:'Krediittejä ei voi lisätä itselleen, eikä samaa krediittiä voi käyttää kahdesti.',
-     checks:[{check:'grant and refund executable only by service role',result:'pass'},{check:'Duplicate external_id is a no-op',result:'pass'}]}];
-  return {map:m,inspections};
-}
-document.getElementById('demoBtn').onclick=()=>{
-  if(!real.map)return;useDemo=!useDemo;if(useDemo&&!demo)demo=makeDemo(real.map);
-  page=null;sel=null;document.getElementById('demoNote').hidden=!useDemo;
-  document.getElementById('demoBtn').textContent=useDemo?'Takaisin todelliseen tilaan':'Näytä esimerkki';render();
-};
+document.getElementById('prevBtn').onclick=()=>turn(-1);
+document.getElementById('nextBtn').onclick=()=>turn(1);
 document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea'))return;if(e.key==='ArrowLeft')turn(-1);if(e.key==='ArrowRight')turn(1);});
 
 async function poll(){
   try{
     const [a,b]=await Promise.all([fetch('/docs/build-map.json',{cache:'no-store'}),fetch('/api/inspections',{cache:'no-store'})]);
-    if(!a.ok)throw 0;real={map:await a.json(),inspections:b.ok?await b.json():[]};live=true;demo=null;
-  }catch(e){live=false;}
-  if(!useDemo)render();
+    if(!a.ok)throw 0;
+    state={map:await a.json(),inspections:b.ok?await b.json():[]};
+  }catch(e){/* keep showing the last known state */}
+  render();
 }
 render();
 if(location.protocol.startsWith('http')){poll();setInterval(poll,4000);}

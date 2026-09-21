@@ -5,6 +5,22 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Command center UI: plain paper-manual, no robot
+**Decision:** `center/index.html` no longer draws a robot illustration or shows a separate
+"what's next" status box above the manual. It shows only: numbered pages (one per module), each
+page's bricks as a checklist (checkbox checked = approved; a small tag for awaiting_commander/
+building/inspecting/rework; nothing shown for plain todo), an overall progress bar, and two
+page-turn buttons centered below the checklist. Clicking a row expands why_fi and, for
+awaiting_commander, the commander_check_fi and any inspection summary — an awaiting_commander
+brick auto-expands so the commander doesn't have to hunt for what to check.
+**Why:** The commander asked for it directly — a page that reads like a paper instruction manual
+getting filled in as work completes, without the robot metaphor's visual layer or a separate status
+box competing with the manual for attention.
+**Consequence:** C1's `done_when` and `commander_check_fi` in `docs/build-map.json` were updated to
+match (no more "shows the robot model"). The robot metaphor name in this file's history and in
+`CLAUDE.md` §10 ("Lego-robotti") is now only a naming/talking-point convention for module ↔ manual
+page ↔ robot part, not something rendered on the page.
+
 ## 2026-09-21 — Fix: pin Vercel to serve the repo root as static output
 **Decision:** `vercel.json` now sets `"buildCommand": null` and `"outputDirectory": "."`.
 **Why:** After brick P1 added `package.json` (with a `next build` script), the commander's Vercel
