@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "center": "node center/serve.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:secrets": "node scripts/check-secrets.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

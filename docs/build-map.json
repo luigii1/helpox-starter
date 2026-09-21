@@ -263,6 +263,7 @@
       "title_fi": "Avainvuotojen tarkistus",
       "why_fi": "Automaattinen hälytys, jos salainen avain on päätymässä väärään paikkaan.",
       "instructions": "Script `pnpm check:secrets` that fails if `SERVICE_ROLE` or `POLAR_` secrets appear outside allowed server files or with NEXT_PUBLIC_.",
+      "build_summary_fi": "Rakennettiin scripts/check-secrets.mjs, joka käy läpi jokaisen src/-kansion tiedoston ja etsii sanoja SERVICE_ROLE tai POLAR_. Jos sellainen löytyy NEXT_PUBLIC_-etuliitteen kanssa, tarkistus epäonnistuu aina — sellaista avainta ei saa koskaan näyttää selaimelle. Muuten se sallitaan vain tiedostossa src/lib/supabase/admin.ts tai missä tahansa tiedostossa joka alkaa `import \"server-only\"` -rivillä (eli on merkitty palvelinvain-koodiksi). Lisättiin `pnpm check:secrets` -komento package.json:iin ja ajettiin se osana GitHub Actions -työnkulkua (.github/workflows/test.yml) jokaisella PR:llä, kuten brickin oma turvavaatimus edellyttää. Todistettiin oikeasti: istutettiin väliaikainen väärä avain (ensin `SERVICE_ROLE`, sitten `NEXT_PUBLIC_POLAR_ACCESS_TOKEN`) tavalliseen selainkomponenttiin src/components/ui/-kansioon, molemmat saivat tarkistuksen kaatumaan oikealla virheellä, väliaikainen tiedosto poistettiin ja tarkistus läpäisi taas puhtaasti. Mitään ei jäänyt kesken.",
       "security": [
         "Runs in CI on every PR"
       ],
@@ -271,7 +272,7 @@
         "P4"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 11,

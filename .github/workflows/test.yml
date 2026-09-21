@@ -3,8 +3,9 @@ name: Test
 # Minimal CI, added by brick D1: runs the RLS test harness against a real
 # local Supabase stack, since Docker/supabase.com are unreachable from both
 # the build session and the commander's machine (see docs/decisions.md).
-# Brick T1 extends this same workflow with typecheck/lint/check:secrets
-# rather than adding a second one.
+# Brick S1 added check:secrets; brick T1 extends this same workflow with
+# typecheck/lint and makes it a required merge gate, rather than adding a
+# second workflow.
 
 on:
   push:
@@ -25,6 +26,8 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      - run: pnpm check:secrets
 
       - uses: supabase/setup-cli@v1
         with:
