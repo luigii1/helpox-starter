@@ -225,6 +225,7 @@
       "title": "UI primitives",
       "title_fi": "Peruskomponentit (painikkeet, kentät, ikkunat)",
       "why_fi": "Painikkeet, kentät ja ikkunat, joita kaikki sivut käyttävät.",
+      "build_summary_fi": "Rakennettiin seitsemän peruskomponenttia src/components/ui/-kansioon: Button, Input, Textarea, Card, Badge, Dialog ja Toast — kaikki käyttävät H1:n väripaikanvaraajia, ei yhtään suoraa väriarvoa. Ikkuna (Dialog) rakennettiin selaimen omalla <dialog>-elementillä, jolloin näppäimistöllä sulkeminen (Esc), fokuksen pysyminen ikkunan sisällä ja taustan himmennys tulevat ilmaiseksi selaimelta itseltään ilman lisäkirjastoja. Lisättiin kehitystilan sivu /dev/ui joka näyttää jokaisen osan. Testattiin oikeasti: tuotantoversiossa (pnpm build + pnpm start) sivu palauttaa 404, kehitystilassa (pnpm dev) se toimii normaalisti; selaimessa kokeiltiin että ikkuna avautuu napista, sulkeutuu Esc-näppäimellä, ilmoitus (Toast) näyttää oikean viestin, ja Tab-näppäin siirtää fokuksen oikein. Molemmat teemat (vaalea/tumma) kuvakaapattiin ja tarkistettiin. Mitään ei jäänyt kesken.",
       "instructions": "Button, Input, Textarea, Card, Dialog, Toast, Badge in `src/components/ui/`, all using tokens, keyboard accessible.",
       "security": [],
       "done_when": "A dev-only `/dev/ui` page shows every primitive in both themes.",
@@ -232,7 +233,7 @@
         "H1"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved"
     },
     {
       "step": 9,
