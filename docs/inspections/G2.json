@@ -1,0 +1,16 @@
+{
+  "brick": "G2",
+  "inspected_at": "2026-09-21T23:43:28Z",
+  "result": "pass",
+  "summary_fi": "Tietojen vienti toimii ja hakee aina vain sisäänkirjautuneen käyttäjän omat tiedot: reitti käyttää istunnon käyttäjätunnusta eikä koskaan mitään pyynnön mukana tulevaa arvoa, kaksinkertainen suojaus (suodatus koodissa ja tietokannan RLS) on paikoillaan, ja kaikki testit sekä laatutarkistukset menivät oikeasti läpi.",
+  "checks": [
+    {
+      "check": "Export only ever contains the requesting user's rows",
+      "result": "pass"
+    },
+    {
+      "check": "Export for user A contains nothing of user B.",
+      "result": "pass"
+    }
+  ]
+}
