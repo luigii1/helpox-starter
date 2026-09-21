@@ -5,6 +5,31 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Brick P5 pulled forward out of order: Vercel was never building the app
+**Decision:** Started brick P5 (step 22) immediately, ahead of E1/E2 (steps 17-18), instead of
+following strict step order.
+**Why:** While answering the commander's question about where the sign-in page was, it became
+clear Vercel was still running under the pre-P1 stop-gap setup (`buildCommand: null`,
+`outputDirectory: "."` — see the 2026-09-21 "Fix: pin Vercel to serve the repo root as static
+output" entry below), meaning `next build` had never actually run in production. A1's
+`commander_check_fi` had already told the commander to test `/sign-in` live, which could not have
+worked. `CLAUDE.md` §10 says propose a change instead of improvising when a brick turns out wrong
+or mistimed — this is that: a self-discovered defect in guidance already given to the commander,
+serious enough to fix immediately rather than wait for step order to reach it.
+**Consequence:** `vercel.json` now just pins `{"framework": "nextjs"}`. The command center
+(`public/center/index.html`, moved from `center/index.html`) is no longer rewritten to `/` — the
+real app now owns `/` (→ `/en`) — it's served at `/center` instead, reading `docs/build-map.json`
+and `docs/inspections/*.json` through two new Next.js API routes (`src/app/api/build-map`,
+`src/app/api/inspections`) instead of the deleted `api/inspections.js` Vercel serverless function
+and the old raw-file rewrite. `src/proxy.ts`'s matcher excludes `/center` from locale redirection.
+Verified with a real production server (`pnpm build && pnpm start`, not just `pnpm dev`): `/` → 
+`/en` redirect, `/en` and `/en/sign-in` render, `/dev/ui` 404s (correct for production), `/center`
+and `/center/index.html` both serve with working `/api/build-map` and `/api/inspections` data. The
+local `pnpm center` dev server (`center/serve.mjs`) was updated for the new file location and
+re-tested. Still needs the commander: setting real Supabase env vars in Vercel (nothing currently
+works live without them) and, per this brick's own security requirement, a second Supabase project
+to actually separate preview from production — see `commander_check_fi`.
+
 ## 2026-09-21 — Internationalization: next-intl, locale routing, auth callback path change (brick H3)
 **Decision:** Added `next-intl` (stack-fixed choice, CLAUDE.md §2) with `[locale]` routing —
 `en` only for now, default locale, `always` URL prefix (so `/` redirects to `/en`, matching this

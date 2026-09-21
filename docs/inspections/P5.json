@@ -1,0 +1,19 @@
+{
+  "brick": "P5",
+  "inspected_at": "2026-09-21T16:00:00Z",
+  "result": "pass",
+  "summary_fi": "Vercel-korjaus on tehty oikein: kun sovellus rakennetaan ja käynnistetään aidosti tuotantotilassa, etusivu, kirjautumissivu ja komentokeskus toimivat kaikki oikeasta osoitteesta datoineen, eikä koodissa ole vuotoja tai virheitä — jäljellä on vain se osa, joka vaatii teitä itseänne Vercelin ja Supabasen hallintapaneeleissa.",
+  "checks": [
+    { "check": "vercel.json is now just {\"framework\": \"nextjs\"} (old buildCommand/outputDirectory/rewrite/includeFiles setup removed)", "result": "pass" },
+    { "check": "public/center/index.html exists (moved from center/index.html) and its fetch() calls target /api/build-map and /api/inspections", "result": "pass" },
+    { "check": "src/app/api/build-map/route.ts and src/app/api/inspections/route.ts read docs/build-map.json and docs/inspections/*.json from process.cwd() and return JSON with content-type + cache-control: no-store headers; inspections route is a faithful port of the deleted api/inspections.js (identical filename regex and fallback-on-broken-report behavior)", "result": "pass" },
+    { "check": "next.config.ts has outputFileTracingIncludes covering docs/build-map.json and docs/inspections/*.json, and a rewrite from /center to /center/index.html", "result": "pass" },
+    { "check": "src/proxy.ts matcher excludes /center (in addition to api/_next/_vercel/dev)", "result": "pass" },
+    { "check": "center/serve.mjs (local dev server) reads from public/center/index.html and serves /api/build-map and /api/inspections, matching the moved file's fetch calls", "result": "pass" },
+    { "check": "pnpm typecheck, pnpm lint, pnpm check:secrets, pnpm build all pass cleanly", "result": "pass" },
+    { "check": "Production server (pnpm build && pnpm start) with dummy Supabase env vars: GET / -> 307 to /en; GET /en and /en/sign-in -> 200; GET /dev/ui -> 404; GET /center and /center/index.html -> 200 with real command-center HTML (title 'Helpox – Ohjekirja'); GET /api/build-map -> 200 with real build-map.json content; GET /api/inspections -> 200 with JSON array of 12 real inspection reports; server killed by exact PID afterward, no survivors, port freed", "result": "pass" },
+    { "check": "node center/serve.mjs (local dev tool) on port 4400: GET /, /api/build-map, /api/inspections all 200 with real content; process killed by exact PID afterward, no survivors, port freed", "result": "pass" },
+    { "check": "docs/decisions.md has an entry explaining why P5 was pulled forward, what changed, and what remains for the commander", "result": "pass" },
+    { "check": "git status is clean after all testing (no leftover .env.local or temp files)", "result": "pass" }
+  ]
+}
