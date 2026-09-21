@@ -411,6 +411,7 @@
       "title_fi": "Krediittien laskenta (tietokantafunktiot)",
       "why_fi": "Krediittien lisäys ja käyttö tietokannan sisällä, niin ettei niitä voi huijata tai käyttää kahdesti.",
       "instructions": "`grant_credits`, `consume_credits`, `refund_credits` as in base-spec.md. SECURITY DEFINER, `search_path = ''`, fully qualified names.",
+      "build_summary_fi": "Lisättiin kolme tietokantafunktiota: grant_credits (lisää krediittejä, vain service_role saa kutsua), consume_credits (käyttää krediitin, kuka tahansa kirjautunut saa kutsua mutta AINA vain omasta saldostaan — funktio ei ota käyttäjä-id:tä parametrina ollenkaan, vaan lukee sen aina Supabasen omasta auth.uid()-tunnisteesta), ja refund_credits (peruu aiemman kirjauksen, vain service_role). Duplikaattisuoja (sama external_id kahdesti = lisätään vain kerran) tehtiin tietokannan omalla uniikkiusrajoitteella, ei sovelluskoodissa. Rakentaminen ja testaus tehtiin oikeasti alusta asti paikallisella Postgres-tietokannalla (ei Docker/Supabase-CLI, joka ei toimi tässä ympäristössä) — rakennettiin pieni jäljitelmä Supabasen auth-skeemasta ja rooleista, ajettiin kaikki migraatiot, ja testattiin jokainen brickin oma vaatimus käsin ennen koodin lukitsemista: sama external_id kahdesti lisää krediitit vain kerran; kaksi TÄYSIN SAMANAIKAISTA consume-kutsua saldolle 1 antoivat oikeasti tasan yhden onnistumisen ja yhden 'insufficient_credits'-virheen (todistettu ajamalla kaksi rinnakkaista tietokantayhteyttä samaan aikaan, ei vain peräkkäin); tavallinen kirjautunut käyttäjä ei pystynyt kutsumaan grant_credits- eikä refund_credits-funktiota (oikeus evätty tietokantatasolla). Matkalla löytyi ja korjattiin oikea bugi: funktioiden parametrit oli ensin nimetty samoin kuin taulujen sarakkeet (esim. external_id), mikä aiheutti PostgreSQL:ltä virheen 'column reference is ambiguous' rivillä `on conflict (external_id)` — korjattiin nimeämällä kaikki parametrit p_-etuliitteellä (esim. p_external_id), vakiintunut tapa juuri tämän ongelman välttämiseksi. Kirjoitettiin myös oikea, CI:ssä ajettava automaattitesti (supabase/tests/credit_functions.test.ts) samoilla tapauksilla. KESKEN: tätä testitiedostoa ei voitu ajaa tässä istunnossa pnpm test -komennolla, koska se vaatii oikean supabase start -pinon (tunnettu, jo aiemmin dokumentoitu rajoitus) — se ajetaan oikeasti ensimmäistä kertaa GitHub Actionsissa PR:n yhteydessä.",
       "security": [
         "grant and refund executable only by service role",
         "consume uses auth.uid(), never a user id argument",
@@ -421,7 +422,7 @@
         "D3"
       ],
       "human_check": true,
-      "status": "building",
+      "status": "inspecting",
       "commander_check_fi": "Lukekaa valvojan raportti. Onko jokainen kohta PASS? Kysykää mekaanikolta, jos jokin on epäselvää."
     },
     {
