@@ -1,0 +1,11 @@
+{
+  "brick": "S1",
+  "inspected_at": "2026-09-21T15:14:09Z",
+  "result": "pass",
+  "summary_fi": "Avainvuototarkistus toimii oikeasti: testasin itse istuttamalla väärän salaisen avaimen selainkoodiin, ja tarkistus pysäytti sen molemmissa tapauksissa (SERVICE_ROLE ja NEXT_PUBLIC_), eikä valittanut turhaan oikeasta, sallitusta paikasta.",
+  "checks": [
+    { "check": "instructions: Script `pnpm check:secrets` that fails if `SERVICE_ROLE` or `POLAR_` secrets appear outside allowed server files or with NEXT_PUBLIC_.", "result": "pass" },
+    { "check": "done_when: Planting a fake secret in a client file makes the check fail.", "result": "pass" },
+    { "check": "security: Runs in CI on every PR", "result": "pass" }
+  ]
+}
