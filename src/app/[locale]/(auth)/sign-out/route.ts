@@ -3,8 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 
 // POST-only so a sign-out can't be triggered by a plain link (e.g. an
 // attacker embedding <img src="/sign-out">) or prefetching.
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/", request.url));
+  return NextResponse.redirect(new URL(`/${locale}`, request.url));
 }

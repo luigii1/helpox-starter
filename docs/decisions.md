@@ -5,6 +5,33 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-21 — Internationalization: next-intl, locale routing, auth callback path change (brick H3)
+**Decision:** Added `next-intl` (stack-fixed choice, CLAUDE.md §2) with `[locale]` routing —
+`en` only for now, default locale, `always` URL prefix (so `/` redirects to `/en`, matching this
+brick's own `done_when`: "`/en` works"). Moved `src/app/page.tsx` and `src/app/(auth)/**` under
+`src/app/[locale]/`, per the target structure A1's decision entry already anticipated. The
+dev-only `/dev/ui` page (brick H2) stays outside `[locale]` — it's never shown to a real user, so
+translating it would be pure noise. Added `eslint-plugin-i18next`'s `no-literal-string` rule,
+scoped to `src/app/[locale]/**` and `src/components/**`, as this brick's required "lint rule ...
+that flags hard-coded JSX strings" — verified live by planting a hard-coded string and watching
+lint fail, then restoring it and watching lint pass again.
+**Consequence:** The auth callback URL changed from `/callback` to `/en/callback`. A1's
+`commander_check_fi` was updated to reflect this, and to add a requirement that A1's original
+guidance had actually missed: Supabase requires *any* `emailRedirectTo`/`redirectTo` target
+(magic-link email included, not just Google OAuth) to be in the project's Redirect URLs allow-list
+— A1 only mentioned this for Google. `supabase/config.toml`'s `additional_redirect_urls` was
+updated to `/en/callback` for local dev/CI; the commander still needs to add the equivalent
+production URL to the cloud project's dashboard themselves (same one-time step as already
+described for Google, just also required for the plain email flow).
+**Gotcha caught before commit:** the ESLint `files` glob `src/app/[locale]/**` silently matched
+nothing, because `[locale]` is glob bracket-expression syntax (a character class), not a literal
+folder name — the rule appeared to work (no errors) but was actually never running. Caught by
+deliberately planting a violation and seeing lint stay clean; fixed by escaping the brackets
+(`src/app/\\[locale\\]/**`) and re-proving both the fail and the pass.
+**Also fixed in passing:** Next.js 16.3.5 warned that the `middleware.ts` file convention is
+deprecated in favor of `proxy.ts` (same export shape) — renamed rather than leaving a fresh
+deprecation warning in every `pnpm build`.
+
 ## 2026-09-21 — T1 changed to `human_check: true` (branch protection is a GitHub Settings action)
 **Decision:** Brick T1's `human_check` was changed from `false` to `true` in `docs/build-map.json`.
 Everything code-side is done: `.github/workflows/test.yml` now also runs `pnpm typecheck` and
