@@ -71,7 +71,10 @@ supabase/
   tests/                  # RLS tests
 center/
   index.html              # command center UI (reads docs/ live)
-  serve.mjs               # zero-dependency local server, 127.0.0.1:4400
+  serve.mjs               # zero-dependency local server, 127.0.0.1:4400 — local dev only
+api/
+  inspections.js          # Vercel serverless mirror of serve.mjs's /api/inspections route
+vercel.json               # rewrites `/` to `/center/index.html`; includeFiles for api/inspections.js
 .claude/
   agents/inspector.md     # the inspector subagent (see §10)
 docs/
@@ -189,8 +192,10 @@ If a product needs one of these, it's a product-level decision recorded in that 
 
 ### Build map (the "Lego manual")
 `docs/build-map.json` is the build plan. The base is assembled one **brick** at a time, in `step` order.
-The owners watch progress in the **command center** (`node center/serve.mjs` → http://localhost:4400),
-which reads `build-map.json` and `docs/inspections/` live.
+The owners watch progress in the **command center**, deployed on Vercel (every push gets its own preview
+URL — see the project's Vercel dashboard), which reads `build-map.json` and `docs/inspections/` live.
+`node center/serve.mjs` → http://localhost:4400 still works for local development, but the commander's
+own check (`commander_check_fi`) always happens against the Vercel URL, never a locally run server.
 
 ### The crew (the build is shown as assembling a Lego-style robot from an instruction manual)
 Each module in `build-map.json` is one robot part and one page of the manual; each brick is a numbered

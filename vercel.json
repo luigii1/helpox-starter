@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/center/index.html" }
+  ],
+  "functions": {
+    "api/inspections.js": {
+      "includeFiles": "docs/inspections/**"
+    }
+  }
+}
