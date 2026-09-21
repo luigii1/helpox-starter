@@ -28,7 +28,6 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Not part of the Next.js app:
     "center/**",
-    "api/**",
   ]),
 ]);
 

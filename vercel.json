@@ -1,12 +1,3 @@
 {
-  "buildCommand": null,
-  "outputDirectory": ".",
-  "rewrites": [
-    { "source": "/", "destination": "/center/index.html" }
-  ],
-  "functions": {
-    "api/inspections.js": {
-      "includeFiles": "docs/inspections/**"
-    }
-  }
+  "framework": "nextjs"
 }

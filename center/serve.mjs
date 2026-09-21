@@ -37,8 +37,8 @@ async function inspections() {
 }
 
 const routes = {
-  '/': async () => ['text/html; charset=utf-8', await readFile(join(root, 'center', 'index.html'), 'utf8')],
-  '/docs/build-map.json': async () => ['application/json; charset=utf-8', await buildMap()],
+  '/': async () => ['text/html; charset=utf-8', await readFile(join(root, 'public', 'center', 'index.html'), 'utf8')],
+  '/api/build-map': async () => ['application/json; charset=utf-8', await buildMap()],
   '/api/inspections': async () => ['application/json; charset=utf-8', await inspections()],
 };
 

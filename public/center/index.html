@@ -289,7 +289,7 @@ document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea'))re
 
 async function poll(){
   try{
-    const [a,b]=await Promise.all([fetch('/docs/build-map.json',{cache:'no-store'}),fetch('/api/inspections',{cache:'no-store'})]);
+    const [a,b]=await Promise.all([fetch('/api/build-map',{cache:'no-store'}),fetch('/api/inspections',{cache:'no-store'})]);
     if(!a.ok)throw 0;
     state={map:await a.json(),inspections:b.ok?await b.json():[]};
   }catch(e){/* keep showing the last known state */}

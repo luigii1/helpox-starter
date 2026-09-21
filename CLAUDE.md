@@ -51,6 +51,8 @@ src/
       (auth)/             # sign-in, sign-up, callback
     api/
       webhooks/polar/     # Polar webhook route handler (Node runtime)
+      build-map/          # read-only mirror of docs/build-map.json for the command center (see §10)
+      inspections/        # read-only mirror of docs/inspections/*.json for the command center
   components/
     ui/                   # design-system primitives (Button, Input, Card…)
     marketing/            # landing-page sections
@@ -66,15 +68,15 @@ src/
   messages/               # en.json (+ other locales later)
   styles/
     tokens.css            # brand tokens: colors, type, radius, spacing
+public/
+  center/
+    index.html            # command center UI, served as-is by Next.js at /center (see §10)
 supabase/
   migrations/             # SQL migrations — the ONLY way schema changes
   tests/                  # RLS tests
 center/
-  index.html              # command center UI (reads docs/ live)
-  serve.mjs               # zero-dependency local server, 127.0.0.1:4400 — local dev only
-api/
-  inspections.js          # Vercel serverless mirror of serve.mjs's /api/inspections route
-vercel.json               # rewrites `/` to `/center/index.html`; includeFiles for api/inspections.js
+  serve.mjs               # zero-dependency local server for public/center/index.html, 127.0.0.1:4400 — local dev only
+vercel.json               # {"framework": "nextjs"} — pins the Vercel project to a real `next build`
 .github/
   workflows/test.yml      # runs supabase start + pnpm test in CI (Docker/Supabase unreachable elsewhere)
 .claude/
@@ -194,10 +196,11 @@ If a product needs one of these, it's a product-level decision recorded in that 
 
 ### Build map (the "Lego manual")
 `docs/build-map.json` is the build plan. The base is assembled one **brick** at a time, in `step` order.
-The owners watch progress in the **command center**, deployed on Vercel (every push gets its own preview
-URL — see the project's Vercel dashboard), which reads `build-map.json` and `docs/inspections/` live.
-`node center/serve.mjs` → http://localhost:4400 still works for local development, but the commander's
-own check (`commander_check_fi`) always happens against the Vercel URL, never a locally run server.
+The owners watch progress in the **command center**, at `/center` on the deployed Vercel app (every push
+gets its own preview URL — see the project's Vercel dashboard), which reads `build-map.json` and
+`docs/inspections/` live through `/api/build-map` and `/api/inspections`. `node center/serve.mjs` →
+http://localhost:4400 still works for local development, but the commander's own check
+(`commander_check_fi`) always happens against the Vercel URL, never a locally run server.
 
 ### The crew (the build is shown as assembling a Lego-style robot from an instruction manual)
 Each module in `build-map.json` is one robot part and one page of the manual; each brick is a numbered

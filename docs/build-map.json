@@ -494,6 +494,7 @@
       "title_fi": "Testiosoitteet (Vercel)",
       "why_fi": "Jokainen muutos saa oman testiosoitteen, jossa sitä voi kokeilla ennen julkaisua.",
       "instructions": "Connect repo to Vercel. Separate env vars for Preview and Production.",
+      "build_summary_fi": "Tämä vaihe otettiin kesken järjestyksen, koska huomattiin kiireellinen ongelma: Vercel ei ollut koskaan oikeasti ajanut sovellusta (next build) — se näytti vain repon tiedostot sellaisenaan, mikä oli tilapäinen ratkaisu ajalta ennen kuin oikea sovellus (P1) edes oli olemassa. Tämän takia A1-brickin kirjautumissivu ei näkynyt livenä, vaikka pyysin jo sinua kokeilemaan sitä — pahoittelut siitä. Korjattiin nyt: 1) vercel.json kertoo Vercelille suoraan että kyseessä on oikea Next.js-sovellus (ei tarvitse enää käydä muuttamassa asetusta Vercelin puolella), 2) komentokeskus (se sivu jossa näet tämän rakennuksen etenemisen) siirrettiin osoitteesta '/' osoitteeseen '/center', koska etusivu '/' kuuluu nyt oikealle tuotteelle, 3) komentokeskuksen kaksi datalähdettä (build-map.json ja tarkastusraportit) tehtiin uudestaan oikeina Next.js-reitteinä (/api/build-map, /api/inspections). Kaikki testattiin oikeasti käynnistämällä sovellus tuotantotilassa (pnpm build + pnpm start, ei vain kehitystila): etusivu ohjautuu /en:iin, kirjautumissivu toimii, /dev/ui palauttaa 404 (kuten pitääkin tuotannossa), ja komentokeskus toimii molemmista osoitteista (/center ja /center/index.html) datoineen. Myös paikallinen komentokeskus-palvelin (pnpm center) testattiin ja korjattiin toimimaan uuden tiedostosijainnin kanssa. KESKEN: Vercelin puolella pitää vielä 1) varmistaa että ympäristömuuttujat (Supabase-osoite, anon-avain, service_role-avain) on asetettu — ilman niitä sovellus ei toimi livenä ollenkaan, ja 2) turvavaatimus 'production ja preview käyttävät eri Supabase-projekteja' vaatii toisen Supabase-projektin luomisen, mitä en voi tehdä puolestasi. Katso commander_check_fi.",
       "security": [
         "Production and preview use different Supabase projects and keys"
       ],
@@ -502,8 +503,8 @@
         "P4"
       ],
       "human_check": true,
-      "status": "todo",
-      "commander_check_fi": "Avatkaa Vercelin antama testiosoite puhelimella. Aukeaako sivu?"
+      "status": "inspecting",
+      "commander_check_fi": "Tämä on kiireellinen, koska A1:n kirjautumissivu ei toiminut livenä ennen tätä korjausta. Kaksi asiaa: 1) Mene Vercelin hallintapaneeliin → projektisi → Settings → Environment Variables. Lisää sinne (kaikki ympäristöt: Production, Preview, Development): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY ja SUPABASE_SERVICE_ROLE_KEY — arvot löydät Supabasen hallintapaneelista Project Settings → API. Ilman näitä sivusto ei toimi ollenkaan. Push tai uusi deploy tarvitaan tämän jälkeen (voit painaa Vercelissä 'Redeploy'). 2) Kun ympäristömuuttujat ovat kohdallaan, avaa Vercelin antama pääosoite puhelimella — aukeaako etusivu, ja toimiiko /sign-in? Turvavaatimus erillisistä production/preview Supabase-projekteista jää vielä tekemättä — se tarkoittaisi TOISEN Supabase-projektin luomista pelkästään testiosoitteita varten, mikä ei ole pakollista juuri nyt saadaksemme sivun toimimaan, mutta kannattaa tehdä myöhemmin ettei testaaminen voi vahingossa sotkea oikeaa dataa. Kerro miten meni."
     },
     {
       "step": 23,
