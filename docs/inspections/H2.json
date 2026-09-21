@@ -1,0 +1,20 @@
+{
+  "brick": "H2",
+  "inspected_at": "2026-09-21T14:07:23Z",
+  "result": "pass",
+  "summary_fi": "Kaikki seitsemän peruskomponenttia toimivat, ja kehityssivu näkyy vain kehitystilassa mutta piilottaa itsensä tuotannossa, mikä on testattu oikeasti selaimella molemmissa väriteemoissa.",
+  "checks": [
+    { "check": "pnpm typecheck runs without errors", "result": "pass" },
+    { "check": "pnpm lint runs without errors", "result": "pass" },
+    { "check": "pnpm build succeeds", "result": "pass" },
+    { "check": "In production (build + start), /dev/ui returns 404 and / returns 200", "result": "pass" },
+    { "check": "In development (pnpm dev), /dev/ui returns 200", "result": "pass" },
+    { "check": "A dev-only /dev/ui page shows every primitive in both themes (done_when)", "result": "pass" },
+    { "check": "Dialog opens on trigger button click and closes on Escape (native <dialog>)", "result": "pass" },
+    { "check": "Toast shows the correct text when triggered", "result": "pass" },
+    { "check": "Tab-key navigation reaches a real focusable element (document.activeElement)", "result": "pass" },
+    { "check": "Light and dark prefers-color-scheme render with distinct, correctly themed, non-broken colors", "result": "pass" },
+    { "check": "No raw hex color literals in src/components/ui/ or src/app/dev/ui/", "result": "pass" },
+    { "check": "notFound() is called inside the UiShowcasePage function body, not at module top level", "result": "pass" }
+  ]
+}
