@@ -16,5 +16,9 @@
     "error": "Something went wrong. Please try again.",
     "or": "or",
     "continueWithGoogle": "Continue with Google"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "signedInAs": "Signed in as {email}."
   }
 }

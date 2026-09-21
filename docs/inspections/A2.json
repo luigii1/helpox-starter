@@ -1,0 +1,16 @@
+{
+  "brick": "A2",
+  "inspected_at": "2026-09-21T16:50:14Z",
+  "result": "pass",
+  "summary_fi": "Suojattu alue toimii oikein: kirjautumaton käyttäjä ohjataan aina kirjautumissivulle sekä /dashboard- että /en/dashboard-osoitteista, eikä palvelin kaadu, ja tarkistus tehdään palvelimella eikä vain selaimen puolella.",
+  "checks": [
+    {
+      "check": "Opening an `(app)` URL signed out redirects to sign-in.",
+      "result": "pass"
+    },
+    {
+      "check": "Authorization checked on the server, never only in the UI",
+      "result": "pass"
+    }
+  ]
+}
