@@ -1,0 +1,20 @@
+{
+  "brick": "G3",
+  "inspected_at": "2026-09-22T00:18:24Z",
+  "result": "pass",
+  "summary_fi": "Tilin poisto toimii oikeasti: kokeilin itse oikeaa tietokantaa vasten että kun käyttäjä poistetaan, sekä hänen profiilirivinsä että krediittikirjanpitonsa katoavat automaattisesti, poisto vaatii sanan DELETE kirjoittamisen ja se tarkistetaan myös palvelimella (ei vain näytöllä), ja pyyntö voi kohdistua aina vain kirjautuneeseen käyttäjään itseensä — kaikki koodin tarkistukset (typecheck, lint, avainvuototarkistus, tuotantokäännös) menivät läpi puhtaina; jäljellä on vain komentajan oma käytännön koe tietokannasta.",
+  "checks": [
+    {
+      "check": "After deletion the user has zero rows in any table (checked in the database).",
+      "result": "pass"
+    },
+    {
+      "check": "Requires fresh confirmation",
+      "result": "pass"
+    },
+    {
+      "check": "Only deletes the signed-in user",
+      "result": "pass"
+    }
+  ]
+}
