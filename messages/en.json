@@ -76,6 +76,7 @@
     "credits": "Credits: {count}",
     "buyCredits": "Buy credits",
     "exportData": "Export data",
+    "signOut": "Sign out",
     "deleteAccount": "Delete account",
     "deleteConfirmTitle": "Delete your account?",
     "deleteConfirmBody": "This permanently removes your account and all your data. This cannot be undone.",
