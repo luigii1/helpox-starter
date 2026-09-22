@@ -23,7 +23,8 @@ describe("credit database functions", () => {
     expect(second.error).toBeNull();
 
     const { data: profile } = await admin.from("profiles").select("credits").eq("id", userA.id).single();
-    expect(profile?.credits).toBe(5);
+    // 1 automatic sign-up credit (E5) + 5 granted here.
+    expect(profile?.credits).toBe(6);
 
     const { data: ledgerRows } = await admin
       .from("credit_ledger")
@@ -36,12 +37,8 @@ describe("credit database functions", () => {
     const { userA } = await createTestUsers();
     const admin = adminClient();
 
-    await admin.rpc("grant_credits", {
-      p_user_id: userA.id,
-      p_amount: 1,
-      p_reason: "grant",
-      p_external_id: `signup:${userA.id}`,
-    });
+    // userA already has a balance of 1 from the automatic sign-up credit
+    // (E5, granted on user creation) — no manual grant needed here.
 
     const [first, second] = await Promise.all([
       userA.client.rpc("consume_credits", { p_amount: 1 }),
@@ -73,7 +70,9 @@ describe("credit database functions", () => {
 
     const admin = adminClient();
     const { data: profile } = await admin.from("profiles").select("credits").eq("id", userA.id).single();
-    expect(profile?.credits).toBe(0);
+    // Only the automatic sign-up credit (E5) — the hack attempt above must
+    // not have added anything.
+    expect(profile?.credits).toBe(1);
   });
 
   it("an authenticated user cannot call refund_credits", async () => {
@@ -87,12 +86,8 @@ describe("credit database functions", () => {
     const { userA, userB } = await createTestUsers();
     const admin = adminClient();
 
-    await admin.rpc("grant_credits", {
-      p_user_id: userB.id,
-      p_amount: 1,
-      p_reason: "grant",
-      p_external_id: `signup:${userB.id}`,
-    });
+    // userB already has a balance of 1 from the automatic sign-up credit
+    // (E5, granted on user creation) — no manual grant needed here.
 
     // consume_credits takes only an amount — there is no user id parameter
     // userA could pass to spend userB's balance.
@@ -111,8 +106,8 @@ describe("credit database functions", () => {
     await admin.rpc("grant_credits", {
       p_user_id: userA.id,
       p_amount: 3,
-      p_reason: "grant",
-      p_external_id: `signup:${userA.id}`,
+      p_reason: "purchase",
+      p_external_id: `purchase:${userA.id}`,
     });
     await userA.client.rpc("consume_credits", { p_amount: 1 });
 
@@ -124,12 +119,14 @@ describe("credit database functions", () => {
       .single();
     const ledgerId = consumeRow?.id;
 
+    // 1 automatic sign-up credit (E5) + 3 granted above, minus the 1 just
+    // consumed, back to 4 once the refund reverses that consume.
     await admin.rpc("refund_credits", { p_ledger_id: ledgerId });
     const { data: afterFirstRefund } = await admin.from("profiles").select("credits").eq("id", userA.id).single();
-    expect(afterFirstRefund?.credits).toBe(3);
+    expect(afterFirstRefund?.credits).toBe(4);
 
     await admin.rpc("refund_credits", { p_ledger_id: ledgerId });
     const { data: afterSecondRefund } = await admin.from("profiles").select("credits").eq("id", userA.id).single();
-    expect(afterSecondRefund?.credits).toBe(3);
+    expect(afterSecondRefund?.credits).toBe(4);
   });
 });
