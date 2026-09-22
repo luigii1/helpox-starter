@@ -1,0 +1,36 @@
+{
+  "brick": "H4",
+  "inspected_at": "2026-09-22T00:07:46Z",
+  "result": "pass",
+  "summary_fi": "Uusi etusivu on rakennettu kunnolla: hinnat (1 ilmainen, 5 kpl 4,99 €, 12 kpl 9,99 €) ovat oikein ja tulevat käännösjärjestelmän kautta, kaikki näkyvä teksti kulkee käännösten kautta (tarkistin myös, että lint-sääntö oikeasti pysäyttää kovakoodatun tekstin jos sellainen lisätään), sivu näytti ehjältä ja täydeltä oikealla selaimella 360 pikselin leveydellä ilman vaakavieritystä tai konsolivirheitä, jaettava esikatselukuva on aito 1200×630-kuva, ja kirjautumis-/suojaustoiminnot toimivat edelleen ennallaan; jäljellä on vain komentajan oma silmämääräinen tarkistus puhelimella.",
+  "checks": [
+    {
+      "check": "Landing page works at 360 px on a real phone, zero hard-coded strings.",
+      "result": "pass"
+    },
+    {
+      "check": "Pricing shown on the landing page (1 free credit on sign-up, 5 credits for €4.99, 12 credits for €9.99) matches CLAUDE.md §5 exactly, and the euro amounts are produced by next-intl's formatter (format.number(..., { style: \"currency\", currency: \"EUR\" })) rather than a literal \"€4.99\"/\"€9.99\" string anywhere in the code",
+      "result": "pass"
+    },
+    {
+      "check": "The 'zero hard-coded strings' rule is mechanically enforced: temporarily replacing a t()-sourced string with literal English text in src/app/[locale]/(marketing)/page.tsx makes `pnpm lint` fail with `i18next/no-literal-string`; after reverting, `pnpm lint` is clean again and the working tree shows no leftover changes (`git status`/`git diff` clean)",
+      "result": "pass"
+    },
+    {
+      "check": "`pnpm typecheck`, `pnpm lint`, `pnpm check:secrets` and `pnpm build` all run clean, and the build output includes the new `/[locale]/opengraph-image-*` route",
+      "result": "pass"
+    },
+    {
+      "check": "Live reproduction in production mode (temporary .env.local, `pnpm build` + `pnpm start`): `/` redirects to `/en`, `/en` renders the pricing text (4.99, 9.99, 1 free credit), the page's real `<meta property=\"og:image\">` URL (read from the actual HTML, not guessed) serves a genuine 1200×630 PNG, `/en/sign-in` returns 200, and `/en/dashboard` and `/en/account` still redirect an unauthenticated visitor to sign-in",
+      "result": "pass"
+    },
+    {
+      "check": "A real headless Chromium browser (Playwright) loading `/en` at a 360×800 viewport shows document.documentElement.scrollWidth === clientWidth (no horizontal overflow) with zero console errors; a full-page screenshot shows no overlapping, truncated or broken content",
+      "result": "pass"
+    },
+    {
+      "check": "A2's server-side auth guard and the sign-in/sign-out/callback routes are untouched by this brick — only marketing/landing content and root layout metadata changed (confirmed via `git show --stat` of the H4 commit and by the live redirect checks above)",
+      "result": "pass"
+    }
+  ]
+}
