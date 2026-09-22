@@ -1,0 +1,16 @@
+{
+  "brick": "E5",
+  "inspected_at": "2026-09-22T08:10:00Z",
+  "result": "pass",
+  "summary_fi": "Testasin uuden käyttäjän ilmaisen krediitin suoraan tietokannan omia sääntöjä vasten: krediitti ilmestyy täsmälleen kerran, vasta kun sähköposti on oikeasti vahvistettu, eikä sitä voi saada toiseen kertaan vaikka vahvistus tai lisäysyritys toistuisi.",
+  "checks": [
+    {
+      "check": "New verified user has exactly 1 credit; re-running the grant adds nothing.",
+      "result": "pass"
+    },
+    {
+      "check": "Granted once per account, only after verification",
+      "result": "pass"
+    }
+  ]
+}
