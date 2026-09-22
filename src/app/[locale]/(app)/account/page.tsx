@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DeleteAccountDialog } from "./delete-account-dialog";
 
 export default async function AccountPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -27,8 +28,8 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           {t("credits", { count: profile?.credits ?? 0 })}
         </p>
 
-        {/* Buy/delete are wired in later bricks (E1+, G3) — the buttons exist
-            now so this page's layout doesn't have to change later. */}
+        {/* Buy is wired in a later brick (E1+) — the button exists now so
+            this page's layout doesn't have to change later. */}
         <div className="flex flex-col gap-2">
           <Button type="button" disabled>
             {t("buyCredits")}
@@ -42,9 +43,7 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
               {t("exportData")}
             </Button>
           </a>
-          <Button type="button" variant="danger" disabled>
-            {t("deleteAccount")}
-          </Button>
+          <DeleteAccountDialog />
         </div>
       </Card>
     </main>
