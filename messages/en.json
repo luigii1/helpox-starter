@@ -180,7 +180,8 @@
   "Dashboard": {
     "title": "Dashboard",
     "signedInAs": "Signed in as {email}.",
-    "accountLink": "Account"
+    "accountLink": "Account",
+    "exampleFeatureLink": "Try the example feature"
   },
   "Account": {
     "title": "Account",
@@ -199,5 +200,19 @@
   },
   "RateLimit": {
     "tooManyRequests": "Too many requests. Please wait a moment and try again."
+  },
+  "ExampleFeature": {
+    "title": "Example feature",
+    "description": "A template for a credit-consuming feature: spends 1 credit, does something trivial with your text, and refunds the credit if the action fails. Not a real product feature — copy the pattern, not the text reversal.",
+    "creditsLabel": "Credits: {count}",
+    "inputLabel": "Text",
+    "inputPlaceholder": "Type something",
+    "simulateFailureLabel": "Simulate a failure (to see the credit get refunded)",
+    "runButton": "Run (uses 1 credit)",
+    "running": "Running…",
+    "outputLabel": "Result: {output}",
+    "insufficientCredits": "You don't have enough credits for this.",
+    "rateLimited": "Too many requests. Please wait a moment and try again.",
+    "actionFailed": "The action failed — your credit was refunded."
   }
 }

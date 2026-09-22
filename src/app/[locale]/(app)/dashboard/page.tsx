@@ -20,6 +20,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       <Link href="/account" className="text-sm text-primary underline underline-offset-2">
         {t("accountLink")}
       </Link>
+      <Link href="/features/example" className="text-sm text-primary underline underline-offset-2">
+        {t("exampleFeatureLink")}
+      </Link>
     </main>
   );
 }
