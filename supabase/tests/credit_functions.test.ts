@@ -86,8 +86,12 @@ describe("credit database functions", () => {
     const { userA, userB } = await createTestUsers();
     const admin = adminClient();
 
-    // userB already has a balance of 1 from the automatic sign-up credit
-    // (E5, granted on user creation) — no manual grant needed here.
+    // Both userA and userB already have a balance of 1 from the automatic
+    // sign-up credit (E5, granted on user creation). Drain userA's own
+    // credit first so the consume below can only succeed by reaching into
+    // userB's balance instead of userA's own (now empty) one.
+    const { error: drainError } = await userA.client.rpc("consume_credits", { p_amount: 1 });
+    expect(drainError).toBeNull();
 
     // consume_credits takes only an amount — there is no user id parameter
     // userA could pass to spend userB's balance.
