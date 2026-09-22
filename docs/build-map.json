@@ -349,7 +349,7 @@
       ],
       "human_check": true,
       "status": "awaiting_commander",
-      "commander_check_fi": "Tämä vaihe vaatii yhden asetuksen GitHubissa, jota en pysty tekemään puolestasi (ei ole työkalua GitHubin haaransuojausasetuksiin). Mene repoon github.com/luigii1/helpox-starter → Settings → Branches → Add branch protection rule (tai Add rule). Kirjoita 'main' kohtaan Branch name pattern. Rastita 'Require status checks to pass before merging', ja etsi/valitse listalta 'test' (se on tarkistus joka ajaa typecheck+lint+check:secrets+testit). Tallenna. Kerro minulle kun olet tehnyt tämän, niin varmistan vielä oikeasti että viallinen PR ei mene läpi, ja hyväksyn vaiheen."
+      "commander_check_fi": "Tämä vaihe vaatii yhden asetuksen GitHubissa, jota en pysty tekemään puolestasi (ei ole työkalua GitHubin haaransuojausasetuksiin). Mene repon GitHub-sivulle → Settings → Branches → Add branch protection rule (tai Add rule). Kirjoita 'main' kohtaan Branch name pattern. Rastita 'Require status checks to pass before merging', ja etsi/valitse listalta 'test' (se on tarkistus joka ajaa typecheck+lint+check:secrets+testit). Tallenna. Kerro minulle kun olet tehnyt tämän, niin varmistan vielä oikeasti että viallinen PR ei mene läpi, ja hyväksyn vaiheen."
     },
     {
       "step": 15,
