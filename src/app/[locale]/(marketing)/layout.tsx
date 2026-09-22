@@ -1,11 +1,12 @@
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { Footer } from "@/components/marketing/footer";
 
-// Shared header/footer for every public marketing page (the landing page
-// now, privacy/terms later in brick G1). The header's CTA is auth-aware —
-// signed-in visitors get a link to their dashboard instead of sign-in —
-// but nothing here gates access; (marketing) pages are public by design.
+// Shared header/footer for every public marketing page (the landing page,
+// privacy, terms). The header's CTA is auth-aware — signed-in visitors get
+// a link to their dashboard instead of sign-in — but nothing here gates
+// access; (marketing) pages are public by design.
 export default async function MarketingLayout({
   children,
   params,
@@ -15,7 +16,6 @@ export default async function MarketingLayout({
 }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Marketing" });
-  const format = await getFormatter({ locale });
   const supabase = await createClient();
   const {
     data: { user },
@@ -39,11 +39,7 @@ export default async function MarketingLayout({
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t border-border">
-        <div className="mx-auto w-full max-w-5xl p-4 text-sm text-muted-foreground">
-          {t("footer.copyright", { year: format.number(new Date().getFullYear(), { useGrouping: false }) })}
-        </div>
-      </footer>
+      <Footer locale={locale} />
     </div>
   );
 }

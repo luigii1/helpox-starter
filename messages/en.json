@@ -53,7 +53,117 @@
       ]
     },
     "footer": {
-      "copyright": "© {year} Helpox"
+      "copyright": "© {year} Helpox",
+      "privacyLink": "Privacy policy",
+      "termsLink": "Terms of service"
+    }
+  },
+  "Legal": {
+    "draftNotice": "Draft — not yet reviewed by a lawyer. Do not rely on this until it has been reviewed and published.",
+    "privacy": {
+      "meta": {
+        "title": "Privacy policy — Helpox",
+        "description": "What data Helpox collects, why, and how to export or delete it."
+      },
+      "title": "Privacy policy",
+      "sections": [
+        {
+          "heading": "Who we are",
+          "body": [
+            "[Company name] (\"Helpox\", \"we\") operates this service. Contact: [contact email]. [Business ID / registration number]."
+          ]
+        },
+        {
+          "heading": "What we collect",
+          "body": [
+            "Your email address and authentication session, from when you sign in.",
+            "Your credit balance and purchase history, from when you buy or use credits.",
+            "Nothing beyond what the service needs to work: no tracking cookies, no ad pixels, no Google Analytics."
+          ]
+        },
+        {
+          "heading": "Why we process it",
+          "body": ["To run your account, keep your credit balance accurate, and process your payments."]
+        },
+        {
+          "heading": "Who we share it with",
+          "body": [
+            "Supabase — hosts our database and handles sign-in.",
+            "Vercel — hosts the application.",
+            "Polar — processes payments as our merchant of record; they handle VAT and sales tax.",
+            "Plausible — cookieless, aggregate website analytics. No personal data, no cookies."
+          ]
+        },
+        {
+          "heading": "How long we keep it",
+          "body": [
+            "Until you delete your account. Deleting your account permanently and immediately removes your profile and credit history — see your account page."
+          ]
+        },
+        {
+          "heading": "Your rights",
+          "body": [
+            "Export all your data as a JSON file, or delete your account entirely, any time, from your account page. No request or waiting period needed."
+          ]
+        },
+        {
+          "heading": "Cookies",
+          "body": ["We set no non-essential cookies — only what's strictly needed to keep you signed in."]
+        },
+        {
+          "heading": "Contact",
+          "body": ["Questions about this policy: [contact email]."]
+        }
+      ]
+    },
+    "terms": {
+      "meta": {
+        "title": "Terms of service — Helpox",
+        "description": "The terms that apply when you use this service."
+      },
+      "title": "Terms of service",
+      "sections": [
+        {
+          "heading": "The service",
+          "body": ["[Company name] (\"Helpox\", \"we\") provides [product description] (\"the service\")."]
+        },
+        {
+          "heading": "Accounts",
+          "body": [
+            "You sign in with a magic link sent to your email, or with Google. You're responsible for keeping access to that email or Google account secure."
+          ]
+        },
+        {
+          "heading": "Credits and payments",
+          "body": [
+            "Credits are purchased once, via Polar, and never expire. There are no subscriptions.",
+            "1 free credit is granted once per account, on sign-up.",
+            "[Refund policy placeholder — confirm against applicable consumer law before publishing.]"
+          ]
+        },
+        {
+          "heading": "Acceptable use",
+          "body": ["Don't use the service for anything illegal, or in a way that disrupts it for other users."]
+        },
+        {
+          "heading": "Ending your account",
+          "body": [
+            "You can delete your account at any time from your account page. This is permanent and cannot be undone."
+          ]
+        },
+        {
+          "heading": "Liability",
+          "body": ["The service is provided \"as is\". [Liability limitation placeholder — needs legal review before publishing.]"]
+        },
+        {
+          "heading": "Changes to these terms",
+          "body": ["We may update these terms. Material changes will be posted on this page."]
+        },
+        {
+          "heading": "Contact",
+          "body": ["Questions about these terms: [contact email]."]
+        }
+      ]
     }
   },
   "SignIn": {
