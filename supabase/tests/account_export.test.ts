@@ -10,23 +10,24 @@ describe("buildAccountExport (real Supabase, RLS-enforced)", () => {
     await admin.rpc("grant_credits", {
       p_user_id: userA.id,
       p_amount: 5,
-      p_reason: "grant",
-      p_external_id: `signup:${userA.id}`,
+      p_reason: "purchase",
+      p_external_id: `purchase:${userA.id}`,
     });
     await admin.rpc("grant_credits", {
       p_user_id: userB.id,
       p_amount: 7,
-      p_reason: "grant",
-      p_external_id: `signup:${userB.id}`,
+      p_reason: "purchase",
+      p_external_id: `purchase:${userB.id}`,
     });
 
     const exportA = await buildAccountExport(userA.client, userA.id, userA.email);
 
     expect(exportA.account.id).toBe(userA.id);
     expect(exportA.profile?.id).toBe(userA.id);
-    expect(exportA.profile?.credits).toBe(5);
-    expect(exportA.credit_ledger.every((row) => row.external_id !== `signup:${userB.id}`)).toBe(true);
-    expect(exportA.credit_ledger.some((row) => row.external_id === `signup:${userA.id}`)).toBe(true);
+    // 1 automatic sign-up credit (E5) + 5 granted here.
+    expect(exportA.profile?.credits).toBe(6);
+    expect(exportA.credit_ledger.every((row) => row.external_id !== `purchase:${userB.id}`)).toBe(true);
+    expect(exportA.credit_ledger.some((row) => row.external_id === `purchase:${userA.id}`)).toBe(true);
   });
 
   it("RLS blocks the export even if userA's own client is asked for userB's id", async () => {

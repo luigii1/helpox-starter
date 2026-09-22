@@ -40,15 +40,16 @@ describe("deleteAccount (real Supabase)", () => {
     await admin.rpc("grant_credits", {
       p_user_id: userB.id,
       p_amount: 2,
-      p_reason: "grant",
-      p_external_id: `signup:${userB.id}`,
+      p_reason: "purchase",
+      p_external_id: `purchase:${userB.id}`,
     });
 
     await deleteAccount(admin, userA.id);
 
     const { data: profileB } = await admin.from("profiles").select("id, credits").eq("id", userB.id).single();
     expect(profileB?.id).toBe(userB.id);
-    expect(profileB?.credits).toBe(2);
+    // 1 automatic sign-up credit (E5) + 2 granted here.
+    expect(profileB?.credits).toBe(3);
   });
 
   it("throws, rather than silently succeeding, when the user id doesn't exist", async () => {

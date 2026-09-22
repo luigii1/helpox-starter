@@ -16,8 +16,10 @@ describe("credit_ledger RLS", () => {
 
     const { data: ownRows, error: ownError } = await userA.client.from("credit_ledger").select("user_id");
     expect(ownError).toBeNull();
-    expect(ownRows).toHaveLength(1);
-    expect(ownRows?.[0]?.user_id).toBe(userA.id);
+    // 2 rows: the automatic sign-up credit (E5, granted on user creation)
+    // plus the one inserted above — never userB's.
+    expect(ownRows).toHaveLength(2);
+    expect(ownRows?.every((row) => row.user_id === userA.id)).toBe(true);
   });
 
   it("anon can read nothing", async () => {

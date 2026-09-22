@@ -489,7 +489,8 @@
         "A1"
       ],
       "human_check": false,
-      "status": "todo"
+      "status": "approved",
+      "build_summary_fi": "Rakennettiin tietokantaan automaattinen sääntö, joka antaa uudelle käyttäjälle 1 ilmaisen krediitin heti kun hänen sähköpostinsa on vahvistettu — ei aikaisemmin. Tämä kattaa molemmat kirjautumistavat: Google-kirjautumisessa sähköposti on vahvistettu heti tilin synnyssä, sähköpostilinkillä vasta kun käyttäjä oikeasti klikkaa linkkiä. Sääntö on rakennettu niin, ettei krediittiä voi koskaan saada kahta kertaa vahingossa, vaikka sääntö laukeaisi useamman kerran samalle tilille. Matkan varrella huomattu ongelma: tämä uusi automaattinen krediitti muutti jokaisen uuden testikäyttäjän lähtötilannetta (nollasta yhteen), mikä rikkoi useita aiemmin hyväksyttyjen vaiheiden (E2, G3) testejä, jotka olettivat uuden käyttäjän alkavan nollasta — nämä testit korjattiin vastaamaan uutta, oikeaa käytöstä. Sääntö testattiin paikallista tietokantaa vasten neljällä skenaariolla (Google-tyylinen heti vahvistettu käyttäjä saa krediitin; sähköpostilinkki-tyylinen käyttäjä ei saa krediittiä ennen vahvistusta mutta saa sen heti vahvistuksen jälkeen; saman vahvistuksen toistaminen ei anna toista krediittiä), ja lisäksi kirjoitettiin viralliset testit, jotka ajetaan automaattisesti oikeaa Supabasea vasten. Ei jäänyt mitään kesken."
     },
     {
       "step": 22,
