@@ -1,10 +1,60 @@
 {
-  "Home": {
-    "title": "Helpox",
-    "tagline": "Project skeleton. Nothing built yet.",
-    "signedInAs": "Signed in as {email}.",
-    "signOut": "Sign out",
-    "signIn": "Sign in"
+  "Marketing": {
+    "meta": {
+      "title": "Helpox — a solid base for small, paid web apps",
+      "description": "Auth, payments, credits and security, solved once — so your product only has to do the one thing it's for."
+    },
+    "siteName": "Helpox",
+    "nav": {
+      "signIn": "Sign in",
+      "dashboard": "Dashboard"
+    },
+    "hero": {
+      "title": "Small and finished beats big and growing.",
+      "subtitle": "Auth, payments, credits and security are solved here — so your product only has to do the one thing it's for.",
+      "cta": "Get started"
+    },
+    "features": {
+      "title": "What's already built",
+      "items": [
+        {
+          "title": "Sign in with Google or email",
+          "description": "Supabase Auth handles sessions and password-free sign-in out of the box."
+        },
+        {
+          "title": "Pay once, keep your credits",
+          "description": "One-time credit packs via Polar. No subscriptions, credits never expire."
+        },
+        {
+          "title": "Your data, on your terms",
+          "description": "Export everything as JSON or delete your account, anytime, from your account page."
+        },
+        {
+          "title": "Secure by default",
+          "description": "Row-level security, rate limiting and strict security headers from the first commit."
+        }
+      ]
+    },
+    "pricing": {
+      "title": "Pricing",
+      "subtitle": "Buy credits once. They never expire.",
+      "freeLabel": "On sign-up",
+      "freeAmount": "{count} free credit",
+      "packLabel": "{count} credits",
+      "cta": "Sign in to buy"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        { "q": "Do credits expire?", "a": "No. Credits never expire, however many you buy." },
+        { "q": "Is this a subscription?", "a": "No. You buy a credit pack once and use it whenever you like." },
+        { "q": "Can I get my data out?", "a": "Yes — export everything as a JSON file from your account page, anytime." },
+        { "q": "What happens if I delete my account?", "a": "Your data and login are permanently removed." }
+      ]
+    },
+    "footer": {
+      "copyright": "© {year} Helpox"
+    }
   },
   "SignIn": {
     "title": "Sign in",
