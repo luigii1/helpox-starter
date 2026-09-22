@@ -69,7 +69,8 @@
   },
   "Dashboard": {
     "title": "Dashboard",
-    "signedInAs": "Signed in as {email}."
+    "signedInAs": "Signed in as {email}.",
+    "accountLink": "Account"
   },
   "Account": {
     "title": "Account",
