@@ -1,0 +1,10 @@
+{
+  "brick": "G1",
+  "inspected_at": "2026-09-22T08:13:16Z",
+  "result": "pass",
+  "summary_fi": "Tietosuojaseloste ja käyttöehdot löytyvät molemmat omalta sivultaan, niissä lukee selvästi näkyvä huomautus siitä että teksti on vielä luonnos, ja linkit niihin näkyvät jokaisen sivun alatunnisteessa.",
+  "checks": [
+    { "check": "Pages exist in all locales and are linked from every page.", "result": "pass" },
+    { "check": "Marked clearly as drafts until reviewed by a professional", "result": "pass" }
+  ]
+}
