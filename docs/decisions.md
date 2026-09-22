@@ -5,6 +5,19 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-22 — Brick F1 pulled forward out of order: G4 needs a Plausible account the commander hasn't set up yet
+**Decision:** Started brick F1 (step 30, "Example feature") instead of G4 (step 29, "Cookieless analytics"),
+which is next in strict step order.
+**Why:** G4's `done_when` requires a page view to actually appear in a real Plausible dashboard from the
+deployed preview URL, and `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` needs a Plausible account and registered domain —
+both only the commander can create, same shape of external blocker as E1's Polar sandbox. F1's dependencies
+(`E2`, `A3`) are both `approved`, its `human_check` is `false`, and it needs nothing external. Same judgment
+call already made for G2 (see the entry below) and P5.
+**Consequence:** G4 stays `todo`, waiting on the commander's Plausible account and domain. Step order resumes
+normally once G4 is unblocked — this is a one-off skip-ahead, not a change to the build plan's order itself.
+
+---
+
 ## 2026-09-22 — Brick T1: GitHub branch protection doesn't bind admins/owners by default
 **Finding, not a decision, but recorded here since it's a real security gap that was live for a few
 minutes:** after the commander configured branch protection on `main` (required status check

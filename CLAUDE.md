@@ -56,6 +56,8 @@ src/
   components/
     ui/                   # design-system primitives (Button, Input, Card…)
     marketing/            # landing-page sections
+  features/
+    example/              # template for a credit-consuming feature (brick F1) — copy the pattern, not the code
   lib/
     supabase/
       server.ts           # server client (user session, anon key)
