@@ -5,6 +5,21 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-22 — Brick T1: GitHub branch protection doesn't bind admins/owners by default
+**Finding, not a decision, but recorded here since it's a real security gap that was live for a few
+minutes:** after the commander configured branch protection on `main` (required status check
+`test`), a live verification test — opening a deliberately broken PR and attempting to merge it —
+succeeded despite the required check failing. Root cause: GitHub's branch protection rules do not
+apply to repository administrators/owners unless "Do not allow bypassing the above settings"
+(sometimes labeled "Include administrators") is separately enabled. Without it, an admin (and the
+API credential used to test this) can merge regardless of required checks.
+**Consequence:** The deliberately broken commit was briefly on `main` — reverted immediately via
+PR #33. The commander has been asked to also enable "Do not allow bypassing the above settings" on
+the same rule. Brick T1 stays `awaiting_commander` (not approved) until a second live test — the
+same kind of deliberately-broken-PR check — actually gets blocked.
+
+---
+
 ## 2026-09-21 — Brick S3: Polar's exact checkout domain used a wildcard, unverified against live docs
 **Decision:** The CSP's `connect-src`/`frame-src` allow `https://*.polar.sh` for Polar rather than one
 exact subdomain (e.g. `checkout.polar.sh` or `buy.polar.sh`).
