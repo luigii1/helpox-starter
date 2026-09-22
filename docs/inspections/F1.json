@@ -1,0 +1,16 @@
+{
+  "brick": "F1",
+  "inspected_at": "2026-09-22T08:27:29Z",
+  "result": "pass",
+  "summary_fi": "Esimerkkiominaisuus toimii kuten piti: sen käyttö vähentää krediittisaldoa yhdellä, pakotettu epäonnistuminen palauttaa krediitin, ja samalla tarkistin erikseen ettei tämä muutos rikkonut jo hyväksytyn E2-vaiheen krediittifunktioiden vanhoja suojauksia tai virhekäsittelyä — ne toimivat edelleen oikein.",
+  "checks": [
+    {
+      "check": "security: Credit is consumed on the server before the action, refunded on failure",
+      "result": "pass"
+    },
+    {
+      "check": "done_when: Using the feature lowers the balance by 1; a forced failure restores it.",
+      "result": "pass"
+    }
+  ]
+}
