@@ -43,6 +43,11 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
               {t("exportData")}
             </Button>
           </a>
+          <form action={`/${locale}/sign-out`} method="post">
+            <Button type="submit" variant="secondary" className="w-full">
+              {t("signOut")}
+            </Button>
+          </form>
           <DeleteAccountDialog />
         </div>
       </Card>
