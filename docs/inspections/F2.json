@@ -1,0 +1,16 @@
+{
+  "brick": "F2",
+  "inspected_at": "2026-09-22T08:35:17Z",
+  "result": "pass",
+  "summary_fi": "Ohje uuden sovelluksen käynnistämiseen on tarkistettu rivi riviltä koodikannasta, ja jokainen siinä mainittu tiedostopolku, asetusavain ja viittaus toisen vaiheen vaatimukseen tai päätöslokin merkintään pitää paikkansa.",
+  "checks": [
+    {
+      "check": "Following the README alone produces a deployed copy.",
+      "result": "pass"
+    },
+    {
+      "check": "New product never reuses another product's keys or webhook secret",
+      "result": "pass"
+    }
+  ]
+}
