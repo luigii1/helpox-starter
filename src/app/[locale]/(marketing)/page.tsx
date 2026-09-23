@@ -4,17 +4,10 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CREDIT_PACKS } from "@/lib/credits/packs";
 
 type FeatureItem = { title: string; description: string };
 type FaqItem = { q: string; a: string };
-
-// CLAUDE.md §5: 1 free credit on sign-up, then one-time packs. Numeric
-// amounts only, formatted at render time — the surrounding labels all come
-// from messages/en.json (CLAUDE.md §6).
-const CREDIT_PACKS = [
-  { credits: 5, priceEur: 4.99 },
-  { credits: 12, priceEur: 9.99 },
-];
 
 export async function generateMetadata({
   params,
@@ -75,7 +68,7 @@ export default async function MarketingPage({ params }: { params: Promise<{ loca
             <p className="text-2xl font-semibold text-foreground">{t("pricing.freeAmount", { count: 1 })}</p>
           </Card>
           {CREDIT_PACKS.map((pack) => (
-            <Card key={pack.credits} className="flex flex-col items-center gap-2 text-center">
+            <Card key={pack.polarProductId} className="flex flex-col items-center gap-2 text-center">
               <p className="text-sm text-muted-foreground">{t("pricing.packLabel", { count: pack.credits })}</p>
               <p className="text-2xl font-semibold text-foreground">
                 {format.number(pack.priceEur, { style: "currency", currency: "EUR" })}
