@@ -1,0 +1,49 @@
+import "server-only";
+import { NextResponse } from "next/server";
+import { verifyPolarWebhook, WebhookVerificationError } from "@/lib/polar/verify-webhook";
+import { handleOrderPaid } from "@/lib/polar/handle-order-paid";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+// Node runtime (not edge): needed for the raw-body signature verification
+// below, and the service-role client this route uses (CLAUDE.md §4).
+export const runtime = "nodejs";
+
+// POST /api/webhooks/polar — Polar calls this after a checkout completes.
+// The raw text body (not request.json()) is what the signature is computed
+// over, so it has to be read before anything else touches the request.
+export async function POST(request: Request) {
+  const rawBody = await request.text();
+  const headers = Object.fromEntries(request.headers);
+
+  let event;
+  try {
+    event = verifyPolarWebhook(rawBody, headers, process.env.POLAR_WEBHOOK_SECRET!);
+  } catch (error) {
+    // Signature verification fails before any processing — 403, nothing
+    // else touched. Never log the body or headers here: an invalid
+    // signature could be an honest misconfiguration, not necessarily an
+    // attack, but the payload could still contain personal data.
+    if (error instanceof WebhookVerificationError) {
+      return NextResponse.json({ error: "invalid_signature" }, { status: 403 });
+    }
+    // Signature was valid but the event type/shape isn't one this SDK
+    // version recognizes — acknowledge so Polar doesn't retry forever,
+    // there's just nothing for this route to do with it.
+    return NextResponse.json({ ok: true });
+  }
+
+  // Only order.paid is subscribed to in Polar's dashboard, but this checks
+  // explicitly rather than assuming — any other event type is acknowledged
+  // and ignored.
+  if (event.type !== "order.paid") {
+    return NextResponse.json({ ok: true });
+  }
+
+  try {
+    await handleOrderPaid(createAdminClient(), event.data);
+  } catch {
+    return NextResponse.json({ error: "grant_failed" }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}

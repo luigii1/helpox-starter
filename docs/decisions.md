@@ -5,6 +5,24 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-23 — New dev dependency: `standardwebhooks` (brick E4), and a Vitest `@/` alias
+**Decision:** Added `standardwebhooks` (already an indirect dependency of `@polar-sh/sdk`, which uses it for
+webhook signature verification) as an explicit **dev** dependency, so `supabase/tests`- and `src/lib`-level
+tests can construct a genuinely, correctly signed test request and prove `verifyPolarWebhook` really rejects
+a bad signature — not just that it calls some function. Also added a `resolve.alias` for `@/*` to
+`vitest.config.ts`, matching `tsconfig.json`'s path — the first lib file this session that both (a) gets
+unit-tested directly and (b) imports another local module via the `@/` alias (`src/lib/polar/handle-order-paid.ts`
+imports `@/lib/credits/packs`); every earlier tested lib file only imported npm packages, so this gap in
+Vitest's own resolution never showed up before.
+**Why:** pnpm's strict dependency isolation means a transitive dependency isn't importable directly — the
+webhook signature test needs to call `standardwebhooks` itself to build a valid signature, not just rely on
+it existing somewhere in `node_modules`. It's dev-only (test code never ships), so this doesn't add anything
+to the deployed bundle.
+**Consequence:** Any future lib file can now use the `@/` alias and still be Vitest-testable, without each one
+having to discover and fix this individually.
+
+---
+
 ## 2026-09-23 — New dependency: `@polar-sh/sdk` (brick E3); verified against its real types instead of live docs
 **Decision:** Added `@polar-sh/sdk` (official Polar Node SDK) for creating checkout sessions. `src/lib/polar/client.ts`
 wraps it; `server` is read from a new `POLAR_SERVER` env var (`"production"` or anything else, defaulting to
