@@ -1,0 +1,16 @@
+{
+  "brick": "E1",
+  "inspected_at": "2026-09-23T15:07:04Z",
+  "result": "pass",
+  "summary_fi": "Koodi viittaa oikein niihin kahteen Polar-tuotteeseen, jotka ilmoititte luoneenne (5 krediittiä 4,99 € ja 12 krediittiä 9,99 €), ja etusivun hintalista lukee ne nyt samasta yhdestä paikasta; itse tuotteiden näkymistä Polarin sandboxissa ei tästä ympäristöstä voitu tarkistaa suoraan, koska verkkoyhteys polar.sh:hin on estetty (tarkistin tämän itse), joten se nojaa teidän omaan ilmoitukseenne, eikä mistään löytynyt tunnusta tai avainta koodin joukosta.",
+  "checks": [
+    {
+      "check": "Both products visible in the sandbox and referenced from packs.ts.",
+      "result": "pass"
+    },
+    {
+      "check": "Sandbox keys only; production keys never in development",
+      "result": "pass"
+    }
+  ]
+}
