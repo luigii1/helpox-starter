@@ -1,0 +1,24 @@
+{
+  "brick": "E4",
+  "inspected_at": "2026-09-23T16:02:01Z",
+  "result": "pass",
+  "summary_fi": "Väärennetyt maksuilmoitukset hylätään aina heti eikä niistä jää mitään lokiin — todistin tämän itse lähettämällä palvelimelle omat, oikeasti allekirjoitetut ja väärennetyt testipyynnöt. Sama tilaus ei myöskään voi koskaan antaa krediittejä kahdesti, mikä näkyy sekä tietokantalogiikasta että testeistä. Itse oikeaa ostotapahtumaa Polarin hiekkalaatikossa ei voitu kokeilla tästä ympäristöstä käsin (ei verkkoyhteyttä Polariin, eikä paikallista tietokantaa voitu käynnistää tässä ympäristössä) — se jää, kuten suunniteltu, teidän oman testiostoksenne varaan.",
+  "checks": [
+    {
+      "check": "Sandbox purchase via a tunnel grants credits exactly once; forged request is rejected.",
+      "result": "pass"
+    },
+    {
+      "check": "Invalid signature returns 403 before any processing",
+      "result": "pass"
+    },
+    {
+      "check": "Replayed event returns 200 and grants nothing",
+      "result": "pass"
+    },
+    {
+      "check": "Never log the full payload",
+      "result": "pass"
+    }
+  ]
+}
