@@ -1,12 +1,14 @@
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CREDIT_PACKS } from "@/lib/credits/packs";
 import { DeleteAccountDialog } from "./delete-account-dialog";
 
 export default async function AccountPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Account" });
+  const format = await getFormatter({ locale });
   const supabase = await createClient();
   const {
     data: { user },
@@ -28,12 +30,19 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
           {t("credits", { count: profile?.credits ?? 0 })}
         </p>
 
-        {/* Buy is wired in a later brick (E1+) — the button exists now so
-            this page's layout doesn't have to change later. */}
         <div className="flex flex-col gap-2">
-          <Button type="button" disabled>
-            {t("buyCredits")}
-          </Button>
+          <p className="text-sm font-medium text-foreground">{t("buyCredits")}</p>
+          {CREDIT_PACKS.map((pack) => (
+            <form key={pack.polarProductId} action={`/${locale}/checkout`} method="post">
+              <input type="hidden" name="polarProductId" value={pack.polarProductId} />
+              <Button type="submit" variant="secondary" className="w-full">
+                {t("buyPackButton", {
+                  count: pack.credits,
+                  price: format.number(pack.priceEur, { style: "currency", currency: "EUR" }),
+                })}
+              </Button>
+            </form>
+          ))}
           {/* Plain <a>, not next/link's Link: this downloads a file
               (Content-Disposition: attachment) from an API route, not a page
               — Link's client-side RSC navigation isn't meant for that. */}

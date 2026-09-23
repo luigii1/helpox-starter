@@ -5,6 +5,32 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-23 — New dependency: `@polar-sh/sdk` (brick E3); verified against its real types instead of live docs
+**Decision:** Added `@polar-sh/sdk` (official Polar Node SDK) for creating checkout sessions. `src/lib/polar/client.ts`
+wraps it; `server` is read from a new `POLAR_SERVER` env var (`"production"` or anything else, defaulting to
+sandbox) rather than inferred from the Vercel environment, so switching a product to real payments is a
+deliberate, documented step, not an accident of which environment it's deployed to.
+**Why:** CLAUDE.md §10 says to check current official docs rather than guess when unsure about a Polar API —
+but this session's sandbox network blocks `docs.polar.sh` and `polar.sh` entirely (same restriction as the
+S3 entry). The npm registry is reachable, though, so instead of guessing the SDK's method names and
+parameters from training knowledge, the real package was installed and its actual generated TypeScript
+types read directly from `node_modules` — `Checkouts.create()`'s `CheckoutCreate` type, the `Checkout`
+response's `url` field, and the client's `server: "sandbox" | "production"` option all come from the
+installed package's real source, then confirmed correct by `pnpm typecheck` passing against those same
+types. This is more reliable than the docs site would have been for exact signatures, at the cost of not
+seeing Polar's own prose (e.g. any usage guidance beyond the types) — worth re-checking against the live
+docs once this sandbox's network policy allows it, or before brick E4 (webhook handling), which needs the
+same SDK's event payload shapes.
+**Consequence:** `E3`'s checkout creation was built without live network access to Polar at any point;
+"Clicking Buy opens Polar sandbox checkout for the right product" (E3's done_when) could not be exercised
+end-to-end from this sandbox — only the auth-gating and pack-id validation around the call were verified
+live. The commander should confirm the first real click-through once deployed.
+**Alternatives considered:** Calling Polar's REST API directly with `fetch` instead of the SDK — rejected;
+CLAUDE.md §1 prefers boring, well-known libraries over hand-rolled HTTP, and the SDK's generated types are
+exactly what made verification possible without live docs access in the first place.
+
+---
+
 ## 2026-09-22 — Brick F1 pulled forward out of order: G4 needs a Plausible account the commander hasn't set up yet
 **Decision:** Started brick F1 (step 30, "Example feature") instead of G4 (step 29, "Cookieless analytics"),
 which is next in strict step order.

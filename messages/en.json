@@ -187,6 +187,7 @@
     "title": "Account",
     "credits": "Credits: {count}",
     "buyCredits": "Buy credits",
+    "buyPackButton": "{count} credits — {price}",
     "exportData": "Export data",
     "signOut": "Sign out",
     "deleteAccount": "Delete account",
