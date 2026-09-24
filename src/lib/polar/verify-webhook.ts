@@ -1,6 +1,7 @@
 import { validateEvent, WebhookVerificationError } from "@polar-sh/sdk/webhooks";
+import { SDKValidationError } from "@polar-sh/sdk/models/errors/sdkvalidationerror.js";
 
-export { WebhookVerificationError };
+export { WebhookVerificationError, SDKValidationError };
 
 // Thin wrapper so the route handler (the only file that reads
 // POLAR_WEBHOOK_SECRET, and so the only one that needs `import "server-only"`)

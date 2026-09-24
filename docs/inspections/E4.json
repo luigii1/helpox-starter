@@ -1,8 +1,8 @@
 {
   "brick": "E4",
-  "inspected_at": "2026-09-23T16:02:01Z",
+  "inspected_at": "2026-09-24T05:37:21Z",
   "result": "pass",
-  "summary_fi": "Väärennetyt maksuilmoitukset hylätään aina heti eikä niistä jää mitään lokiin — todistin tämän itse lähettämällä palvelimelle omat, oikeasti allekirjoitetut ja väärennetyt testipyynnöt. Sama tilaus ei myöskään voi koskaan antaa krediittejä kahdesti, mikä näkyy sekä tietokantalogiikasta että testeistä. Itse oikeaa ostotapahtumaa Polarin hiekkalaatikossa ei voitu kokeilla tästä ympäristöstä käsin (ei verkkoyhteyttä Polariin, eikä paikallista tietokantaa voitu käynnistää tässä ympäristössä) — se jää, kuten suunniteltu, teidän oman testiostoksenne varaan.",
+  "summary_fi": "Korjaus toimii: jos webhookin salaisuus puuttuu tai on väärin asetettu palvelimella, järjestelmä ei enää vastaa Polarille \"ok\" -viestillä virheen kanssa vaan ilmoittaa virheestä näkyvästi, jotta Polar yrittää uudestaan eikä epäonnistunut krediittien lisäys jää huomaamatta; aito väärennetty allekirjoitus hylätään yhä oikein eikä sama ostotapahtuma voi koskaan tuottaa krediittejä kahdesti, vaikka Polar lähettäisi sen uudelleen.",
   "checks": [
     {
       "check": "Sandbox purchase via a tunnel grants credits exactly once; forged request is rejected.",
