@@ -1,18 +1,16 @@
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { Webhook } from "standardwebhooks";
-import { verifyPolarWebhook, WebhookVerificationError, SDKValidationError } from "./verify-webhook";
+import { verifyPolarWebhook, WebhookVerificationError } from "./verify-webhook";
 
-const SECRET = "whsec_test_secret_do_not_use_in_production";
+// Shaped exactly like a real Polar webhook secret (whsec_ prefix, base64
+// payload, = padding) — not a real one. This shape matters: the bug this
+// file guards against (see verify-webhook.ts) only reproduces with a secret
+// in this wire format, not with an arbitrary plain string.
+const SECRET = `whsec_${randomBytes(32).toString("base64")}`;
 
-// The exact transform validateEvent (inside @polar-sh/sdk/webhooks) applies
-// to the secret before handing it to standardwebhooks — replicated here so
-// a signature built with the plain secret verifies correctly, the same way
-// a real signature from Polar (signed with their copy of the same secret)
-// would.
 function signRequest(payload: string) {
-  const base64Secret = Buffer.from(SECRET, "utf-8").toString("base64");
-  const webhook = new Webhook(base64Secret);
+  const webhook = new Webhook(SECRET);
   const id = `msg_${randomUUID()}`;
   const timestamp = new Date();
   const signature = webhook.sign(id, timestamp, payload);
@@ -99,7 +97,7 @@ describe("verifyPolarWebhook", () => {
     const payload = orderPaidPayload();
     const headers = signRequest(payload);
 
-    expect(() => verifyPolarWebhook(payload, headers, "whsec_a_completely_different_secret")).toThrow(
+    expect(() => verifyPolarWebhook(payload, headers, `whsec_${randomBytes(32).toString("base64")}`)).toThrow(
       WebhookVerificationError,
     );
   });
@@ -121,12 +119,9 @@ describe("verifyPolarWebhook", () => {
   // Regression test: if the webhook secret env var is unset in the
   // deployment (e.g. only added to one Vercel environment while Polar's
   // webhook points at another), the route must not treat that as a
-  // signature mismatch and
-  // must not fall through to its "unrecognized event, acknowledge anyway"
-  // branch either — both would report ok:true to Polar while never granting
-  // credits, with nothing to show it happened. Confirms this throws, and
-  // throws something other than WebhookVerificationError, so route.ts's
-  // catch can tell the two apart.
+  // signature mismatch — it must throw something other than
+  // WebhookVerificationError, so route.ts's catch can tell the two apart
+  // and report a real failure (500) instead of quietly succeeding.
   it("throws something other than WebhookVerificationError when the secret is missing", () => {
     const payload = orderPaidPayload();
     const headers = signRequest(payload);
@@ -140,14 +135,16 @@ describe("verifyPolarWebhook", () => {
     }
   });
 
-  // A genuinely signed request for an event type this SDK version doesn't
-  // recognize is the one case route.ts should acknowledge (200) without
-  // granting anything — distinguished from every other failure above by
-  // being an SDKValidationError, not a WebhookVerificationError.
-  it("throws SDKValidationError for a validly signed but unrecognized event type", () => {
-    const payload = JSON.stringify({ type: "some.future.event", data: {} });
+  // A genuinely signed request for an event type this route doesn't
+  // subscribe to must still verify successfully — route.ts's own
+  // `event.type !== "order.paid"` check is what acknowledges and ignores
+  // it, not a verification failure.
+  it("verifies successfully for a validly signed event of an unrelated type", () => {
+    const payload = JSON.stringify({ type: "checkout.created", data: {} });
     const headers = signRequest(payload);
 
-    expect(() => verifyPolarWebhook(payload, headers, SECRET)).toThrow(SDKValidationError);
+    const event = verifyPolarWebhook(payload, headers, SECRET);
+
+    expect(event.type).toBe("checkout.created");
   });
 });
