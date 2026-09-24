@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page, type Locator } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { CREDIT_PACKS } from "@/lib/credits/packs";
 import { deleteAccount } from "@/lib/account/delete-account";
@@ -139,17 +139,36 @@ test.describe("smoke", () => {
   });
 });
 
-// Polar's hosted checkout page — this app has no control over its markup,
-// but two live runs now confirm its actual structure directly (no iframe
-// involved): labeled fields "Email", "Card number", "Expiration date",
-// "Security code" and "Cardholder name", plus a "Country" combobox under
-// a "Billing address" heading. Card number/Expiration date/Security code
-// were originally located by matching their placeholder *example* text
-// (e.g. "1234 1234 1234 1234") against a /card number/i-style pattern —
-// which never matches, since that placeholder isn't the field's label.
-// getByLabel is correct here and also gets Playwright's normal built-in
-// waiting for free, so no custom polling helper is needed.
+// Polar's hosted checkout page — this app has no control over its markup.
+// Three live runs now confirm its actual structure: "Email", "Cardholder
+// name" and a "Country" combobox are plain fields directly on the page
+// (getByLabel found and filled them correctly), but "Card number" timed
+// out the entire 90s test waiting for a same-named getByLabel to appear —
+// despite looking like a normal field in the failure screenshot. Card
+// data is the one part of a checkout PCI compliance usually pulls into
+// an isolated iframe (Stripe's Elements, which Polar is built on, always
+// does this for its card fields), rendered borderless so it's visually
+// indistinguishable from the surrounding page — exactly why a screenshot
+// alone couldn't reveal it, only the getByLabel timeout could.
 //
+// locateInFrames polls the top-level page and every current iframe for a
+// matching label, rather than a composite .or() (Playwright rejects
+// mixing a page locator with one built from frameLocator() — hit on an
+// earlier run) and rather than assuming either the page or an iframe.
+async function locateInFrames(page: Page, label: string): Promise<Locator> {
+  const timeoutMs = 30_000;
+  const pollIntervalMs = 500;
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    for (const frame of [page, ...page.frames()]) {
+      const locator = frame.getByLabel(label).first();
+      if (await locator.count()) return locator;
+    }
+    await page.waitForTimeout(pollIntervalMs);
+  }
+  throw new Error(`Could not find a field labeled "${label}" on Polar's checkout page or in any of its iframes.`);
+}
+
 // Email really does start blank: our own checkout/route.ts sends
 // externalCustomerId but no customerEmail to Polar.
 //
@@ -174,9 +193,16 @@ async function selectFirstCountry(page: Page): Promise<void> {
 
 async function fillPolarCheckout(page: Page, email: string): Promise<void> {
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Card number").fill("4242424242424242");
-  await page.getByLabel("Expiration date").fill("12 / 34");
-  await page.getByLabel("Security code").fill("123");
+
+  const cardNumber = await locateInFrames(page, "Card number");
+  await cardNumber.fill("4242424242424242");
+
+  const expiry = await locateInFrames(page, "Expiration date");
+  await expiry.fill("12 / 34");
+
+  const cvc = await locateInFrames(page, "Security code");
+  await cvc.fill("123");
+
   await page.getByLabel("Cardholder name").fill("E2E Smoke Test");
   await selectFirstCountry(page);
 
