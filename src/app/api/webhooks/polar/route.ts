@@ -38,6 +38,21 @@ export async function POST(request: Request) {
     // would silently swallow every event (including order.paid) with no
     // credits ever granted and nothing to show for it. 500 makes Polar retry
     // and shows up in its delivery log instead of vanishing.
+    //
+    // TEMPORARY diagnostic (remove once the commander's live purchase
+    // grants credits correctly): server-side only, in Vercel's own Runtime
+    // Logs — never in the HTTP response, since Polar (or anyone who finds
+    // this public URL) sees that. Never the secret's value, only whether
+    // it's present at all in this deployment's environment, its length, and
+    // whether it has the shape Polar's dashboard shows it in — enough to
+    // tell "env var missing/empty here" apart from "env var present but
+    // doesn't match Polar's copy" without exposing anything usable.
+    const secret = process.env.POLAR_WEBHOOK_SECRET;
+    console.error("polar webhook verification_failed diagnostic", {
+      secretConfigured: typeof secret === "string" && secret.length > 0,
+      secretLength: secret?.length ?? 0,
+      secretHasWhsecPrefix: secret?.startsWith("whsec_") ?? false,
+    });
     return NextResponse.json({ error: "verification_failed" }, { status: 500 });
   }
 
