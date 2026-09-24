@@ -5,6 +5,33 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-24 — `standardwebhooks` moves from dev to runtime dependency (brick E4 fix); `@polar-sh/sdk`'s webhook verifier has a real secret-encoding bug
+**Decision:** `src/lib/polar/verify-webhook.ts` now calls `standardwebhooks`'s `Webhook` class directly instead
+of going through `@polar-sh/sdk/webhooks`'s `validateEvent`. `standardwebhooks` moved from `devDependencies` to
+`dependencies` accordingly — it's imported at runtime by the shipped webhook route now, not just by tests. This
+supersedes the "dev-only, doesn't add anything to the deployed bundle" line in the entry below, which is now
+stale for that reason.
+**Why:** the commander's real Polar sandbox purchases consistently failed with an invalid-signature error, even
+after confirming (character by character) that the webhook secret in Vercel exactly matched Polar's dashboard.
+Testing directly against their real secret (a `whsec_<base64>=`-shaped string) proved the cause: `validateEvent`
+re-encodes the secret with `Buffer.from(secret, "utf-8").toString("base64")` before handing it to
+`standardwebhooks`. For a secret already in that wire format, this computes the wrong signing key — the raw
+UTF-8 bytes of the whole `whsec_...` string (50 bytes), not the correct base64-decoded key (32 bytes) you get by
+stripping the `whsec_` prefix and decoding the remainder, which is what `standardwebhooks`'s own constructor
+does when given the secret unmodified. No signature can ever verify through that path, regardless of how
+correctly the secret is copied. This is a real bug in `@polar-sh/sdk@0.49.0`, not a configuration error — worth
+re-checking if the package is ever upgraded.
+**Alternatives considered:** patching `@polar-sh/sdk`'s output or pre-transforming the secret to cancel out its
+bug were both rejected as fragile, version-specific workarounds. Calling `standardwebhooks` directly is the
+spec-compliant approach `@polar-sh/sdk` is itself a thin wrapper around, so it's no less correct and doesn't
+depend on this particular SDK bug persisting or not.
+**Consequence:** event payloads are no longer re-validated per type against the SDK's zod schemas after
+signature verification (that only ever ran through the same broken `validateEvent` path). `route.ts` casts
+`event.data as Order` at the one call site that needs the typed shape instead — the signature is what's
+actually trusted here, and `handleOrderPaid` already checks defensively for the specific fields it reads.
+
+---
+
 ## 2026-09-23 — New dev dependency: `standardwebhooks` (brick E4), and a Vitest `@/` alias
 **Decision:** Added `standardwebhooks` (already an indirect dependency of `@polar-sh/sdk`, which uses it for
 webhook signature verification) as an explicit **dev** dependency, so `supabase/tests`- and `src/lib`-level

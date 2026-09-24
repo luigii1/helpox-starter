@@ -1,6 +1,7 @@
 import "server-only";
 import { NextResponse } from "next/server";
-import { verifyPolarWebhook, WebhookVerificationError, SDKValidationError } from "@/lib/polar/verify-webhook";
+import type { Order } from "@polar-sh/sdk/models/components/order.js";
+import { verifyPolarWebhook, WebhookVerificationError } from "@/lib/polar/verify-webhook";
 import { handleOrderPaid } from "@/lib/polar/handle-order-paid";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -26,33 +27,12 @@ export async function POST(request: Request) {
     if (error instanceof WebhookVerificationError) {
       return NextResponse.json({ error: "invalid_signature" }, { status: 403 });
     }
-    if (error instanceof SDKValidationError) {
-      // Signature was valid but the event type/shape isn't one this SDK
-      // version recognizes — acknowledge so Polar doesn't retry forever,
-      // there's just nothing for this route to do with it.
-      return NextResponse.json({ ok: true });
-    }
     // Anything else — most importantly a missing/malformed
     // POLAR_WEBHOOK_SECRET, which throws before signature verification even
     // runs — is a real failure, never a thing to report as success: doing so
     // would silently swallow every event (including order.paid) with no
     // credits ever granted and nothing to show for it. 500 makes Polar retry
     // and shows up in its delivery log instead of vanishing.
-    //
-    // TEMPORARY diagnostic (remove once the commander's live purchase
-    // grants credits correctly): server-side only, in Vercel's own Runtime
-    // Logs — never in the HTTP response, since Polar (or anyone who finds
-    // this public URL) sees that. Never the secret's value, only whether
-    // it's present at all in this deployment's environment, its length, and
-    // whether it has the shape Polar's dashboard shows it in — enough to
-    // tell "env var missing/empty here" apart from "env var present but
-    // doesn't match Polar's copy" without exposing anything usable.
-    const secret = process.env.POLAR_WEBHOOK_SECRET;
-    console.error("polar webhook verification_failed diagnostic", {
-      secretConfigured: typeof secret === "string" && secret.length > 0,
-      secretLength: secret?.length ?? 0,
-      secretHasWhsecPrefix: secret?.startsWith("whsec_") ?? false,
-    });
     return NextResponse.json({ error: "verification_failed" }, { status: 500 });
   }
 
@@ -64,7 +44,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    await handleOrderPaid(createAdminClient(), event.data);
+    // Cast, not re-validated: the signature above already proves this body
+    // came from Polar, and Polar's own webhook payload for order.paid is
+    // exactly this shape.
+    await handleOrderPaid(createAdminClient(), event.data as Order);
   } catch {
     return NextResponse.json({ error: "grant_failed" }, { status: 500 });
   }
