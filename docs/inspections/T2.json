@@ -1,0 +1,36 @@
+{
+  "brick": "T2",
+  "inspected_at": "2026-09-24T00:00:00Z",
+  "result": "fail",
+  "summary_fi": "Savutestin koodi on muuten huolellisesti tehty ja kaikki paikallisesti tarkistettavat asiat (tyypitys, lint, salaisuustarkistus, käännös ja vanhat testit) menevät läpi, mutta testin tapa kirjautua sisään testikäyttäjänä ei todennäköisesti toimi oikeaa julkaisua vastaan, joten testi kaatuisi jo heti ensimmäisessä vaiheessa eikä ehtisi edes ostoon asti.",
+  "checks": [
+    {
+      "check": "Smoke test passes against the preview deployment.",
+      "result": "fail"
+    },
+    {
+      "check": "Auth bypass correctness: admin.generateLink() + visiting action_link + navigating to /dashboard and asserting 'Signed in as {email}.' actually proves sign-in succeeded (and an unauthenticated visitor could not produce the same text).",
+      "result": "fail"
+    },
+    {
+      "check": "Credit-count assertions ('Credits: 1', 'Credits: 6', 'Credits: 5') use the real i18n string (messages/en.json Account.credits = 'Credits: {count}') and real numbers (signup grant = 1 credit per supabase/migrations/20260922074420_signup_credit.sql; CREDIT_PACKS[0].credits = 5 per src/lib/credits/packs.ts), and the button/input/result selectors match real strings in ExampleFeature/Account namespaces.",
+      "result": "pass"
+    },
+    {
+      "check": "deleteAccount() in afterEach cannot leave the purchase half-done or double-charge-able on a retry (retries: 0 in playwright.config.ts, and this is a fake-money Polar sandbox purchase).",
+      "result": "pass"
+    },
+    {
+      "check": "SUPABASE_SERVICE_ROLE_KEY usage in e2e/smoke.spec.ts is safe even though scripts/check-secrets.mjs only scans src/ (file never ships to a browser bundle, runs only in a Node test process, same category as supabase/tests/*.ts; key is never logged or written to the Playwright report).",
+      "result": "pass"
+    },
+    {
+      "check": ".github/workflows/e2e-smoke.yml is workflow_dispatch-only with a required preview_url input, both secrets referenced correctly, and a browser-install step present; never runs on push/PR.",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm typecheck, pnpm lint, pnpm check:secrets, pnpm build, and pnpm test all run clean/as-expected (Vitest: 37 pre-existing Supabase-unreachable failures, same as documented, no new regressions); playwright test --list loads the new config/spec correctly with dummy env vars.",
+      "result": "pass"
+    }
+  ]
+}

@@ -38,25 +38,32 @@ test.describe("smoke", () => {
     userId = undefined;
   });
 
-  test("sign up, buy a pack in the Polar sandbox, spend a credit, balance is correct", async ({ page, baseURL }) => {
+  test("sign up, buy a pack in the Polar sandbox, spend a credit, balance is correct", async ({ page }) => {
     const email = `e2e-smoke-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
 
     // 1. "Sign up": a real Supabase user, signed in via a real magic link —
     // generated directly through the admin API instead of sent by email,
     // Supabase's own documented way to test this flow without a real inbox.
-    // The user still goes through the exact same /callback route a real
-    // clicked email link would.
+    // generateLink's action_link can't be used directly here: this app's
+    // Supabase clients use the PKCE flow (@supabase/ssr's default), and
+    // PKCE's code_challenge/code_verifier pairing is only ever set up by a
+    // browser-invoked signInWithOtp call — an admin-generated link has none,
+    // so visiting it can't complete through /callback's `?code=` exchange.
+    // src/app/[locale]/(auth)/confirm/route.ts is the PKCE-independent
+    // counterpart: it verifies the token_hash directly via Supabase's own
+    // verifyOtp, exactly what a real signInWithOtp() email would also
+    // support (see that route's comment for the full explanation).
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
       type: "magiclink",
       email,
-      options: { redirectTo: `${baseURL}/${LOCALE}/callback` },
     });
-    if (linkError || !linkData.properties?.action_link) {
-      throw new Error(`Could not generate a sign-in link: ${linkError?.message ?? "no action_link in response"}`);
+    if (linkError || !linkData.properties?.hashed_token) {
+      throw new Error(`Could not generate a sign-in link: ${linkError?.message ?? "no hashed_token in response"}`);
     }
     userId = linkData.user.id;
 
-    await page.goto(linkData.properties.action_link);
+    const tokenHash = encodeURIComponent(linkData.properties.hashed_token);
+    await page.goto(`/${LOCALE}/confirm?token_hash=${tokenHash}&type=magiclink`);
 
     // Confirm sign-in actually completed and the signup bonus was granted,
     // rather than trusting that the redirect landed somewhere sensible.

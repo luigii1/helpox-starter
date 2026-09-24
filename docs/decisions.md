@@ -19,9 +19,17 @@ webhook has to be able to call it back — and this workflow has no way to disco
 Vercel's own GitHub integration (not this repo's workflows) is what creates Preview deployments.
 
 Sign-in is done via `supabase.auth.admin.generateLink({type: "magiclink", ...})` rather than driving the real
-sign-in form and waiting for an email: this is Supabase's own documented pattern for testing magic-link auth,
-and the resulting link is still redeemed through this app's real `/callback` route, the same one a genuinely
-clicked email link uses.
+sign-in form and waiting for an email: this is Supabase's own documented pattern for testing magic-link auth.
+
+**Correction after inspection:** the first version of this test visited `generateLink`'s `action_link` and
+redeemed it through the existing `/callback` route (`?code=` → `exchangeCodeForSession`), on the assumption
+that this was the same path a real clicked email uses. The inspector caught that this doesn't work: this
+app's Supabase clients use the PKCE flow (`@supabase/ssr`'s default), and PKCE's code_challenge/code_verifier
+pairing is only ever set up by a *browser-invoked* `signInWithOtp` call — an admin-generated link has none, so
+`exchangeCodeForSession` can't complete it. Added `src/app/[locale]/(auth)/confirm/route.ts`, a small
+companion to `/callback` that verifies a `token_hash` directly via Supabase's own `verifyOtp` — a
+PKCE-independent, equally real Supabase SDK verification method (not a hand-rolled check), which is what
+`generateLink` actually supports. The test now redeems `hashed_token` through this new route instead.
 
 **New GitHub Actions secrets needed** (Settings → Secrets and variables → Actions → "New repository secret",
 same values already in Vercel): `SUPABASE_SERVICE_ROLE_KEY` (used only server-side, inside the test's own
