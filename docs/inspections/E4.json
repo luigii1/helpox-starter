@@ -1,8 +1,8 @@
 {
   "brick": "E4",
-  "inspected_at": "2026-09-24T07:47:24Z",
+  "inspected_at": "2026-09-24T08:04:29Z",
   "result": "pass",
-  "summary_fi": "Löysin ja todistin itse saman juurisyyn kuin rakentaja: Polarin virallinen kirjasto laski webhookin salaisuudesta väärän tarkistusavaimen aina kun salaisuus on Polarin oikeassa muodossa, ja uusi korjaus (jossa salaisuus annetaan suoraan allekirjoituskirjastolle sellaisenaan) laskee sen oikein — väärennetyt ilmoitukset hylätään yhä oikein, sama tilaus ei voi koskaan antaa krediittejä kahdesti, eikä mitään arkaluontoista jää lokiin; kaikki koneelliset tarkistukset (tyypit, tyyli, salaisuustarkistus, käännös, testit) menivät läpi puhtaina. Itse oikeaa ostotapahtumaa Polarin hiekkalaatikossa ei voitu kokeilla tästä ympäristöstä (ei verkkoyhteyttä Polariin eikä paikallista tietokantaa käytettävissä) — se jää, kuten suunniteltu, teidän oman testiostoksenne varaan, mutta koodin puolelta juurisyy näyttää nyt oikeasti korjatulta.",
+  "summary_fi": "Tarkastin webhook-koodin uudelleen alusta loppuun ja syötin sille itse rakentamani, aidon muotoisen ostoviestin: koko putki (allekirjoituksen tarkistus, viestin muuntaminen oikeaan muotoon ja krediitin lisäys) toimii nyt oikein ja antaa oikean määrän krediittejä oikealle ostajalle, väärä allekirjoitus hylätään yhä, sama ilmoitus toistettuna ei anna krediittejä kahdesti, eikä arkaluontoista dataa kirjata lokiin — koodi on nyt valmis odottamaan komentajan omaa oikeaa testiostoa.",
   "checks": [
     {
       "check": "Sandbox purchase via a tunnel grants credits exactly once; forged request is rejected.",

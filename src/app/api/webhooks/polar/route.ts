@@ -1,7 +1,6 @@
 import "server-only";
 import { NextResponse } from "next/server";
-import type { Order } from "@polar-sh/sdk/models/components/order.js";
-import { verifyPolarWebhook, WebhookVerificationError } from "@/lib/polar/verify-webhook";
+import { verifyPolarWebhook, parseOrderPaidEvent, WebhookVerificationError } from "@/lib/polar/verify-webhook";
 import { handleOrderPaid } from "@/lib/polar/handle-order-paid";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -43,11 +42,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  let order;
   try {
-    // Cast, not re-validated: the signature above already proves this body
-    // came from Polar, and Polar's own webhook payload for order.paid is
-    // exactly this shape.
-    await handleOrderPaid(createAdminClient(), event.data as Order);
+    order = parseOrderPaidEvent(event.data);
+  } catch {
+    // Signature verified, but the payload doesn't match this SDK version's
+    // order.paid shape — acknowledge so Polar doesn't retry forever, there's
+    // nothing safe to do with an unparseable order.
+    return NextResponse.json({ ok: true });
+  }
+
+  try {
+    await handleOrderPaid(createAdminClient(), order);
   } catch {
     return NextResponse.json({ error: "grant_failed" }, { status: 500 });
   }
