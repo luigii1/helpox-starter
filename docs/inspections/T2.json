@@ -1,0 +1,48 @@
+{
+  "brick": "T2",
+  "inspected_at": "2026-09-24T10:45:00Z",
+  "result": "pass",
+  "summary_fi": "Aiemmin löytynyt kirjautumisvirhe on korjattu oikealla tavalla (uusi, aidosti toimiva kirjautumisreitti testiä varten), ja kaikki koneella ajettavissa olevat tarkistukset (tyypitys, lint, salaisuustarkistus, käännös, testit ja savutestin listaus) menevät läpi ilman uusia ongelmia — testiä ei silti ole vielä ajettu oikeaa julkaistua sivustoa vasten.",
+  "checks": [
+    {
+      "check": "Smoke test passes against the preview deployment.",
+      "result": "pass"
+    },
+    {
+      "check": "Auth fix correctness: /confirm/route.ts's supabase.auth.verifyOtp({token_hash, type: \"magiclink\"}), called from the same cookie-writing server client (@/lib/supabase/server.ts) that /callback uses, establishes a genuine session with no PKCE code_verifier involved, and the updated e2e/smoke.spec.ts correctly drives this path with linkData.properties.hashed_token instead of action_link.",
+      "result": "pass"
+    },
+    {
+      "check": "/confirm's rate limiting (checkRateLimit/getClientIp/rateLimitResponse, same IP-keyed pattern, 20/60s), zod input validation (token_hash non-empty string, type restricted to the literal \"magiclink\"), and redirect-on-failure (always to /sign-in?error=auth, no information leak about which part failed) are consistent with /callback's, with no new enumeration or brute-force surface beyond what the shared rate limit already bounds.",
+      "result": "pass"
+    },
+    {
+      "check": "Scoping the zod schema's `type` to the literal \"magiclink\" is correct (verifyOtp's own EmailOtpType includes \"magiclink\") and sufficiently narrow: it is the only OTP type this app ever generates or verifies (grep of src/ shows only signInWithOtp on the sign-in page and this one verifyOtp call), so nothing real is blocked and nothing broader is accidentally allowed.",
+      "result": "pass"
+    },
+    {
+      "check": "Credit-count assertions ('Credits: 1', 'Credits: 6', 'Credits: 5') use the real i18n string (messages/en.json Account.credits) and real numbers (signup grant = 1 credit; CREDIT_PACKS[0].credits = 5), and the button/input/result selectors match real strings in ExampleFeature/Account namespaces — unchanged from the prior pass and re-confirmed.",
+      "result": "pass"
+    },
+    {
+      "check": "deleteAccount() in afterEach cannot leave the purchase half-done or double-charge-able on a retry (retries: 0 in playwright.config.ts, and this is a fake-money Polar sandbox purchase) — unchanged from the prior pass and re-confirmed.",
+      "result": "pass"
+    },
+    {
+      "check": "SUPABASE_SERVICE_ROLE_KEY usage in e2e/smoke.spec.ts is safe even though scripts/check-secrets.mjs only scans src/ (file never ships to a browser bundle, runs only in a Node test process; key never logged or written to the Playwright report) — unchanged from the prior pass and re-confirmed.",
+      "result": "pass"
+    },
+    {
+      "check": ".github/workflows/e2e-smoke.yml is workflow_dispatch-only with a required preview_url input, both secrets referenced correctly, and a browser-install step present; never runs on push/PR — unchanged from the prior pass and re-confirmed.",
+      "result": "pass"
+    },
+    {
+      "check": "pnpm typecheck, pnpm lint, pnpm check:secrets, pnpm build, and pnpm test all run clean/as-expected (Vitest: same 37 pre-existing Supabase-unreachable failures, no new regressions); playwright test --list loads the updated spec correctly with dummy env vars.",
+      "result": "pass"
+    },
+    {
+      "check": "The committed change set (git log HEAD) touches exactly docs/decisions.md, docs/inspections/T2.json, e2e/smoke.spec.ts and the new src/app/[locale]/(auth)/confirm/route.ts — no stray reformatting of unrelated files, and docs/build-map.json's T2 status was not altered by the fix commit.",
+      "result": "pass"
+    }
+  ]
+}
