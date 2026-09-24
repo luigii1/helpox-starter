@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { Webhook } from "standardwebhooks";
-import { verifyPolarWebhook, WebhookVerificationError } from "./verify-webhook";
+import { verifyPolarWebhook, WebhookVerificationError, SDKValidationError } from "./verify-webhook";
 
 const SECRET = "whsec_test_secret_do_not_use_in_production";
 
@@ -116,5 +116,38 @@ describe("verifyPolarWebhook", () => {
     const payload = orderPaidPayload();
 
     expect(() => verifyPolarWebhook(payload, {}, SECRET)).toThrow();
+  });
+
+  // Regression test: if the webhook secret env var is unset in the
+  // deployment (e.g. only added to one Vercel environment while Polar's
+  // webhook points at another), the route must not treat that as a
+  // signature mismatch and
+  // must not fall through to its "unrecognized event, acknowledge anyway"
+  // branch either — both would report ok:true to Polar while never granting
+  // credits, with nothing to show it happened. Confirms this throws, and
+  // throws something other than WebhookVerificationError, so route.ts's
+  // catch can tell the two apart.
+  it("throws something other than WebhookVerificationError when the secret is missing", () => {
+    const payload = orderPaidPayload();
+    const headers = signRequest(payload);
+
+    expect(() => verifyPolarWebhook(payload, headers, undefined as unknown as string)).toThrow();
+    try {
+      verifyPolarWebhook(payload, headers, undefined as unknown as string);
+      expect.unreachable();
+    } catch (error) {
+      expect(error).not.toBeInstanceOf(WebhookVerificationError);
+    }
+  });
+
+  // A genuinely signed request for an event type this SDK version doesn't
+  // recognize is the one case route.ts should acknowledge (200) without
+  // granting anything — distinguished from every other failure above by
+  // being an SDKValidationError, not a WebhookVerificationError.
+  it("throws SDKValidationError for a validly signed but unrecognized event type", () => {
+    const payload = JSON.stringify({ type: "some.future.event", data: {} });
+    const headers = signRequest(payload);
+
+    expect(() => verifyPolarWebhook(payload, headers, SECRET)).toThrow(SDKValidationError);
   });
 });

@@ -1,6 +1,6 @@
 import "server-only";
 import { NextResponse } from "next/server";
-import { verifyPolarWebhook, WebhookVerificationError } from "@/lib/polar/verify-webhook";
+import { verifyPolarWebhook, WebhookVerificationError, SDKValidationError } from "@/lib/polar/verify-webhook";
 import { handleOrderPaid } from "@/lib/polar/handle-order-paid";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -26,10 +26,19 @@ export async function POST(request: Request) {
     if (error instanceof WebhookVerificationError) {
       return NextResponse.json({ error: "invalid_signature" }, { status: 403 });
     }
-    // Signature was valid but the event type/shape isn't one this SDK
-    // version recognizes — acknowledge so Polar doesn't retry forever,
-    // there's just nothing for this route to do with it.
-    return NextResponse.json({ ok: true });
+    if (error instanceof SDKValidationError) {
+      // Signature was valid but the event type/shape isn't one this SDK
+      // version recognizes — acknowledge so Polar doesn't retry forever,
+      // there's just nothing for this route to do with it.
+      return NextResponse.json({ ok: true });
+    }
+    // Anything else — most importantly a missing/malformed
+    // POLAR_WEBHOOK_SECRET, which throws before signature verification even
+    // runs — is a real failure, never a thing to report as success: doing so
+    // would silently swallow every event (including order.paid) with no
+    // credits ever granted and nothing to show for it. 500 makes Polar retry
+    // and shows up in its delivery log instead of vanishing.
+    return NextResponse.json({ error: "verification_failed" }, { status: 500 });
   }
 
   // Only order.paid is subscribed to in Polar's dashboard, but this checks
