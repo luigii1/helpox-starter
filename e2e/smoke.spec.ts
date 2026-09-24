@@ -53,6 +53,26 @@ test.describe("smoke", () => {
     // counterpart: it verifies the token_hash directly via Supabase's own
     // verifyOtp, exactly what a real signInWithOtp() email would also
     // support (see that route's comment for the full explanation).
+    //
+    // The user is created explicitly first (unconfirmed) rather than left
+    // for generateLink to create implicitly: a live run hit "Email link is
+    // invalid or has expired" (otp_expired) on every attempt, always for a
+    // brand-new email — a known Supabase bug where generateLink's implicit
+    // user creation races its own token generation for a first-ever magic
+    // link (supabase/supabase#22521). Creating the user first avoids that
+    // race; email_confirm stays false so the credit-granting trigger still
+    // fires via its UPDATE path (see 20260922074420_signup_credit.sql) when
+    // /confirm's verifyOtp call confirms the email below — the same path a
+    // real magic-link signup takes, not the INSERT path Google sign-in uses.
+    const { data: createdUser, error: createError } = await admin.auth.admin.createUser({
+      email,
+      email_confirm: false,
+    });
+    if (createError || !createdUser.user) {
+      throw new Error(`Could not create the test user: ${createError?.message ?? "no user in response"}`);
+    }
+    userId = createdUser.user.id;
+
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
       type: "magiclink",
       email,
@@ -60,7 +80,6 @@ test.describe("smoke", () => {
     if (linkError || !linkData.properties?.hashed_token) {
       throw new Error(`Could not generate a sign-in link: ${linkError?.message ?? "no hashed_token in response"}`);
     }
-    userId = linkData.user.id;
 
     const tokenHash = encodeURIComponent(linkData.properties.hashed_token);
     await page.goto(`/${LOCALE}/confirm?token_hash=${tokenHash}&type=magiclink`);
