@@ -53,6 +53,17 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+    // TEMPORARY diagnostic (remove once the E2E suite signs in
+    // successfully): server-side only, in Vercel's own Runtime Logs —
+    // never the token_hash itself, only Supabase's own explanation of why
+    // verification failed, which doesn't embed the token or any secret.
+    console.error("confirm route: verifyOtp failed", {
+      message: error.message,
+      status: error.status,
+      code: error.code,
+    });
+  } else {
+    console.error("confirm route: invalid query params", parsed.error.flatten());
   }
 
   return NextResponse.redirect(`${origin}/${locale}/sign-in?error=auth`);
