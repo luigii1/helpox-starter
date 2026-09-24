@@ -5,6 +5,41 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-24 — `@playwright/test` dependency; E2E smoke test runs against the live Preview URL via a manual-only workflow, needs two new GitHub Actions secrets (brick T2)
+**Decision:** Added `@playwright/test` as a dev dependency, `playwright.config.ts`, and `e2e/smoke.spec.ts`
+(the one test file this repo has outside `src/`/`supabase/tests/` — CLAUDE.md's structure list doesn't
+mention an `e2e/` folder, but it's the standard, expected location for Playwright specs, and inventing a
+non-standard one instead would confuse tooling and future readers more than it would help). It signs a real
+test user up, buys a pack for real in Polar's sandbox, spends a credit, and checks the balance — the one
+place in this repo that proves the whole stack works together, not each piece mocked in isolation.
+
+Runs only via `.github/workflows/e2e-smoke.yml`'s `workflow_dispatch` trigger (an input for the Preview URL),
+**not** on every push/PR like `test.yml`: it needs a real, already-deployed, publicly reachable URL — Polar's
+webhook has to be able to call it back — and this workflow has no way to discover that URL on its own since
+Vercel's own GitHub integration (not this repo's workflows) is what creates Preview deployments.
+
+Sign-in is done via `supabase.auth.admin.generateLink({type: "magiclink", ...})` rather than driving the real
+sign-in form and waiting for an email: this is Supabase's own documented pattern for testing magic-link auth,
+and the resulting link is still redeemed through this app's real `/callback` route, the same one a genuinely
+clicked email link uses.
+
+**New GitHub Actions secrets needed** (Settings → Secrets and variables → Actions → "New repository secret",
+same values already in Vercel): `SUPABASE_SERVICE_ROLE_KEY` (used only server-side, inside the test's own
+Node process — never sent to the browser) and `NEXT_PUBLIC_SUPABASE_URL` (not actually secret, but stored as
+a secret here anyway to keep the commander's setup to one consistent step rather than a secret *and* a
+separate "variable").
+
+**Why not run it against a local server instead** (like `test.yml`'s Vitest/RLS suite does, against a local
+`supabase start`)? A local server in a CI runner isn't reachable from the public internet, so Polar's webhook
+could never call it back — the credit-granting step this test exists to prove would be untestable.
+
+**The one part of this test not verified against the real thing:** Polar's own checkout page markup — this
+sandbox has no network access to polar.sh, so the card-entry selectors in `fillPolarCheckout()` (in
+`e2e/smoke.spec.ts`) are a best-effort guess, not something seen live. Check the Playwright trace/screenshot
+artifact from this workflow's first real run and fix those selectors to match if they're wrong.
+
+---
+
 ## 2026-09-24 — `standardwebhooks` moves from dev to runtime dependency (brick E4 fix); `@polar-sh/sdk`'s webhook verifier has a real secret-encoding bug
 **Decision:** `src/lib/polar/verify-webhook.ts` now calls `standardwebhooks`'s `Webhook` class directly instead
 of going through `@polar-sh/sdk/webhooks`'s `validateEvent`. `standardwebhooks` moved from `devDependencies` to

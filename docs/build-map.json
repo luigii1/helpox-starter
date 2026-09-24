@@ -709,7 +709,7 @@
         "F1"
       ],
       "human_check": false,
-      "status": "building"
+      "status": "inspecting"
     },
     {
       "step": 33,

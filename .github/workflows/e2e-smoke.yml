@@ -1,0 +1,50 @@
+name: E2E smoke test
+
+# Brick T2. Manual only, not on every push/PR (unlike test.yml): this suite
+# needs a real, already-deployed Preview URL to test against — Vercel
+# creates one per PR automatically, but this workflow has no way to know
+# that URL on its own, so it's given as an input instead. Run it from the
+# Actions tab ("Run workflow") with the Preview URL from that PR's Vercel
+# comment, any time after that deploy is ready.
+on:
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: "Preview URL to test (from the PR's Vercel comment, no trailing slash)"
+        required: true
+        type: string
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - run: pnpm test:e2e
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ inputs.preview_url }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      # Always, not just on failure: a screenshot/trace from a passing run
+      # is still useful evidence, and this is the only way to see what
+      # actually happened on Polar's real checkout page from outside CI.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
