@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CREDIT_PACKS } from "@/lib/credits/packs";
+import { BuyPackButton } from "./buy-pack-button";
 import { DeleteAccountDialog } from "./delete-account-dialog";
 
 export default async function AccountPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -33,15 +34,14 @@ export default async function AccountPage({ params }: { params: Promise<{ locale
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium text-foreground">{t("buyCredits")}</p>
           {CREDIT_PACKS.map((pack) => (
-            <form key={pack.polarProductId} action={`/${locale}/checkout`} method="post">
-              <input type="hidden" name="polarProductId" value={pack.polarProductId} />
-              <Button type="submit" variant="secondary" className="w-full">
-                {t("buyPackButton", {
-                  count: pack.credits,
-                  price: format.number(pack.priceEur, { style: "currency", currency: "EUR" }),
-                })}
-              </Button>
-            </form>
+            <BuyPackButton
+              key={pack.polarProductId}
+              polarProductId={pack.polarProductId}
+              label={t("buyPackButton", {
+                count: pack.credits,
+                price: format.number(pack.priceEur, { style: "currency", currency: "EUR" }),
+              })}
+            />
           ))}
           {/* Plain <a>, not next/link's Link: this downloads a file
               (Content-Disposition: attachment) from an API route, not a page

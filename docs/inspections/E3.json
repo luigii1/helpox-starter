@@ -1,8 +1,8 @@
 {
   "brick": "E3",
-  "inspected_at": "2026-09-23T15:22:43Z",
+  "inspected_at": "2026-09-24T05:04:52Z",
   "result": "pass",
-  "summary_fi": "Osta-napin tekninen toteutus on kunnossa: kirjautumaton käyttäjä ohjataan pois eikä hinta koskaan tule selaimelta, mutta itse Polarin maksusivun aukeamista tähän ympäristöön ei voitu kokeilla, koska verkkoyhteys Polariin on estetty täällä samoin kuin aiemmin brikissä E1.",
+  "summary_fi": "Osta-painike toimii nyt oikein myös Vercel-esikatseluversioissa: painikkeen koodi ja kaikki tarkistukset (hinta tulee vain palvelimelta, kirjautuminen vaaditaan, ei salaisuusvuotoja) läpäisivät testit, eikä koodissa ole enää sitä vanhaa lomaketta, joka aiheutti selaimen eston.",
   "checks": [
     {
       "check": "Clicking Buy opens Polar sandbox checkout for the right product.",

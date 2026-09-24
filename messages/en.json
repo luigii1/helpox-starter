@@ -188,6 +188,8 @@
     "credits": "Credits: {count}",
     "buyCredits": "Buy credits",
     "buyPackButton": "{count} credits — {price}",
+    "buyPackLoading": "Starting checkout…",
+    "buyError": "Something went wrong. Please try again.",
     "exportData": "Export data",
     "signOut": "Sign out",
     "deleteAccount": "Delete account",
