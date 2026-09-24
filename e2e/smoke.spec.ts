@@ -39,7 +39,14 @@ test.describe("smoke", () => {
   });
 
   test("sign up, buy a pack in the Polar sandbox, spend a credit, balance is correct", async ({ page }) => {
-    const email = `e2e-smoke-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+    // A live run showed Polar's checkout validates the email's domain
+    // actually accepts mail, rejecting @example.com outright ("The domain
+    // name example.com does not accept email"). A Gmail "+" alias is a
+    // real, deliverable address Polar accepts, and a fresh alias per run
+    // (still unique via the same timestamp+random suffix) still exercises
+    // sign-up as a brand-new account each time; any mail Polar happens to
+    // send lands in that one real inbox.
+    const email = `h.roivainen+e2e-smoke-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@gmail.com`;
 
     // 1. "Sign up": a real Supabase user, signed in via a real magic link —
     // generated directly through the admin API instead of sent by email,
