@@ -37,6 +37,26 @@ Node process — never sent to the browser) and `NEXT_PUBLIC_SUPABASE_URL` (not 
 a secret here anyway to keep the commander's setup to one consistent step rather than a secret *and* a
 separate "variable").
 
+**Second correction, after the first real run:** the suite failed immediately — not on Polar's checkout (the
+part flagged as unverified below), but on the very first assertion, landing on Vercel's own login page
+instead of the app. Vercel Preview deployments sit behind "Vercel Authentication" by default (a login wall in
+front of the whole deployment); Production doesn't have this, which is why nothing in this repo noticed
+before now — every earlier live test in this session used the Production URL, and the commander's own browser
+never saw the wall since they're logged into Vercel already. Fixed by sending Vercel's own
+"Protection Bypass for Automation" header (`x-vercel-protection-bypass`) on every request
+(`playwright.config.ts`), sourced from a third GitHub Actions secret: `VERCEL_AUTOMATION_BYPASS_SECRET`
+(Vercel Project Settings → Deployment Protection → "Protection Bypass for Automation" — Vercel generates the
+value, nothing to invent). `e2e/smoke.spec.ts` also fails fast with a clear message now if it ever lands on
+Vercel's login domain again, instead of a confusing "text not found" timeout.
+
+**Open question this fix doesn't resolve:** the bypass header only helps Playwright's own browser get past the
+wall — it says nothing about whether Vercel Authentication also blocks *Polar's* webhook POST to
+`/api/webhooks/polar` on a Preview URL, since Polar has no way to send that header. If it does, no
+Preview-based purchase's credits could ever be granted, regardless of anything in this test, and the real fix
+would be disabling Preview deployment protection entirely (simplest — Preview URLs are already
+effectively-unguessable random strings) rather than anything on this suite's side. Whether this is actually a
+problem is unconfirmed pending the next live run.
+
 **Why not run it against a local server instead** (like `test.yml`'s Vitest/RLS suite does, against a local
 `supabase start`)? A local server in a CI runner isn't reachable from the public internet, so Polar's webhook
 could never call it back — the credit-granting step this test exists to prove would be untestable.
