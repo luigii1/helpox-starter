@@ -65,6 +65,19 @@ test.describe("smoke", () => {
     const tokenHash = encodeURIComponent(linkData.properties.hashed_token);
     await page.goto(`/${LOCALE}/confirm?token_hash=${tokenHash}&type=magiclink`);
 
+    // Fails fast with a clear reason instead of a confusing "text not
+    // found" timeout later: a Preview deployment behind Vercel's own
+    // "Vercel Authentication" wall (on by default, unlike Production —
+    // see playwright.config.ts) redirects every request here instead of
+    // ever reaching the app. VERCEL_AUTOMATION_BYPASS_SECRET must be set.
+    if (/vercel\.com\/login|accounts\.vercel\.com/i.test(page.url())) {
+      throw new Error(
+        "Landed on Vercel's own login page instead of the app — this Preview deployment is behind " +
+          "Vercel Authentication and VERCEL_AUTOMATION_BYPASS_SECRET isn't set (or is wrong). " +
+          "See docs/decisions.md.",
+      );
+    }
+
     // Confirm sign-in actually completed and the signup bonus was granted,
     // rather than trusting that the redirect landed somewhere sensible.
     await page.goto(`/${LOCALE}/dashboard`);

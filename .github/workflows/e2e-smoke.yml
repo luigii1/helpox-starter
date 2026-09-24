@@ -36,6 +36,10 @@ jobs:
           PLAYWRIGHT_BASE_URL: ${{ inputs.preview_url }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Vercel Preview deployments sit behind "Vercel Authentication" by
+          # default — see playwright.config.ts's comment. Optional here too:
+          # an empty/unset secret just means no bypass header is sent.
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       # Always, not just on failure: a screenshot/trace from a passing run
       # is still useful evidence, and this is the only way to see what
