@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page, type Locator } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { CREDIT_PACKS } from "@/lib/credits/packs";
 import { deleteAccount } from "@/lib/account/delete-account";
@@ -109,7 +109,7 @@ test.describe("smoke", () => {
     // this suite doesn't control the markup of. See fillPolarCheckout.
     await page.getByRole("button", { name: new RegExp(`^${PACK.credits} credits`) }).click();
     await page.waitForURL(/checkout\.polar\.sh|polar\.sh/i, { timeout: 20_000 });
-    await fillPolarCheckout(page);
+    await fillPolarCheckout(page, email);
 
     // Polar redirects back to our own successUrl (the account page) once
     // the checkout completes; the credit grant itself happens async, via
@@ -132,30 +132,70 @@ test.describe("smoke", () => {
   });
 });
 
-// Polar's hosted checkout page — this app has no control over its markup,
-// so these selectors are a best-effort guess at a typical card-entry form,
-// not something verified against the real page (this sandbox has no network
-// access to polar.sh). This is the one part of this suite most likely to
-// need adjusting after its first real run — check the Playwright trace/
-// screenshot artifact from that run and fix the selectors below to match.
-async function fillPolarCheckout(page: Page): Promise<void> {
-  const cardNumber = page
-    .getByPlaceholder(/card number/i)
-    .or(page.frameLocator("iframe").getByPlaceholder(/card number/i))
-    .first();
-  await cardNumber.waitFor({ timeout: 15_000 });
+// Polar's hosted checkout page — this app has no control over its markup.
+// The first real run's failure screenshot confirmed the top of the form:
+// labeled "Email" and "Cardholder name" inputs and a "Country" combobox
+// (our own checkout route.ts sends externalCustomerId but no
+// customerEmail, so Email really does start empty — not a fluke of that
+// screenshot). The card-number/expiry/CVC fields were not yet visible in
+// that screenshot, taken right as the page loaded — still an unverified,
+// best-effort guess at Polar's payment element, most likely to need
+// adjusting from the next run's artifact.
+//
+// locateCheckoutField polls the top-level page and every current iframe
+// rather than combining them with .or(): Playwright rejects a composite
+// locator that mixes a page locator with one built from frameLocator()
+// ("Frame locators are not allowed inside composite locators") — hit on
+// the first live run, before ever reaching Polar's real DOM. This works
+// whether Polar renders the card form directly on the page or inside an
+// embedded iframe (e.g. a Stripe Elements-style form), without knowing
+// which in advance.
+async function locateCheckoutField(page: Page, fieldName: string, placeholder: RegExp): Promise<Locator> {
+  const timeoutMs = 20_000;
+  const pollIntervalMs = 500;
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const direct = page.getByPlaceholder(placeholder).first();
+    if (await direct.count()) return direct;
+    for (const frame of page.frames()) {
+      const inFrame = frame.getByPlaceholder(placeholder).first();
+      if (await inFrame.count()) return inFrame;
+    }
+    await page.waitForTimeout(pollIntervalMs);
+  }
+  throw new Error(`Could not find the ${fieldName} field on Polar's checkout page or in any of its iframes.`);
+}
+
+// Best-effort: picks whichever first real option a "Country" combobox
+// offers, native <select> or a custom listbox alike — this smoke test
+// doesn't care which country, only that the field ends up filled if the
+// form requires it. Silently does nothing if no such field is found,
+// rather than guessing at markup that might not even be there.
+async function selectFirstCountry(page: Page): Promise<void> {
+  const combobox = page.getByRole("combobox", { name: /country/i }).first();
+  if (!(await combobox.count())) return;
+
+  const tagName = await combobox.evaluate((el) => el.tagName.toLowerCase());
+  if (tagName === "select") {
+    await combobox.selectOption({ index: 1 });
+    return;
+  }
+  await combobox.click();
+  await page.getByRole("option").first().click();
+}
+
+async function fillPolarCheckout(page: Page, email: string): Promise<void> {
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Cardholder name").fill("E2E Smoke Test");
+  await selectFirstCountry(page);
+
+  const cardNumber = await locateCheckoutField(page, "card number", /card number/i);
   await cardNumber.fill("4242424242424242");
 
-  const expiry = page
-    .getByPlaceholder(/mm\s*\/\s*yy/i)
-    .or(page.frameLocator("iframe").getByPlaceholder(/mm\s*\/\s*yy/i))
-    .first();
+  const expiry = await locateCheckoutField(page, "expiry", /mm\s*\/\s*yy/i);
   await expiry.fill("12 / 34");
 
-  const cvc = page
-    .getByPlaceholder(/cvc|cvv/i)
-    .or(page.frameLocator("iframe").getByPlaceholder(/cvc|cvv/i))
-    .first();
+  const cvc = await locateCheckoutField(page, "CVC", /cvc|cvv/i);
   await cvc.fill("123");
 
   await page.getByRole("button", { name: /pay|purchase|subscribe|complete/i }).click();
