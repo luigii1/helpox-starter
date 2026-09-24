@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { Webhook } from "standardwebhooks";
-import { verifyPolarWebhook, WebhookVerificationError } from "./verify-webhook";
+import { verifyPolarWebhook, parseOrderPaidEvent, WebhookVerificationError } from "./verify-webhook";
 
 // Shaped exactly like a real Polar webhook secret (whsec_ prefix, base64
 // payload, = padding) — not a real one. This shape matters: the bug this
@@ -146,5 +146,33 @@ describe("verifyPolarWebhook", () => {
     const event = verifyPolarWebhook(payload, headers, SECRET);
 
     expect(event.type).toBe("checkout.created");
+  });
+});
+
+describe("parseOrderPaidEvent", () => {
+  // Regression test: verifyPolarWebhook returns Polar's raw wire-format
+  // JSON as-is (snake_case: product_id, customer.external_id — see
+  // orderPaidPayload above, which matches a real Polar payload), not the
+  // camelCase shape handleOrderPaid reads. A route that cast event.data
+  // straight to Order without this parse step would silently read
+  // order.productId and order.customer.externalId as undefined on every
+  // real webhook — handleOrderPaid's own "nothing to grant against"
+  // early-return would then quietly no-op every purchase, with a 200 to
+  // Polar and no error anywhere. Confirmed against a real Polar delivery
+  // during this brick's commander check, and fixed by routing event.data
+  // through this function before calling handleOrderPaid.
+  it("transforms a verified order.paid event's raw fields into the typed, camelCase Order shape", () => {
+    const payload = orderPaidPayload();
+    const headers = signRequest(payload);
+    const event = verifyPolarWebhook(payload, headers, SECRET);
+
+    const order = parseOrderPaidEvent(event.data);
+
+    expect(order.productId).toBe("6a7960c1-e346-4057-8fb2-9760484477ec");
+    expect(order.customer.externalId).toBe("user-a");
+  });
+
+  it("throws for data that isn't a valid order.paid shape", () => {
+    expect(() => parseOrderPaidEvent({ not: "an order" })).toThrow();
   });
 });
