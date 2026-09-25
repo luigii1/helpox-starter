@@ -59,6 +59,8 @@ product by copying the repo — never build a product directly on top of `helpox
      and its own webhook secret once brick E4 exists.
    - Vercel: new project connected to the new repo, with `vercel.json` already pinning it to a real
      Next.js build (brick P5).
+   - Plausible: register the new product's real domain as its own site (brick G4) — a product never
+     reports its traffic into another product's Plausible site.
    - **This is the actual security requirement for this brick:** every key, secret and webhook signing
      secret below belongs to the new product's own accounts. Copying a `.env.local` (or Vercel
      environment variables) from another product means that product can read or grant credits against
@@ -68,6 +70,11 @@ product by copying the repo — never build a product directly on top of `helpox
    Production — brick P5's own security requirement in `docs/build-map.json` is that Production and
    Preview use different Supabase projects and keys, never the same one). Every value comes from the
    new accounts created in step 3, never copied from another product.
+   - The E2E smoke test (brick T2, `.github/workflows/e2e-smoke.yml`) reads its own secrets from GitHub
+     rather than Vercel: set `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_URL` and (if the new
+     Vercel project has Deployment Protection on, which is on by default for Preview) a fresh
+     `VERCEL_AUTOMATION_BYPASS_SECRET` under the new GitHub repo's Settings → Secrets and variables →
+     Actions — the new product's own values, never copied from another product's secrets.
 5. **Delete the example feature.** Remove `src/features/example/`,
    `src/app/[locale]/(app)/features/example/`, `src/app/api/features/example/`, the `ExampleFeature`
    namespace in `messages/en.json`, and the dashboard link to it (brick F1) — it was only ever a template
