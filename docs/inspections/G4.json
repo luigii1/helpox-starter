@@ -1,0 +1,10 @@
+{
+  "brick": "G4",
+  "inspected_at": "2026-09-25T07:14:57Z",
+  "result": "pass",
+  "summary_fi": "Kävijätilastot on rakennettu Vercelin omalla, evästeettömällä työkalulla eikä Plausiblella, kaikki dokumentit ja koodi on päivitetty vastaamaan tätä, eikä mitään uusia evästeitä tai ulkopuolisia seurantaskriptejä löytynyt.",
+  "checks": [
+    { "check": "Page views appear in the Vercel project's Analytics tab from the preview URL; no new cookies set.", "result": "pass" },
+    { "check": "Devtools show only Supabase auth cookies", "result": "pass" }
+  ]
+}

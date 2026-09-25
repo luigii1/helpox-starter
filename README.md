@@ -59,8 +59,9 @@ product by copying the repo — never build a product directly on top of `helpox
      and its own webhook secret once brick E4 exists.
    - Vercel: new project connected to the new repo, with `vercel.json` already pinning it to a real
      Next.js build (brick P5).
-   - Plausible: register the new product's real domain as its own site (brick G4) — a product never
-     reports its traffic into another product's Plausible site.
+   - Vercel Analytics: enable Web Analytics for the new Vercel project (Project → Analytics tab, brick
+     G4) — it's tied to the project, not a separate account, so a product never reports its traffic
+     into another product's analytics.
    - **This is the actual security requirement for this brick:** every key, secret and webhook signing
      secret below belongs to the new product's own accounts. Copying a `.env.local` (or Vercel
      environment variables) from another product means that product can read or grant credits against

@@ -2,12 +2,14 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 // CLAUDE.md §4 / brick S3: only this origin plus the third-party services
-// the browser actually talks to — Supabase (auth/session calls), Polar
-// (checkout, brick E1+) and Plausible (analytics, brick G4, not wired up
-// yet, allowed pre-emptively since the brick's instructions name it
-// explicitly). `*.polar.sh` covers both their sandbox and production hosts
-// without hard-coding one exact subdomain — Polar's docs weren't reachable
-// from this sandbox's network to confirm the precise hostname (see
+// the browser actually talks to — Supabase (auth/session calls) and Polar
+// (checkout, brick E1+). Analytics (brick G4) needs no extra entry: Vercel
+// Web Analytics loads its script and posts events same-origin
+// (/_vercel/insights/...), not from a third-party domain (see
+// docs/decisions.md for why it replaced the originally planned Plausible).
+// `*.polar.sh` covers both their sandbox and production hosts without
+// hard-coding one exact subdomain — Polar's docs weren't reachable from
+// this sandbox's network to confirm the precise hostname (see
 // docs/decisions.md); this should be re-checked against a real checkout
 // once brick E1+ wires one up. `'unsafe-inline'` on script-src is required
 // because Next.js injects its own hydration payload as an inline <script>
@@ -19,11 +21,11 @@ function buildContentSecurityPolicy(): string {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   return [
     `default-src 'self'`,
-    `script-src 'self' 'unsafe-inline' https://plausible.io`,
+    `script-src 'self' 'unsafe-inline'`,
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data:`,
     `font-src 'self'`,
-    `connect-src 'self' ${supabaseUrl} https://plausible.io https://*.polar.sh`.trim(),
+    `connect-src 'self' ${supabaseUrl} https://*.polar.sh`.trim(),
     `frame-src https://*.polar.sh`,
     `frame-ancestors 'none'`,
     `form-action 'self'`,

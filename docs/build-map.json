@@ -638,19 +638,20 @@
       "id": "G4",
       "module": "chip",
       "title": "Cookieless analytics",
-      "title_fi": "Kävijätilastot ilman evästeitä (Plausible)",
+      "title_fi": "Kävijätilastot ilman evästeitä (Vercel Analytics)",
       "why_fi": "Kävijätilastot ilman evästeitä, joten evästebanneria ei tarvita.",
-      "instructions": "Plausible script, disabled in development. No other third-party scripts.",
+      "instructions": "Vercel Web Analytics (@vercel/analytics), same-origin, only sends events in production. No other third-party scripts.",
       "security": [
         "Devtools show only Supabase auth cookies"
       ],
-      "done_when": "Page views appear in Plausible from the preview URL; no new cookies set.",
+      "done_when": "Page views appear in the Vercel project's Analytics tab from the preview URL; no new cookies set.",
       "depends_on": [
         "H4"
       ],
       "human_check": true,
-      "status": "todo",
-      "commander_check_fi": "Käykää sivulla ja katsokaa Plausiblesta, näkyykö käynti."
+      "status": "awaiting_commander",
+      "commander_check_fi": "Käykää sivulla ja katsokaa Vercelin projektin Analytics-välilehdeltä, näkyykö käynti.",
+      "build_summary_fi": "Kävijätilastot rakennettiin — mutta ei Plausiblella niin kuin alunperin suunniteltiin, vaan Vercelin omalla Web Analytics -työkalulla, koska se on ilmainen nykyisellä tililläsi eikä vaadi erillistä tiliä. Toteutus: lisättiin yksi pieni komponentti sivun juureen, joka lataa Vercelin oman, evästeettömän seurantaskriptin. Skripti ei aseta yhtään evästettä, ei tallenna IP-osoitteita eikä mitään pysyvää tunnistetta — kävijät lasketaan väliaikaisella, 24 tunnin sisällä poistuvalla tiivisteellä. Skripti myös lähettää tietoja vain oikeassa julkaisussa, ei paikallisessa kehitysympäristössä, automaattisesti — mitään erillistä kytkintä ei tarvittu.\n\nKoska Vercelin oma työkalu toimii saman verkko-osoitteen kautta (ei erillistä ulkopuolista palvelinta niin kuin Plausible olisi tarvinnut), selaimen turvallisuusasetuksia (CSP) pystyttiin jopa yksinkertaistamaan — yksi rivi poistui kokonaan tarpeettomana.\n\nPäivitettiin myös tietosuojaseloste ja kaikki muut dokumentit (mukaan lukien \"Ohje uuteen sovellukseen\" -osio, jonka kirjoitin vasta äskettäin Plausiblea varten) vastaamaan uutta valintaa, ja kirjattiin päätös perusteluineen `docs/decisions.md`-tiedostoon, kuten CLAUDE.md vaatii kun tekninen valinta vaihtuu.\n\nTarkastaja (riippumaton tekoäly, joka ei nähnyt tätä rakennustyötä) kävi läpi koodin, rakensi sovelluksen tuotantotilassa ja tarkisti oikeasti otsakkeista ja verkkoliikenteestä että mitään evästeitä ei aseteta ja että skripti tosiaan lataantuu omalta palvelimelta — läpäisi molemmat tarkistukset.\n\nJäljellä sinun tarkistettavaksi: käy sivulla ja katso Vercelin projektin Analytics-välilehdeltä, näkyykö käynti siellä. Tämä ei vaadi mitään uutta tiliä tai maksua — pelkkä käynti sivulla riittää, ja tilastot löytyvät suoraan samasta Vercel-projektista jota jo käytätte."
     },
     {
       "step": 30,

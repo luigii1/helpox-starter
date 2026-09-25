@@ -5,6 +5,29 @@ Newest first. One entry per decision: date, decision, why, alternatives consider
 
 ---
 
+## 2026-09-25 — Analytics switched from Plausible to Vercel Web Analytics (brick G4)
+**Decision:** Replaced the stack table's Plausible entry with Vercel Web Analytics (`@vercel/analytics`).
+Updated `CLAUDE.md`'s stack table and secrets line, `next.config.ts`'s CSP (dropped `plausible.io` from
+`script-src`/`connect-src` — Vercel Analytics loads and posts same-origin, so nothing needed to be added
+in its place), `.env.example` (dropped `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` — Vercel Analytics reads the
+deployment's own domain automatically, no env var needed), the privacy policy's processor list
+(`messages/en.json`), `docs/base-spec.md`, `docs/launch-checklist.md`, and the new-product guide in
+`README.md`.
+**Why:** G4 was blocked on the commander creating and paying for a Plausible account (see the
+2026-09-22 entry below). Vercel Web Analytics is free on the Hobby plan (50,000 events/month, no
+overage charge — collection just pauses past that), is confirmed cookieless (no cookies, no persistent
+identifier, no IP stored; visitors are counted with a 24-hour hashed request), and needs no separate
+account at all since the product's Vercel project already exists — just enabling it per project.
+**Consequence:** the 2026-09-22 entry's blocker (needing a Plausible account) is moot; G4 proceeds
+without waiting on any external account. Each product's traffic is scoped to its own Vercel project
+automatically, same isolation Plausible would have given per registered domain.
+**Alternatives considered:** staying with Plausible once a paid account exists — rejected for now, no
+reason to pay when a cookieless option is already free on the current plan; Google Analytics — never
+considered, explicitly ruled out by `CLAUDE.md` §4 (non-essential cookies/tracking are forbidden without
+a consent solution) and §2's stack table note ("No Google Analytics, no ad pixels").
+
+---
+
 ## 2026-09-24 — `@playwright/test` dependency; E2E smoke test runs against the live Preview URL via a manual-only workflow, needs two new GitHub Actions secrets (brick T2)
 **Decision:** Added `@playwright/test` as a dev dependency, `playwright.config.ts`, and `e2e/smoke.spec.ts`
 (the one test file this repo has outside `src/`/`supabase/tests/` — CLAUDE.md's structure list doesn't

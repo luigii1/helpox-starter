@@ -31,7 +31,7 @@ point out the conflict before proceeding.
 | Validation | zod | All external input |
 | i18n | next-intl | English default; every UI string via `t()` |
 | Styling | Tailwind CSS + design tokens | Tokens in `src/styles/tokens.css` |
-| Analytics | Plausible (cookieless) | No Google Analytics, no ad pixels |
+| Analytics | Vercel Web Analytics (cookieless) | No Google Analytics, no ad pixels |
 | Unit/integration tests | Vitest | Includes RLS tests against local Supabase |
 | E2E smoke tests | Playwright | Sign-up → buy → use credit happy path |
 | Package manager | pnpm | |
@@ -100,7 +100,7 @@ Do not invent new top-level folders. If something doesn't fit, ask.
 ### Secrets
 - `SUPABASE_SERVICE_ROLE_KEY` and `POLAR_*` secrets are used **only** in `src/lib/supabase/admin.ts`
   and server-only modules. Those files start with `import 'server-only'`.
-- Never prefix a secret with `NEXT_PUBLIC_`. Only the Supabase URL, anon key and Plausible domain may be public.
+- Never prefix a secret with `NEXT_PUBLIC_`. Only the Supabase URL and anon key may be public.
 - Never log secrets, tokens, full webhook payloads or personal data.
 
 ### Database

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // VERCEL_URL is set automatically by Vercel to the current deployment's own
@@ -16,7 +17,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        {/* Cookieless (brick G4, docs/decisions.md): no config needed — it
+            reads the deployment's own domain and only sends events in
+            production ("auto" mode, the default), so no dev-only guard is
+            needed here either. */}
+        <Analytics />
+      </body>
     </html>
   );
 }

@@ -34,9 +34,9 @@ Tick every box. If one fails, do not release.
 
 ## D. Privacy and legal
 - [ ] Privacy policy and terms are published and linked in the footer
-- [ ] Legal texts name the right company (Helpox), contact address and processors (Supabase, Vercel, Polar, Plausible)
+- [ ] Legal texts name the right company (Helpox), contact address and processors (Supabase, Vercel, Polar)
 - [ ] Browser devtools show no cookies other than Supabase auth cookies
-- [ ] No third-party scripts other than Plausible load on any page
+- [ ] No third-party scripts load on any page (Vercel Analytics is same-origin, not third-party)
 - [ ] Data export downloads complete JSON of the user's data
 - [ ] Account deletion removes the auth user and all related rows (verify in the database)
 

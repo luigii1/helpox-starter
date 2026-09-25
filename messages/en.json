@@ -89,9 +89,8 @@
           "heading": "Who we share it with",
           "body": [
             "Supabase — hosts our database and handles sign-in.",
-            "Vercel — hosts the application.",
-            "Polar — processes payments as our merchant of record; they handle VAT and sales tax.",
-            "Plausible — cookieless, aggregate website analytics. No personal data, no cookies."
+            "Vercel — hosts the application, and provides cookieless, aggregate website analytics. No personal data, no cookies.",
+            "Polar — processes payments as our merchant of record; they handle VAT and sales tax."
           ]
         },
         {
