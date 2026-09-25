@@ -102,7 +102,7 @@ RLS: users can `select` their own ledger rows. No client writes.
 - Privacy policy and terms of service pages (templates with placeholders — to be reviewed by a professional)
 - Data export: account page button → JSON download of the user's profile, ledger and product data
 - Account deletion: confirmation dialog → server action deletes the auth user (cascades to all rows)
-- Plausible analytics script (cookieless), disabled in development
+- Vercel Web Analytics (cookieless), only sends events in production
 - Footer links to privacy, terms, contact
 - No cookie banner (only essential auth cookies are set) — documented in `docs/decisions.md`
 
